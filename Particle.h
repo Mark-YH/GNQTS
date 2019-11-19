@@ -8,7 +8,7 @@
 class Particle {
 public:
     int *solution;
-    int fitness;
+    double fitness;
 
     void setSolutionSize(int size) {
         this->solution = new int[size];
