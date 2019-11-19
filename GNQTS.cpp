@@ -166,13 +166,16 @@ void GNQTS::measure() {
 void GNQTS::calcFitness() {
     // local worst
     this->worstParticle.fitness = INT_MAX;
+
     for (int i = 0; i < this->model.getPopulation(); i++) {
-        for (int j = 0; j < this->model.getLength(); j++) {
-            this->particle[i].fitness = this->model.getFitness(this->particle[i]);
-        }
+        this->particle[i].fitness = this->model.getFitness(this->particle[i], this->stocks,
+                                                           numOfStocks, numOfDays);
+
+        // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle.fitness) {
             memcpy(&this->bestParticle, &this->particle[i], sizeof(bestParticle));
         }
+        // Check if it needs to update worst particle
         if (this->worstParticle.fitness > this->particle[i].fitness) {
             memcpy(&this->worstParticle, &this->particle[i], sizeof(bestParticle));
         }
