@@ -44,10 +44,9 @@ GNQTS::GNQTS() {
     for (int i = 0; i < this->model.getLength(); i++) {
         this->pMatrix[i] = 0.5;
     }
-    // TODO: initialize best and worst particle
 
+    // global best
     this->bestParticle.fitness = 0;
-    this->worstParticle.fitness = INT_MAX;
 
 #if DEBUG
     Logger logger("../log/init");
@@ -164,9 +163,17 @@ void GNQTS::measure() {
 }
 
 void GNQTS::calcFitness() {
+    // local worst
+    this->worstParticle.fitness = INT_MAX;
     for (int i = 0; i < this->model.getGeneration(); i++) {
         for (int j = 0; j < this->model.getLength(); j++) {
             this->particle[i].fitness = this->model.getFitness(this->particle[i]);
+        }
+        if (this->particle[i].fitness > this->bestParticle.fitness) {
+            memcpy(&this->bestParticle, &this->particle[i], sizeof(bestParticle));
+        }
+        if (this->worstParticle.fitness > this->particle[i].fitness) {
+            memcpy(&this->worstParticle, &this->particle[i], sizeof(bestParticle));
         }
     }
 }
@@ -174,11 +181,9 @@ void GNQTS::calcFitness() {
 void GNQTS::update() {
     for (int i = 0; i < this->model.getLength(); i++) {
         if (this->bestParticle.solution[i] == 1 && worstParticle.solution[i] == 0) {
-            if (this->pMatrix[i] < 0.9)
-                this->pMatrix[i] += 0.1;
+            this->pMatrix[i] += this->model.getTheta();
         } else if (bestParticle.solution[i] == 0 && worstParticle.solution[i] == 1) {
-            if (this->pMatrix[i] > 0.1)
-                this->pMatrix[i] -= 0.1;
+            this->pMatrix[i] -= this->model.getTheta();
         }
     }
 }
