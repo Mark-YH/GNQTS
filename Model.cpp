@@ -43,3 +43,8 @@ void Model::setLength(int length) {
 int Model::getLength() {
     return this->length;
 }
+
+double Model::getFitness(Particle p) {
+
+    return 0;
+}

@@ -5,6 +5,9 @@
 #ifndef GNQTS_STOCK_MODEL_H
 #define GNQTS_STOCK_MODEL_H
 
+#include "Particle.h"
+#include "Stock.h"
+
 class Model {
 public:
     Model() = default;
@@ -30,6 +33,8 @@ public:
     void setLength(int length);
 
     int getLength();
+
+    double getFitness(Particle p);
 
 private:
     int population;

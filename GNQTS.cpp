@@ -5,6 +5,7 @@
 #include "GNQTS.h"
 #include "Logger.h"
 #include <sstream>
+#include <climits>
 
 using std::ifstream;
 using std::string;
@@ -16,7 +17,7 @@ using std::ios;
 GNQTS::GNQTS() {
     string path = "../data/M2M/train_2009_12(2009 Q1).csv";
     this->model.setPopulation(10);
-    this->model.setGeneration(100);
+    this->model.setGeneration(1);
     this->model.setTheta(0.0004);
     this->model.setFund(10000000.0);
 
@@ -25,22 +26,34 @@ GNQTS::GNQTS() {
 
     this->model.setLength(this->numOfStocks);
 
-    this->particles = new Particle[this->model.getPopulation()];
-
+    // allocate memory
+    this->pMatrix = new double[this->model.getLength()];
+    this->particle = new Particle[this->model.getPopulation()];
     for (int i = 0; i < this->model.getPopulation(); i++) {
-        this->particles[i].setSolutionSize(this->model.getLength());
+        this->particle[i].setSolutionSize(this->model.getLength());
     }
 
+    // initialize solution
     for (int i = 0; i < this->model.getPopulation(); i++) {
         for (int j = 0; j < this->model.getLength(); j++) {
-            this->particles[i].solution[j] = rand() % 2;
+            this->particle[i].solution[j] = rand() % 2;
         }
     }
+
+    // initialize probability matrix
+    for (int i = 0; i < this->model.getLength(); i++) {
+        this->pMatrix[i] = 0.5;
+    }
+    // TODO: initialize best and worst particle
+
+    this->bestParticle.fitness = 0;
+    this->worstParticle.fitness = INT_MAX;
+
 #if DEBUG
     Logger logger("../log/init");
     for (int i = 0; i < this->model.getPopulation(); i++) {
         for (int j = 0; j < this->model.getLength(); j++) {
-            logger.write(this->particles[i].solution[j]);
+            logger.write(this->particle[i].solution[j]);
         }
         logger.writeLine("");
     }
@@ -48,10 +61,15 @@ GNQTS::GNQTS() {
 }
 
 void GNQTS::run() {
-
+    for (int i = 0; i < this->model.getGeneration(); i++) {
+        measure();
+        calcFitness();
+        update();
+    }
 }
 
-void GNQTS::initStock(string path) {
+// get numbers of stocks and days in order to allocate memory for `Stock`
+void GNQTS::initStock(const string &path) {
     ifstream fin;
     try {
         fin.open(path, ios::in);
@@ -82,7 +100,7 @@ void GNQTS::initStock(string path) {
     }
 }
 
-void GNQTS::readData(string path) {
+void GNQTS::readData(const string &path) {
     ifstream fin;
     try {
         fin.open(path, ios::in);
@@ -108,7 +126,7 @@ void GNQTS::readData(string path) {
         }
         fin.close();
 #if DEBUG
-        Logger logger("../log/readData.csv", ios::out);
+        Logger logger("../log/read_data_for_debug.csv", ios::out);
         for (int i = 0; i < numOfStocks; i++) {
             logger.writeComma(stocks[i].code);
             for (int j = 0; j < numOfDays; j++) {
@@ -126,16 +144,43 @@ void GNQTS::readData(string path) {
 }
 
 void GNQTS::measure() {
+    auto *randomMatrix = new double[this->model.getLength()];
 
+    for (int i = 0; i < this->model.getGeneration(); i++) {
+        // generate a random matrix
+        for (int j = 0; j < this->model.getLength(); j++) {
+            randomMatrix[j] = rand() / RAND_MAX;
+        }
+
+        // measure the value of each item (taken or not)
+        for (int j = 0; j < this->model.getLength(); j++) {
+            if (this->pMatrix[j] > randomMatrix[j]) {
+                this->particle[i].solution[j] = 1;
+            } else {
+                this->particle[i].solution[j] = 0;
+            }
+        }
+    }
 }
 
 void GNQTS::calcFitness() {
-
+    for (int i = 0; i < this->model.getGeneration(); i++) {
+        for (int j = 0; j < this->model.getLength(); j++) {
+            this->particle[i].fitness = this->model.getFitness(this->particle[i]);
+        }
+    }
 }
 
 void GNQTS::update() {
-
+    for (int i = 0; i < this->model.getLength(); i++) {
+        if (this->bestParticle.solution[i] == 1 && worstParticle.solution[i] == 0) {
+            if (this->pMatrix[i] < 0.9)
+                this->pMatrix[i] += 0.1;
+        } else if (bestParticle.solution[i] == 0 && worstParticle.solution[i] == 1) {
+            if (this->pMatrix[i] > 0.1)
+                this->pMatrix[i] -= 0.1;
+        }
+    }
 }
-
 
 

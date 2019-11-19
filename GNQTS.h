@@ -5,9 +5,7 @@
 #ifndef GNQTS_STOCK_GNQTS_H
 #define GNQTS_STOCK_GNQTS_H
 
-#include "Particle.h"
 #include "Model.h"
-#include "Stock.h"
 #include <string>
 
 #define DEBUG 1
@@ -16,9 +14,9 @@ class GNQTS {
 public:
     GNQTS();
 
-    void initStock(std::string path);
+    void initStock(const std::string &path);
 
-    void readData(std::string path);
+    void readData(const std::string &path);
 
     void run();
 
@@ -30,13 +28,13 @@ public:
 
 private:
     Model model;
-    Particle *particles;
+    Particle *particle;
     Particle bestParticle;
     Particle worstParticle;
     double *pMatrix;
     Stock *stocks;
-    int numOfStocks = 0;
-    int numOfDays = 0;
+    int numOfStocks;
+    int numOfDays;
 };
 
 
