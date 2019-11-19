@@ -64,6 +64,7 @@ void GNQTS::run() {
         measure();
         calcFitness();
         update();
+        mutate();
     }
 }
 
@@ -145,7 +146,7 @@ void GNQTS::readData(const string &path) {
 void GNQTS::measure() {
     auto *randomMatrix = new double[this->model.getLength()];
 
-    for (int i = 0; i < this->model.getGeneration(); i++) {
+    for (int i = 0; i < this->model.getPopulation(); i++) {
         // generate a random matrix
         for (int j = 0; j < this->model.getLength(); j++) {
             randomMatrix[j] = rand() / RAND_MAX;
@@ -165,7 +166,7 @@ void GNQTS::measure() {
 void GNQTS::calcFitness() {
     // local worst
     this->worstParticle.fitness = INT_MAX;
-    for (int i = 0; i < this->model.getGeneration(); i++) {
+    for (int i = 0; i < this->model.getPopulation(); i++) {
         for (int j = 0; j < this->model.getLength(); j++) {
             this->particle[i].fitness = this->model.getFitness(this->particle[i]);
         }
@@ -188,4 +189,12 @@ void GNQTS::update() {
     }
 }
 
-
+void GNQTS::mutate() {
+    for (int i = 0; i < this->model.getLength(); i++) {
+        if (this->bestParticle.solution[i] == 1 && worstParticle.solution[i] == 0 && pMatrix[i] < 0.5) {
+            this->pMatrix[i] = 1 - this->pMatrix[i] - this->model.getTheta();
+        } else if (bestParticle.solution[i] == 0 && worstParticle.solution[i] == 1 && pMatrix[i] > 0.5) {
+            this->pMatrix[i] = 1 - this->pMatrix[i] + this->model.getTheta();
+        }
+    }
+}

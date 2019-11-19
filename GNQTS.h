@@ -26,6 +26,8 @@ public:
 
     void update();
 
+    void mutate();
+
 private:
     Model model;
     Particle *particle;
