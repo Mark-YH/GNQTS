@@ -100,7 +100,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle p, int gen) {
+double Model::getFitness(Particle p, int gen, int pIndex) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance;
     double fund = this->fund;
@@ -181,9 +181,12 @@ double Model::getFitness(Particle p, int gen) {
     }
 
 #if DEBUG
-    Logger logLevel("../log/level.csv", 15);
+    Logger logLevel("../log/level.csv", 2);
     logLevel.writeComma("Generation:");
-    logLevel.writeLine(gen);
+    logLevel.writeComma(gen);
+    logLevel.writeComma("Particle:");
+    logLevel.writeLine(pIndex);
+
     logLevel.writeLine("Water level:");
 
     for (int i = 0; i < this->numOfStocks; i++) {
@@ -232,8 +235,11 @@ double Model::getFitness(Particle p, int gen) {
 
 #if DEBUG
     Logger logTrend("../log/trend_value.csv");
-    logTrend.writeComma("Generation:");
-    logTrend.writeLine(gen);
+    logLevel.writeComma("Generation:");
+    logLevel.writeComma(gen);
+    logLevel.writeComma("Particle:");
+    logLevel.writeLine(pIndex);
+
     logTrend.writeComma("slope:");
     logTrend.writeLine(slope);
     logTrend.writeComma("trend line:");

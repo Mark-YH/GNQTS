@@ -103,7 +103,7 @@ void GNQTS::calcFitness(int gen) {
     this->worstParticle.fitness = INT_MAX;
 
     for (int i = 0; i < this->model.getPopulation(); i++) {
-        this->particle[i].fitness = this->model.getFitness(this->particle[i], gen);
+        this->particle[i].fitness = this->model.getFitness(this->particle[i], gen, i);
 #if DEBUG
         Logger logger("../log/fitness.csv");
         logger.write("Individual ");
