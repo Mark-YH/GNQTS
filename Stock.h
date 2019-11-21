@@ -9,9 +9,11 @@ class Stock {
 public:
     int code;
     double *price;
+    double *level;
 
     void setPriceSize(int size) {
         this->price = new double[size];
+        this->level = new double[size];
     }
 };
 

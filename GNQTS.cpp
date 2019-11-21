@@ -3,41 +3,24 @@
 //
 
 #include "GNQTS.h"
-#include "Logger.h"
-#include <sstream>
 #include <climits>
 
-using std::ifstream;
-using std::string;
-using std::stringstream;
-using std::cout;
-using std::endl;
-using std::ios;
+#define DEBUG 1
 
 GNQTS::GNQTS() {
-    string path = "../data/M2M/train_2009_12(2009 Q1).csv";
+    this->model.init();
     this->model.setPopulation(10);
     this->model.setGeneration(1);
     this->model.setTheta(0.0004);
     this->model.setFund(10000000.0);
-
-    initStock(path);
-    readData(path);
-
-    this->model.setLength(this->numOfStocks);
+    this->model.setFee(0.001425);
+    this->model.setTax(0.003);
 
     // allocate memory
     this->pMatrix = new double[this->model.getLength()];
     this->particle = new Particle[this->model.getPopulation()];
     for (int i = 0; i < this->model.getPopulation(); i++) {
         this->particle[i].setSolutionSize(this->model.getLength());
-    }
-
-    // initialize solution
-    for (int i = 0; i < this->model.getPopulation(); i++) {
-        for (int j = 0; j < this->model.getLength(); j++) {
-            this->particle[i].solution[j] = rand() % 2;
-        }
     }
 
     // initialize probability matrix
@@ -47,12 +30,13 @@ GNQTS::GNQTS() {
 
     // global best
     this->bestParticle.fitness = 0;
+    bestGeneration = 0;
 
 #if DEBUG
-    Logger logger("../log/init");
+    Logger logger("../log/init.csv");
     for (int i = 0; i < this->model.getPopulation(); i++) {
         for (int j = 0; j < this->model.getLength(); j++) {
-            logger.write(this->particle[i].solution[j]);
+            logger.writeComma(this->particle[i].solution[j]);
         }
         logger.writeLine("");
     }
@@ -62,85 +46,18 @@ GNQTS::GNQTS() {
 void GNQTS::run() {
     for (int i = 0; i < this->model.getGeneration(); i++) {
         measure();
-        calcFitness();
+        calcFitness(i);
         update();
         mutate();
     }
-}
-
-// get numbers of stocks and days in order to allocate memory for `Stock`
-void GNQTS::initStock(const string &path) {
-    ifstream fin;
-    try {
-        fin.open(path, ios::in);
-        string line;
-
-        getline(fin, line);
-
-        this->numOfDays = std::count(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>(), '\n');
-        this->numOfStocks = 0;
-
-        for (int pos = line.string::find(',', 0);
-             line.string::find(',', pos) != string::npos;
-             pos = line.string::find(',', pos) + 1) {
-            this->numOfStocks++;
-        }
-        fin.close();
-
-        this->stocks = new Stock[this->numOfStocks];
-
-        for (int i = 0; i < this->numOfStocks; i++) {
-            this->stocks[i].setPriceSize(this->numOfDays);
-        }
-    } catch (std::exception &e) {
-        fin.close();
-        Logger logger("../log/error");
-        logger.writeTab("void initStock():");
-        logger.writeLine(e.what());
+    Logger result("../log/result.csv");
+    result.writeComma("Found best at");
+    result.writeLine(this->bestGeneration);
+    result.writeComma("Best portfolio:");
+    for (int i = 0; i < this->model.getLength(); i++) {
+        result.writeComma(this->bestParticle.solution[i]);
     }
-}
-
-void GNQTS::readData(const string &path) {
-    ifstream fin;
-    try {
-        fin.open(path, ios::in);
-
-        string line;
-        int lineCount = -1;
-        while (getline(fin, line)) {
-            string tmp;
-            stringstream ss(line);
-
-            int stockCount = 0;
-            while (getline(ss, tmp, ',')) {
-                if (tmp == "\r")
-                    continue;
-                if (lineCount == -1) {
-                    this->stocks[stockCount].code = stoi(tmp);
-                } else {
-                    this->stocks[stockCount].price[lineCount] = stod(tmp);
-                }
-                stockCount++;
-            }
-            lineCount++;
-        }
-        fin.close();
-#if DEBUG
-        Logger logger("../log/read_data_for_debug.csv", ios::out);
-        for (int i = 0; i < numOfStocks; i++) {
-            logger.writeComma(stocks[i].code);
-            for (int j = 0; j < numOfDays; j++) {
-                logger.writeComma(stocks[i].price[j]);
-            }
-            logger.writeLine("");
-        }
-#endif
-    } catch (std::exception &e) {
-        fin.close();
-        Logger logger("../log/error");
-        logger.writeTab("void readData():");
-        logger.writeLine(e.what());
-    }
+    result.writeLine("");
 }
 
 void GNQTS::measure() {
@@ -149,9 +66,17 @@ void GNQTS::measure() {
     for (int i = 0; i < this->model.getPopulation(); i++) {
         // generate a random matrix
         for (int j = 0; j < this->model.getLength(); j++) {
-            randomMatrix[j] = rand() / RAND_MAX;
+            randomMatrix[j] = (double) rand() / RAND_MAX;
         }
-
+#if DEBUG
+        Logger logger("../log/random_matrix.csv", 2);
+        logger.write("Individual ");
+        logger.writeComma(i);
+        for (int j = 0; j < this->model.getLength(); j++) {
+            logger.writeComma(randomMatrix[j]);
+        }
+        logger.writeLine("");
+#endif
         // measure the value of each item (taken or not)
         for (int j = 0; j < this->model.getLength(); j++) {
             if (this->pMatrix[j] > randomMatrix[j]) {
@@ -161,25 +86,59 @@ void GNQTS::measure() {
             }
         }
     }
+
+#if DEBUG
+    Logger logger("../log/measure.csv");
+    for (int i = 0; i < this->model.getPopulation(); i++) {
+        for (int j = 0; j < this->model.getLength(); j++) {
+            logger.writeComma(this->particle[i].solution[j]);
+        }
+        logger.writeLine("");
+    }
+#endif
 }
 
-void GNQTS::calcFitness() {
+void GNQTS::calcFitness(int gen) {
     // local worst
     this->worstParticle.fitness = INT_MAX;
 
     for (int i = 0; i < this->model.getPopulation(); i++) {
-        this->particle[i].fitness = this->model.getFitness(this->particle[i], this->stocks,
-                                                           numOfStocks, numOfDays);
-
+        this->particle[i].fitness = this->model.getFitness(this->particle[i], gen);
+#if DEBUG
+        Logger logger("../log/fitness.csv");
+        logger.write("Individual ");
+        logger.writeComma(i);
+        logger.writeLine(this->particle[i].fitness);
+#endif
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle.fitness) {
             memcpy(&this->bestParticle, &this->particle[i], sizeof(bestParticle));
+            bestGeneration = gen;
         }
         // Check if it needs to update worst particle
         if (this->worstParticle.fitness > this->particle[i].fitness) {
             memcpy(&this->worstParticle, &this->particle[i], sizeof(bestParticle));
         }
     }
+#if DEBUG
+    Logger logger("../log/best&worst_particle.csv");
+
+    logger.writeLine("Best particle:");
+    for (int j = 0; j < this->model.getLength(); j++) {
+        logger.writeComma(this->bestParticle.solution[j]);
+    }
+    logger.writeLine("");
+    logger.writeComma("Best fitness:");
+    logger.writeLine(this->bestParticle.fitness);
+
+    logger.writeLine("Worst particle:");
+    for (int j = 0; j < this->model.getLength(); j++) {
+        logger.writeComma(this->worstParticle.solution[j]);
+    }
+    logger.writeLine("");
+    logger.writeComma("Worst fitness:");
+    logger.writeLine(this->worstParticle.fitness);
+#endif
 }
 
 void GNQTS::update() {
@@ -190,6 +149,13 @@ void GNQTS::update() {
             this->pMatrix[i] -= this->model.getTheta();
         }
     }
+#if DEBUG
+    Logger logger("../log/update.csv", 2);
+    for (int i = 0; i < this->model.getLength(); i++) {
+        logger.writeComma(pMatrix[i]);
+    }
+    logger.writeLine("");
+#endif
 }
 
 void GNQTS::mutate() {
@@ -200,4 +166,11 @@ void GNQTS::mutate() {
             this->pMatrix[i] = 1 - this->pMatrix[i] + this->model.getTheta();
         }
     }
+#if DEBUG
+    Logger logger("../log/mutate.csv", 2);
+    for (int i = 0; i < this->model.getLength(); i++) {
+        logger.writeComma(pMatrix[i]);
+    }
+    logger.writeLine("");
+#endif
 }
