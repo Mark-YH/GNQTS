@@ -207,26 +207,24 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     // calculate slope
     double tmp = 0, tmp2 = 0;
 
-    for (int i = 1; i <= this->numOfDays; i++) {
-        if (p.solution[i] == 1) {
-            tmp += i * totalLevel[i] - i * fund;
-            tmp2 += i * i;
-        }
+    for (int i = 0; i < this->numOfDays; i++) {
+        tmp += (i + 1) * totalLevel[i] - (i + 1) * this->fund;
+        tmp2 += (i + 1) * (i + 1);
     }
     double slope = tmp / tmp2;
 
-    double trendLine = 0; // daily expected water level
+    double *trendLine = new double[this->numOfDays]; // daily expected water level
 
     // calculate trend line
-    for (int i = 1; i <= this->numOfDays; i++) {
-        trendLine = slope * i + fund;
+    for (int i = 0; i < this->numOfDays; i++) {
+        trendLine[i] = slope * (i + 1) + this->fund;
     }
 
     // calculate risk
     tmp = 0;
 
     for (int i = 0; i < this->numOfDays; i++) {
-        tmp += (totalLevel[i] - trendLine) * (totalLevel[i] - trendLine);
+        tmp += (totalLevel[i] - trendLine[i]) * (totalLevel[i] - trendLine[i]);
     }
     double risk = sqrt(tmp / this->numOfDays);
 
