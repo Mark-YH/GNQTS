@@ -8,11 +8,12 @@
 #include <cmath>
 
 /*! @param DEBUG val
- * val > 0: generate output including `chosen stock`, `total level`, `slope`, `risk`, `trend line`, `trend value` results.
- * val > 4: generate output including `level of each stock symbol` and above results.
+ * val > 0: generate output including `chosen stock`, `best individual's total level and level of each stock symbol`, `slope`, `risk`, `trend line`, `trend value` results.
+ * val > 4: generate output including `each individual's total level` and above results.
+ * val > 6: generate output including `each individual's level and level of each stock symbol` and above results.
  * val > 10: generate output including `read data` and above results.
  */
-#define DEBUG 11
+#define DEBUG 5
 
 using std::ifstream;
 using std::string;
@@ -232,6 +233,9 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     }
 #if DEBUG > 4
     logLevel.writeLine("");
+#if DEBUG < 6
+    if (pIndex == -1) {
+#endif
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p.solution[i] == 1) {
             logLevel.writeComma(this->stocks[i].code);
@@ -241,6 +245,9 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
             logLevel.writeLine("");
         }
     }
+#if DEBUG < 6
+    }
+#endif
 #endif
     logLevel.writeComma("Total");
     for (int i = 0; i < this->numOfDays; i++) {
