@@ -13,12 +13,12 @@
  * val > 8: generate output including `mutate` and above results.
  * val > 10: generate output including `random matrix` and above results.
  */
-#define DEBUG 0
+#define DEBUG 1
 
 GNQTS::GNQTS() {
     this->model.init();
     this->model.setPopulation(10);
-    this->model.setGeneration(3);
+    this->model.setGeneration(100);
     this->model.setTheta(0.0004);
     this->model.setFund(10000000.0);
     this->model.setFee(0.001425);
@@ -30,6 +30,8 @@ GNQTS::GNQTS() {
     for (int i = 0; i < this->model.getPopulation(); i++) {
         this->particle[i].setSolutionSize(this->model.getLength());
     }
+    this->bestParticle.setSolutionSize(this->model.getLength());
+    this->worstParticle.setSolutionSize(this->model.getLength());
 
     // initialize probability matrix
     for (int i = 0; i < this->model.getLength(); i++) {
@@ -86,7 +88,6 @@ void GNQTS::measure(int gen) {
         }
         logger.writeLine("");
 #endif
-        // measure the value of each item (taken or not)
         for (int j = 0; j < this->model.getLength(); j++) {
             if (this->pMatrix[j] > randomMatrix[j]) {
                 this->particle[i].solution[j] = 1;
@@ -128,12 +129,18 @@ void GNQTS::calcFitness(int gen) {
 
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle.fitness) {
-            memcpy(&this->bestParticle, &this->particle[i], sizeof(bestParticle));
+            for (int j = 0; j < this->model.getLength(); j++) {
+                this->bestParticle.solution[j] = this->particle[i].solution[j];
+            }
+            this->bestParticle.fitness = this->particle[i].fitness;
             bestGeneration = gen;
         }
         // Check if it needs to update worst particle
         if (this->worstParticle.fitness > this->particle[i].fitness) {
-            memcpy(&this->worstParticle, &this->particle[i], sizeof(bestParticle));
+            for (int j = 0; j < this->model.getLength(); j++) {
+                this->worstParticle.solution[j] = this->particle[i].solution[j];
+            }
+            this->worstParticle.fitness = this->particle[i].fitness;
         }
 
 #if DEBUG
@@ -197,7 +204,7 @@ void GNQTS::update(int gen) {
         }
     }
 #if DEBUG > 6
-    Logger logger("../log/update.csv",10);
+    Logger logger("../log/update.csv", 10);
     if (gen == 0) {
         logger.writeComma("Generation");
         for (int j = 0; j < this->model.getLength(); j++) {
@@ -222,7 +229,7 @@ void GNQTS::mutate(int gen) {
         }
     }
 #if DEBUG > 8
-    Logger logger("../log/mutate.csv",10);
+    Logger logger("../log/mutate.csv", 10);
     if (gen == 0) {
         logger.writeComma("Generation");
         for (int j = 0; j < this->model.getLength(); j++) {
