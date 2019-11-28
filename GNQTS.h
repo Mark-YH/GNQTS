@@ -13,13 +13,13 @@ public:
 
     void run();
 
-    void measure();
+    void measure(int generation);
 
     void calcFitness(int generation);
 
-    void update();
+    void update(int generation);
 
-    void mutate();
+    void mutate(int generation);
 
 private:
     Model model;

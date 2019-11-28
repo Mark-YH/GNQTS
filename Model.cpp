@@ -7,7 +7,12 @@
 #include <sstream>
 #include <cmath>
 
-#define DEBUG 1
+/*! @param DEBUG val
+ * val > 0: generate output including `chosen stock`, `total level`, `slope`, `risk`, `trend line`, `trend value` results.
+ * val > 4: generate output including `level of each stock symbol` and above results.
+ * val > 10: generate output including `read data` and above results.
+ */
+#define DEBUG 11
 
 using std::ifstream;
 using std::string;
@@ -82,7 +87,7 @@ void Model::readData(const string &path) {
             lineCount++;
         }
         fin.close();
-#if DEBUG
+#if DEBUG > 10
         Logger logger("../log/read_data_for_debug.csv", ios::out);
         for (int i = 0; i < numOfStocks; i++) {
             logger.writeComma(stocks[i].code);
@@ -123,22 +128,34 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
 
 #if DEBUG
     Logger logStock("../log/stock.csv");
-    logStock.writeComma("Generation:");
-    logStock.writeLine(gen);
-    logStock.writeComma("number of chosen stock:");
-    logStock.writeLine(numOfChosen);
-    logStock.writeComma("Chosen stocks:");
+    if (gen == 0 && pIndex == 0) {
+        logStock.writeComma("Generation");
+        logStock.writeComma("Individual");
+        logStock.writeComma("number of chosen stock");
+        logStock.writeComma("Allocated fund");
+        logStock.writeComma("Total balance");
+        logStock.writeComma("Chosen stocks");
+        for (int i = 0; i < this->numOfStocks; i++) {
+            logStock.writeComma(i);
+        }
+        logStock.writeLine("");
+    }
+    logStock.writeComma(gen);
+    if (pIndex == -1) {
+        logStock.writeComma("Best");
+    } else {
+        logStock.writeComma(pIndex);
+    }
+    logStock.writeComma(numOfChosen);
+    logStock.writeComma(fund);
+    logStock.writeComma(totalBalance);
+    logStock.writeComma("");
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p.solution[i] == 1) {
             logStock.writeComma(this->stocks[i].code);
         }
     }
     logStock.writeLine("");
-
-    logStock.writeComma("Allocated fund:");
-    logStock.writeLine(fund);
-    logStock.writeComma("Balance:");
-    logStock.writeLine(totalBalance);
 #endif
 
     // calculate water level
@@ -154,6 +171,29 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
                     balance = fund - amount * pricePerStock;
                     this->stocks[i].level[j] =
                             fund - (amount * this->stocks[i].price[j] * 1000 * this->fee);
+#if DEBUG
+                    Logger logStock2("../log/stock2.csv");
+                    if (gen == 0 && pIndex == 0 && i == 0) {
+                        logStock2.writeComma("Generation");
+                        logStock2.writeComma("Individual");
+                        logStock2.writeComma("Stock symbol");
+                        logStock2.writeComma("Allocated fund");
+                        logStock2.writeComma("Balance of particular stock");
+                        logStock2.writeComma("Amount");
+                        logStock2.writeLine("");
+                    }
+                    logStock2.writeComma(gen);
+                    if (pIndex == -1) {
+                        logStock2.writeComma("Best");
+                    } else {
+                        logStock2.writeComma(pIndex);
+                    }
+                    logStock2.writeComma(this->stocks[i].code);
+                    logStock2.writeComma(fund);
+                    logStock2.writeComma(balance);
+                    logStock2.writeComma(amount);
+                    logStock2.writeLine("");
+#endif
                 } else { // the other days
                     this->stocks[i].level[j] =
                             this->stocks[i].price[j] * amount * 1000 * (1 - (this->fee + this->tax)) + balance;
@@ -181,23 +221,28 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     }
 
 #if DEBUG
-    Logger logLevel("../log/level.csv", 2);
-    logLevel.writeComma("Generation:");
+    Logger logLevel("../log/level.csv", 20);
+    logLevel.writeComma("Generation ");
     logLevel.writeComma(gen);
-    logLevel.writeComma("Particle:");
-    logLevel.writeLine(pIndex);
-
-    logLevel.writeLine("Water level:");
-
+    if (pIndex == -1) {
+        logLevel.writeComma("Best");
+    } else {
+        logLevel.writeComma("Individual ");
+        logLevel.writeComma(pIndex);
+    }
+#if DEBUG > 4
+    logLevel.writeLine("");
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p.solution[i] == 1) {
+            logLevel.writeComma(this->stocks[i].code);
             for (int j = 0; j < this->numOfDays; j++) {
                 logLevel.writeComma(this->stocks[i].level[j]);
             }
             logLevel.writeLine("");
         }
     }
-
+#endif
+    logLevel.writeComma("Total");
     for (int i = 0; i < this->numOfDays; i++) {
         logLevel.writeComma(totalLevel[i]);
     }
@@ -233,19 +278,32 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
 
 #if DEBUG
     Logger logTrend("../log/trend_value.csv");
-    logLevel.writeComma("Generation:");
-    logLevel.writeComma(gen);
-    logLevel.writeComma("Particle:");
-    logLevel.writeLine(pIndex);
-
-    logTrend.writeComma("slope:");
-    logTrend.writeLine(slope);
-    logTrend.writeComma("trend line:");
-    logTrend.writeLine(trendLine);
-    logTrend.writeComma("risk:");
-    logTrend.writeLine(risk);
-    logTrend.writeComma("trend value:");
-    logTrend.writeLine(trendVal);
+    if (gen == 0 && pIndex == 0) {
+        logTrend.writeComma("Generation");
+        logTrend.writeComma("Individual");
+        logTrend.writeComma("Slope");
+        logTrend.writeComma("Risk");
+        logTrend.writeComma("Trend value");
+        logTrend.writeComma("Trend line");
+        for (int i = 0; i < this->numOfDays; i++) {
+            logTrend.writeComma(i);
+        }
+        logTrend.writeLine("");
+    }
+    logTrend.writeComma(gen);
+    if (pIndex == -1) {
+        logTrend.writeComma("Best");
+    } else {
+        logTrend.writeComma(pIndex);
+    }
+    logTrend.writeComma(slope);
+    logTrend.writeComma(risk);
+    logTrend.writeComma(trendVal);
+    logTrend.writeComma("");
+    for (int i = 0; i < this->numOfDays; i++) {
+        logTrend.writeComma(trendLine[i]);
+    }
+    logTrend.writeLine("");
 #endif
 
     return trendVal;
