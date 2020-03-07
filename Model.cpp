@@ -8,12 +8,12 @@
 #include <cmath>
 
 /*! @param DEBUG val
- * val > 0: generate output including `chosen stock`, `best individual's total level and level of each stock symbol`, `slope`, `risk`, `trend line`, `trend value` results.
- * val > 4: generate output including `each individual's total level` and above results.
- * val > 6: generate output including `each individual's level and level of each stock symbol` and above results.
+ * val > 0: generate output including `chosen stock`, `best individual's total fund standardization and fund standardization of each stock symbol`, `slope`, `risk`, `trend line`, `trend value` results.
+ * val > 4: generate output including `each individual's total fund standardization` and above results.
+ * val > 6: generate output including `each individual's fund standardization and fund standardization of each stock symbol` and above results.
  * val > 10: generate output including `read data` and above results.
  */
-#define DEBUG 5
+#define DEBUG 3
 
 using std::ifstream;
 using std::string;
@@ -26,7 +26,7 @@ void Model::init() {
     readData(path);
     for (int i = 0; i < this->numOfStocks; i++) {
         for (int j = 0; j < this->numOfDays; j++) {
-            this->stocks[i].level[j] = 0;
+            this->stocks[i].fs[j] = 0;
         }
     }
 }
@@ -159,7 +159,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     logStock.writeLine("");
 #endif
 
-    // calculate water level
+    // calculate fund standardization
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p.solution[i] == 1) { // the chosen stock
             double balance = 0;
@@ -170,7 +170,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
                     double pricePerStock = this->stocks[i].price[j] * 1000.0 * (1.0 + this->fee);
                     amount = floor(fund / pricePerStock);
                     balance = fund - amount * pricePerStock;
-                    this->stocks[i].level[j] =
+                    this->stocks[i].fs[j] =
                             fund - (amount * this->stocks[i].price[j] * 1000 * this->fee);
 #if DEBUG
                     Logger logStock2("../log/stock2.csv");
@@ -181,6 +181,8 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
                         logStock2.writeComma("Allocated fund");
                         logStock2.writeComma("Balance of particular stock");
                         logStock2.writeComma("Amount");
+                        logStock2.writeComma("Price per stock");
+                        logStock2.writeComma("Total fee");
                         logStock2.writeLine("");
                     }
                     logStock2.writeComma(gen);
@@ -193,79 +195,81 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
                     logStock2.writeComma(fund);
                     logStock2.writeComma(balance);
                     logStock2.writeComma(amount);
+                    logStock2.writeComma(pricePerStock);
+                    logStock2.writeComma(amount * this->stocks[i].price[j] * 1000 * this->fee);
                     logStock2.writeLine("");
 #endif
                 } else { // the other days
-                    this->stocks[i].level[j] =
+                    this->stocks[i].fs[j] =
                             this->stocks[i].price[j] * amount * 1000 * (1 - (this->fee + this->tax)) + balance;
                 }
             }
         }
     }
 
-    // calculate total water level
-    double *totalLevel = new double[this->numOfDays];
+    // calculate total fund standardization
+    double *totalFS = new double[this->numOfDays];
 
     for (int i = 0; i < this->numOfDays; i++) {
-        totalLevel[i] = 0;
+        totalFS[i] = 0;
     }
     for (int i = 0; i < numOfStocks; i++) {
         if (p.solution[i] == 1) {
             for (int j = 0; j < this->numOfDays; j++) {
-                totalLevel[j] += this->stocks[i].level[j];
+                totalFS[j] += this->stocks[i].fs[j];
             }
         }
     }
 
     for (int i = 0; i < numOfDays; i++) {
-        totalLevel[i] += totalBalance; // add the balance from allocation part
+        totalFS[i] += totalBalance; // add the balance from allocation part
     }
 
 #if DEBUG
-    Logger logLevel("../log/level.csv", 20);
-    logLevel.writeComma("Generation ");
-    logLevel.writeComma(gen);
+    Logger logFS("../log/fund_standardization.csv", 20);
+    logFS.writeComma("Generation ");
+    logFS.writeComma(gen);
     if (pIndex == -1) {
-        logLevel.writeComma("Best");
+        logFS.writeComma("Best");
     } else {
-        logLevel.writeComma("Individual ");
-        logLevel.writeComma(pIndex);
+        logFS.writeComma("Individual ");
+        logFS.writeComma(pIndex);
     }
 #if DEBUG > 4
-    logLevel.writeLine("");
+    logFS.writeLine("");
 #if DEBUG < 6
     if (pIndex == -1) {
 #endif
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p.solution[i] == 1) {
-            logLevel.writeComma(this->stocks[i].code);
+            logFS.writeComma(this->stocks[i].code);
             for (int j = 0; j < this->numOfDays; j++) {
-                logLevel.writeComma(this->stocks[i].level[j]);
+                logFS.writeComma(this->stocks[i].fs[j]);
             }
-            logLevel.writeLine("");
+            logFS.writeLine("");
         }
     }
 #if DEBUG < 6
     }
 #endif
 #endif
-    logLevel.writeComma("Total");
+    logFS.writeComma("Total");
     for (int i = 0; i < this->numOfDays; i++) {
-        logLevel.writeComma(totalLevel[i]);
+        logFS.writeComma(totalFS[i]);
     }
-    logLevel.writeLine("");
+    logFS.writeLine("");
 #endif
 
     // calculate slope
     double tmp = 0, tmp2 = 0;
 
     for (int i = 0; i < this->numOfDays; i++) {
-        tmp += (i + 1) * totalLevel[i] - (i + 1) * this->fund;
+        tmp += (i + 1) * totalFS[i] - (i + 1) * this->fund;
         tmp2 += (i + 1) * (i + 1);
     }
     double slope = tmp / tmp2;
-
-    double *trendLine = new double[this->numOfDays]; // daily expected water level
+//TODO: add 'delete' instruction for memory allocation
+    double *trendLine = new double[this->numOfDays]; // daily expected standardization fund
 
     // calculate trend line
     for (int i = 0; i < this->numOfDays; i++) {
@@ -276,7 +280,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     tmp = 0;
 
     for (int i = 0; i < this->numOfDays; i++) {
-        tmp += (totalLevel[i] - trendLine[i]) * (totalLevel[i] - trendLine[i]);
+        tmp += (totalFS[i] - trendLine[i]) * (totalFS[i] - trendLine[i]);
     }
     double risk = sqrt(tmp / this->numOfDays);
 

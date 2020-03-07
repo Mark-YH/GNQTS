@@ -9,11 +9,11 @@ class Stock {
 public:
     int code;
     double *price;
-    double *level;
+    double *fs; // fund standardization
 
     void setPriceSize(int size) {
         this->price = new double[size];
-        this->level = new double[size];
+        this->fs = new double[size];
     }
 };
 

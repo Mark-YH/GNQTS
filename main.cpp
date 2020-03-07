@@ -6,7 +6,7 @@ int main() {
     std::remove("../log/result.csv");
     std::remove("../log/best&worst_particle.csv");
     std::remove("../log/fitness.csv");
-    std::remove("../log/level.csv");
+    std::remove("../log/fund_standardization.csv");
     std::remove("../log/measure.csv");
     std::remove("../log/mutate.csv");
     std::remove("../log/random_matrix.csv");
