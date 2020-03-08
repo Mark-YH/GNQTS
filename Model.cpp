@@ -221,22 +221,28 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
         }
     }
 
-    for (int i = 0; i < numOfDays; i++) {
+    for (int i = 0; i < this->numOfDays; i++) {
         totalFS[i] += totalBalance; // add the balance from allocation part
     }
 
 #if DEBUG
     Logger logFS("../log/fund_standardization.csv", 20);
-    logFS.writeComma("Generation ");
+    if (gen == 0 && pIndex == 0) {
+        logFS.writeComma("Generation");
+        logFS.writeComma("Individual");
+        for (int i = 0; i < this->numOfDays; i++) {
+            logFS.writeComma(i);
+        }
+        logFS.writeLine("");
+    }
+
     logFS.writeComma(gen);
     if (pIndex == -1) {
         logFS.writeComma("Best");
     } else {
-        logFS.writeComma("Individual ");
         logFS.writeComma(pIndex);
     }
 #if DEBUG > 4
-    logFS.writeLine("");
 #if DEBUG < 6
     if (pIndex == -1) {
 #endif
@@ -253,7 +259,6 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     }
 #endif
 #endif
-    logFS.writeComma("Total");
     for (int i = 0; i < this->numOfDays; i++) {
         logFS.writeComma(totalFS[i]);
     }
