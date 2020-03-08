@@ -254,4 +254,3 @@ void GNQTS::mutate(int gen) {
     logger.writeLine("");
 #endif
 }
-

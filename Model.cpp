@@ -13,7 +13,7 @@
  * val > 6: generate output including `each individual's fund standardization and fund standardization of each stock symbol` and above results.
  * val > 10: generate output including `read data` and above results.
  */
-#define DEBUG 11
+#define DEBUG 3
 
 using std::ifstream;
 using std::string;
