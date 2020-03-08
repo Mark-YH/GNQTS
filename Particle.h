@@ -10,8 +10,14 @@ public:
     int *solution;
     double fitness;
 
+    Particle() = default;
+
     void setSolutionSize(int size) {
         this->solution = new int[size];
+    }
+
+    ~Particle() {
+        delete[] this->solution;
     }
 };
 

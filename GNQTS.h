@@ -9,7 +9,11 @@
 
 class GNQTS {
 public:
-    GNQTS();
+    GNQTS() = delete;
+
+    explicit GNQTS(Model *m);
+
+    ~GNQTS();
 
     void run();
 
@@ -22,10 +26,10 @@ public:
     void mutate(int generation);
 
 private:
-    Model model;
+    Model *model;
     Particle *particle;
-    Particle bestParticle;
-    Particle worstParticle;
+    Particle *bestParticle;
+    Particle *worstParticle;
     int bestGeneration;
     double *pMatrix;
 };

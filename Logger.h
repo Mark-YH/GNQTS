@@ -2,8 +2,8 @@
 // Created by Mark Hsu on 2019/11/5.
 //
 
-#ifndef JA_ABSOLUTE_LOGGER_H
-#define JA_ABSOLUTE_LOGGER_H
+#ifndef LOGGER_H
+#define LOGGER_H
 
 #include <iomanip>
 #include <iostream>
@@ -23,7 +23,7 @@ private:
     ofstream fOut;
     int precision;
 public:
-    Logger(const string &path) {
+    explicit Logger(const string &path) {
         try {
             fOut.open(path, ios::app);
             this->precision = 20;
@@ -80,4 +80,4 @@ public:
     }
 };
 
-#endif //JA_ABSOLUTE_LOGGER_H
+#endif //LOGGER_H

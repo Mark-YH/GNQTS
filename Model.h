@@ -12,11 +12,9 @@
 
 class Model {
 public:
-    Model() = default;
+    Model();
 
-    ~Model() = default;
-
-    void init();
+    ~Model();
 
     void setGeneration(int generation);
 
@@ -38,7 +36,7 @@ public:
 
     int getLength();
 
-    double getFitness(Particle p, int generation, int pIndex);
+    double getFitness(Particle *p, int generation, int pIndex);
 
 private:
     int population;
@@ -51,7 +49,7 @@ private:
     double fee;
     double tax;
 
-    void initStock(const std::string &path);
+    void getNumOfRowColumn(const std::string &path);
 
     void readData(const std::string &path);
 };

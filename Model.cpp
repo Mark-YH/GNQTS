@@ -13,17 +13,24 @@
  * val > 6: generate output including `each individual's fund standardization and fund standardization of each stock symbol` and above results.
  * val > 10: generate output including `read data` and above results.
  */
-#define DEBUG 3
+#define DEBUG 11
 
 using std::ifstream;
 using std::string;
 using std::stringstream;
 using std::ios;
 
-void Model::init() {
+Model::Model() {
     string path = "../data/M2M/train_2009_12(2009 Q1).csv";
-    initStock(path);
+    getNumOfRowColumn(path);
+    this->stocks = new Stock[this->numOfStocks];
+
+    for (int i = 0; i < this->numOfStocks; i++) {
+        this->stocks[i].setPriceSize(this->numOfDays);
+    }
+
     readData(path);
+
     for (int i = 0; i < this->numOfStocks; i++) {
         for (int j = 0; j < this->numOfDays; j++) {
             this->stocks[i].fs[j] = 0;
@@ -31,8 +38,12 @@ void Model::init() {
     }
 }
 
+Model::~Model() {
+    delete[] this->stocks;
+}
+
 // get numbers of stocks and days in order to allocate memory for `Stock`
-void Model::initStock(const string &path) {
+void Model::getNumOfRowColumn(const string &path) {
     ifstream fin;
     try {
         fin.open(path, ios::in);
@@ -50,11 +61,6 @@ void Model::initStock(const string &path) {
         }
         fin.close();
 
-        this->stocks = new Stock[this->numOfStocks];
-
-        for (int i = 0; i < this->numOfStocks; i++) {
-            this->stocks[i].setPriceSize(this->numOfDays);
-        }
     } catch (std::exception &e) {
         fin.close();
         Logger logger("../log/error");
@@ -106,13 +112,13 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle p, int gen, int pIndex) {
+double Model::getFitness(Particle *p, int gen, int pIndex) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance;
     double fund = this->fund;
 
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p.solution[i] == 1) {
+        if (p->solution[i] == 1) {
             numOfChosen++;
         }
     }
@@ -152,7 +158,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     logStock.writeComma(totalBalance);
     logStock.writeComma("");
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p.solution[i] == 1) {
+        if (p->solution[i] == 1) {
             logStock.writeComma(this->stocks[i].code);
         }
     }
@@ -161,7 +167,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
 
     // calculate fund standardization
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p.solution[i] == 1) { // the chosen stock
+        if (p->solution[i] == 1) { // the chosen stock
             double balance = 0;
             int amount = 0; // how much stock can buy
 
@@ -214,7 +220,7 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
         totalFS[i] = 0;
     }
     for (int i = 0; i < numOfStocks; i++) {
-        if (p.solution[i] == 1) {
+        if (p->solution[i] == 1) {
             for (int j = 0; j < this->numOfDays; j++) {
                 totalFS[j] += this->stocks[i].fs[j];
             }
@@ -247,7 +253,9 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
     if (pIndex == -1) {
 #endif
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p.solution[i] == 1) {
+        if (p->solution[i] == 1) {
+            logFS.writeComma(gen);
+            logFS.writeComma(pIndex);
             logFS.writeComma(this->stocks[i].code);
             for (int j = 0; j < this->numOfDays; j++) {
                 logFS.writeComma(this->stocks[i].fs[j]);
@@ -260,6 +268,9 @@ double Model::getFitness(Particle p, int gen, int pIndex) {
 #endif
 #endif
     for (int i = 0; i < this->numOfDays; i++) {
+        logFS.writeComma(gen);
+        logFS.writeComma(pIndex);
+        logFS.writeComma("");
         logFS.writeComma(totalFS[i]);
     }
     logFS.writeLine("");
