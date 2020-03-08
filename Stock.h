@@ -11,9 +11,16 @@ public:
     double *price;
     double *fs; // fund standardization
 
+    Stock() = default;
+
     void setPriceSize(int size) {
         this->price = new double[size];
         this->fs = new double[size];
+    }
+
+    ~Stock() {
+        delete[] this->price;
+        delete[] this->fs;
     }
 };
 

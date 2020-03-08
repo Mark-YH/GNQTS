@@ -38,7 +38,7 @@ public:
 
     int getLength();
 
-    double getFitness(Particle p, int generation, int pIndex);
+    double getFitness(Particle *p, int generation, int pIndex);
 
 private:
     int population;
