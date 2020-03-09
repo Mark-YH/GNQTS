@@ -20,7 +20,16 @@ using std::string;
 using std::stringstream;
 using std::ios;
 
-Model::Model() {
+Model::Model(int population, int generation, double theta, double fund, double fee, double tax) {
+    this->population = population;
+    this->generation = generation;
+    this->theta = theta;
+    this->fund = fund;
+    this->fee = fee;
+    this->tax = tax;
+    this->numOfDays = 0;
+    this->numOfStocks = 0;
+
     string path = "../data/M2M/train_2009_12(2009 Q1).csv";
     getNumOfRowColumn(path);
     this->stocks = new Stock[this->numOfStocks];
@@ -52,7 +61,6 @@ void Model::getNumOfRowColumn(const string &path) {
         getline(fin, line);
 
         this->numOfDays = std::count(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>(), '\n');
-        this->numOfStocks = 0;
 
         for (int pos = line.string::find(',', 0);
              line.string::find(',', pos) != string::npos;
@@ -166,52 +174,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
 #endif
 
     // calculate fund standardization
-    for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) { // the chosen stock
-            double balance = 0;
-            int amount = 0; // how much stock can buy
-
-            for (int j = 0; j < this->numOfDays; j++) {
-                if (j == 0) { // first day
-                    double pricePerStock = this->stocks[i].price[j] * 1000.0 * (1.0 + this->fee);
-                    amount = floor(fund / pricePerStock);
-                    balance = fund - amount * pricePerStock;
-                    this->stocks[i].fs[j] =
-                            fund - (amount * this->stocks[i].price[j] * 1000 * this->fee);
-#if DEBUG
-                    Logger logStock2("../log/stock2.csv");
-                    if (gen == 0 && pIndex == 0 && i == 0) {
-                        logStock2.writeComma("Generation");
-                        logStock2.writeComma("Individual");
-                        logStock2.writeComma("Stock symbol");
-                        logStock2.writeComma("Allocated fund");
-                        logStock2.writeComma("Balance of particular stock");
-                        logStock2.writeComma("Amount");
-                        logStock2.writeComma("Price per stock");
-                        logStock2.writeComma("Total fee");
-                        logStock2.writeLine("");
-                    }
-                    logStock2.writeComma(gen);
-                    if (pIndex == -1) {
-                        logStock2.writeComma("Best");
-                    } else {
-                        logStock2.writeComma(pIndex);
-                    }
-                    logStock2.writeComma(this->stocks[i].code);
-                    logStock2.writeComma(fund);
-                    logStock2.writeComma(balance);
-                    logStock2.writeComma(amount);
-                    logStock2.writeComma(pricePerStock);
-                    logStock2.writeComma(amount * this->stocks[i].price[j] * 1000 * this->fee);
-                    logStock2.writeLine("");
-#endif
-                } else { // the other days
-                    this->stocks[i].fs[j] =
-                            this->stocks[i].price[j] * amount * 1000 * (1 - (this->fee + this->tax)) + balance;
-                }
-            }
-        }
-    }
+    calcFS(p, fund, gen, pIndex);
 
     // calculate total fund standardization
     double *totalFS = new double[this->numOfDays];
@@ -284,7 +247,6 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
         tmp2 += (i + 1) * (i + 1);
     }
     double slope = tmp / tmp2;
-//TODO: add 'delete' instruction for memory allocation
     double *trendLine = new double[this->numOfDays]; // daily expected standardization fund
 
     // calculate trend line
@@ -333,43 +295,71 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     logTrend.writeLine("");
 #endif
 
+    delete[] totalFS;
+    delete[] trendLine;
     return trendVal;
 }
 
-void Model::setGeneration(int generation) {
-    this->generation = generation;
+void Model::calcFS(Particle *p, double lFund, int gen, int pIndex) {
+    // calculate fund standardization
+    for (int i = 0; i < this->numOfStocks; i++) {
+        if (p->solution[i] == 1) { // the chosen stock
+            double balance = 0;
+            int amount = 0; // how much stock can buy
+
+            for (int j = 0; j < this->numOfDays; j++) {
+                if (j == 0) { // first day
+                    double pricePerStock = this->stocks[i].price[j] * 1000.0 * (1.0 + this->fee);
+                    amount = floor(lFund / pricePerStock);
+                    balance = lFund - amount * pricePerStock;
+                    this->stocks[i].fs[j] =
+                            lFund - (amount * this->stocks[i].price[j] * 1000 * this->fee);
+#if DEBUG
+                    Logger logStock2("../log/stock2.csv");
+                    if (gen == 0 && pIndex == 0 && i == 0) {
+                        logStock2.writeComma("Generation");
+                        logStock2.writeComma("Individual");
+                        logStock2.writeComma("Stock symbol");
+                        logStock2.writeComma("Allocated fund");
+                        logStock2.writeComma("Balance of particular stock");
+                        logStock2.writeComma("Amount");
+                        logStock2.writeComma("Price per stock");
+                        logStock2.writeComma("Total fee");
+                        logStock2.writeLine("");
+                    }
+                    logStock2.writeComma(gen);
+                    if (pIndex == -1) {
+                        logStock2.writeComma("Best");
+                    } else {
+                        logStock2.writeComma(pIndex);
+                    }
+                    logStock2.writeComma(this->stocks[i].code);
+                    logStock2.writeComma(lFund);
+                    logStock2.writeComma(balance);
+                    logStock2.writeComma(amount);
+                    logStock2.writeComma(pricePerStock);
+                    logStock2.writeComma(amount * this->stocks[i].price[j] * 1000 * this->fee);
+                    logStock2.writeLine("");
+#endif
+                } else { // the other days
+                    this->stocks[i].fs[j] =
+                            this->stocks[i].price[j] * amount * 1000 * (1 - (this->fee + this->tax)) + balance;
+                }
+            }
+        }
+    }
 }
 
 int Model::getGeneration() {
     return this->generation;
 }
 
-void Model::setPopulation(int population) {
-    this->population = population;
-}
-
 int Model::getPopulation() {
     return this->population;
 }
 
-void Model::setTheta(double theta) {
-    this->theta = theta;
-}
-
 double Model::getTheta() {
     return this->theta;
-}
-
-void Model::setFund(double fund) {
-    this->fund = fund;
-}
-
-void Model::setFee(double fee) {
-    this->fee = fee;
-}
-
-void Model::setTax(double tax) {
-    this->tax = tax;
 }
 
 int Model::getLength() {

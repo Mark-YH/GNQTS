@@ -17,7 +17,7 @@ int main() {
     std::remove("../log/update.csv");
     auto start = std::chrono::steady_clock::now();
     srand(114);
-    Model *model = new Model();
+    Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
     GNQTS *qts = new GNQTS(model);
     qts->run();
     delete qts;

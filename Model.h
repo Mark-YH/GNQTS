@@ -12,27 +12,17 @@
 
 class Model {
 public:
-    Model();
+    Model() = delete;
+
+    Model(int population, int generation, double theta, double fund, double fee, double tax);
 
     ~Model();
 
-    void setGeneration(int generation);
-
     int getGeneration();
-
-    void setPopulation(int population);
 
     int getPopulation();
 
-    void setTheta(double theta);
-
     double getTheta();
-
-    void setFund(double fund);
-
-    void setFee(double fee);
-
-    void setTax(double tax);
 
     int getLength();
 
@@ -52,6 +42,8 @@ private:
     void getNumOfRowColumn(const std::string &path);
 
     void readData(const std::string &path);
+
+    void calcFS(Particle *p, double lFund, int gen, int pIndex);
 };
 
 #endif //GNQTS_STOCK_MODEL_H

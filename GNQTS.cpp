@@ -17,12 +17,6 @@
 
 GNQTS::GNQTS(Model *m) {
     this->model = m;
-    this->model->setPopulation(10);
-    this->model->setGeneration(100);
-    this->model->setTheta(0.0004);
-    this->model->setFund(10000000.0);
-    this->model->setFee(0.001425);
-    this->model->setTax(0.003);
 
     // allocate memory
     this->pMatrix = new double[this->model->getLength()];
