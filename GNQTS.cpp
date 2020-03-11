@@ -35,7 +35,7 @@ GNQTS::GNQTS(Model *m) {
     }
 
     // global best
-    this->bestParticle->fitness = 0;
+    this->bestParticle->fitness = -INT_MAX;
     bestGeneration = 0;
 }
 
@@ -47,7 +47,7 @@ GNQTS::~GNQTS() {
     this->model = nullptr;
 }
 
-void GNQTS::run() {
+void GNQTS::run(int round, int section) {
     for (int i = 0; i < this->model->getGeneration(); i++) {
         measure(i);
         calcFitness(i);

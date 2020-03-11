@@ -15,7 +15,7 @@ public:
 
     ~GNQTS();
 
-    void run();
+    void run(int round, int section);
 
     void measure(int generation);
 

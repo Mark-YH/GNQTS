@@ -18,9 +18,13 @@ int main() {
     auto start = std::chrono::steady_clock::now();
     srand(114);
     Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
-    GNQTS *qts = new GNQTS(model);
-    qts->run();
-    delete qts;
+    for (int i = 0; i < 1; i++) { // round
+        for (int j = 0; j < 1; j++) { // section
+            GNQTS *qts = new GNQTS(model);
+            qts->run(i, j);
+            delete qts;
+        }
+    }
     delete model;
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
