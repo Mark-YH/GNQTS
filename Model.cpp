@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <algorithm>
 
 /*! @param DEBUG val
  * val > 0: generate output including `chosen stock`, `best individual's total fund standardization and fund standardization of each stock symbol`, `slope`, `risk`, `trend line`, `trend value` results.
