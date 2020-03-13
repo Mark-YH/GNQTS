@@ -13,7 +13,7 @@
  * val > 8: generate output including `mutate` and above results.
  * val > 10: generate output including `random matrix` and above results.
  */
-#define DEBUG 1
+#define DEBUG 0
 
 GNQTS::GNQTS(Model *m) {
     this->model = m;
@@ -54,17 +54,26 @@ void GNQTS::run(int round, int section) {
         update(i);
         mutate(i);
     }
-    Logger result("../log/result.csv");
-    result.writeComma("Found best at");
-    result.writeLine(this->bestGeneration);
-    result.writeComma("Best portfolio");
-    for (int i = 0; i < this->model->getLength(); i++) {
-        result.writeComma(this->bestParticle->solution[i]);
-    }
-    result.writeLine("");
-    result.writeComma("Fitness");
-    result.writeLine(this->bestParticle->fitness);
+
+//    Logger result("../log/result.csv");
+//    result.writeComma("Found best at");
+//    result.writeLine(this->bestGeneration);
+//    result.writeComma("Best portfolio");
+//    for (int i = 0; i < this->model->getLength(); i++) {
+//        result.writeComma(this->bestParticle->solution[i]);
+//    }
+//    result.writeLine("");
+//    result.writeComma("Fitness");
+//    result.writeLine(this->bestParticle->fitness);
     this->model->getFitness(this->bestParticle, bestGeneration, -1);
+    this->model->result->atGen = this->bestGeneration;
+    this->model->result->atRound = round;
+    this->model->result->generation = this->model->getGeneration();
+    this->model->result->population = this->model->getPopulation();
+    this->model->result->uBound = this->model->getTheta();
+    this->model->result->lBound = this->model->getTheta();
+    this->model->result->theta = this->model->getTheta();
+    this->model->result->round = ROUND;
 }
 
 void GNQTS::measure(int gen) {

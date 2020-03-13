@@ -18,11 +18,16 @@ int main() {
     auto start = std::chrono::steady_clock::now();
     srand(114);
     Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
-    for (int i = 0; i < 1; i++) { // round
+    for (int i = 0; i < ROUND; i++) { // round
         for (int j = 0; j < 1; j++) { // section
+            Result *result = new Result();
+            model->setResult(result);
             GNQTS *qts = new GNQTS(model);
             qts->run(i, j);
+            result->foundBestCount = 1;
+            result->generateOutput();
             delete qts;
+            delete result;
         }
     }
     delete model;
