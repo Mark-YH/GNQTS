@@ -15,11 +15,12 @@ int main() {
     std::remove("../log/stock2.csv");
     std::remove("../log/trend_value.csv");
     std::remove("../log/update.csv");
+    std::remove("../log/section_result.csv");
     auto start = std::chrono::steady_clock::now();
     srand(114);
     Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int i = 0; i < ROUND; i++) { // round
-        for (int j = 0; j < 1; j++) { // section
+        for (int j = 0; j < 2; j++) { // section
             Result *result = new Result();
             model->setResult(result);
             GNQTS *qts = new GNQTS(model);

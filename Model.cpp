@@ -14,7 +14,7 @@
  * val > 6: generate output including `each individual's fund standardization and fund standardization of each stock symbol` and above results.
  * val > 10: generate output including `read data` and above results.
  */
-#define DEBUG 5
+#define DEBUG 0
 
 using std::ifstream;
 using std::string;
@@ -31,7 +31,8 @@ Model::Model(int population, int generation, double theta, double fund, double f
     this->numOfDays = 0;
     this->numOfStocks = 0;
 
-    string path = "../data/M2M/train_2009_12(2009 Q1).csv";
+//    string path = "../data/M2M/train_2009_12(2009 Q1).csv";
+    string path = "../data/M2M/train_2010_01(2010 Q1).csv";
     getNumOfRowColumn(path);
     this->stocks = new Stock[this->numOfStocks];
 
@@ -141,7 +142,10 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     totalBalance = fund;
 
     // allocate fund
-    fund = int(fund) / numOfChosen;
+    if (numOfChosen == 0)
+        fund = 0;
+    else
+        fund = int(fund) / numOfChosen;
 
     // calculate the rest fund
     for (int i = 0; i < numOfChosen; i++) {
@@ -268,7 +272,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     }
 
     // calculate risk
-    tmp = 0;
+    tmp = 0.0;
 
     for (int i = 0; i < this->numOfDays; i++) {
         tmp += (totalFS[i] - trendLine[i]) * (totalFS[i] - trendLine[i]);
@@ -277,11 +281,16 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     double risk = sqrt(tmp / this->numOfDays);
 
     // calculate trend value
-    double trendVal = 0;
-    if (slope >= 0)
-        trendVal = slope / risk;
-    else
+    double trendVal = 0.0;
+    if (slope >= 0) {
+        if (risk == 0)
+            trendVal = 0;
+        else
+            trendVal = slope / risk;
+    } else {
         trendVal = slope * risk;
+    }
+
     if (pIndex == -1) {
         this->result->initFund = this->fund;
         this->result->expectedReturn = slope;
@@ -342,11 +351,12 @@ void Model::calcFS(Particle *p, double lFund, int gen, int pIndex) {
 
             for (int j = 0; j < this->numOfDays; j++) {
                 if (j == 0) { // first day
-                    double pricePerStock = this->stocks[i].price[j] * 1000.0 * (1.0 + this->fee);
-                    amount = floor(lFund / pricePerStock);
-                    balance = lFund - amount * pricePerStock;
-                    this->stocks[i].fs[j] =
-                            lFund - (amount * this->stocks[i].price[j] * 1000 * this->fee);
+                    amount = lFund /
+                             (this->stocks[i].price[j] * 1000.0 + this->stocks[i].price[j] * (1000.0 * this->fee));
+                    balance = lFund - amount * this->stocks[i].price[j] * 1000.0 - amount *
+                                                                                   this->stocks[i].price[j] * 1000.0 *
+                                                                                   this->fee;
+                    this->stocks[i].fs[j] = lFund - this->stocks[i].price[j] * amount * 1000.0 * this->fee;
                     if (pIndex == -1) {
                         this->result->amount[i] = amount;
                         this->result->balance[i] = balance;
@@ -381,7 +391,9 @@ void Model::calcFS(Particle *p, double lFund, int gen, int pIndex) {
 #endif
                 } else { // the other days
                     this->stocks[i].fs[j] =
-                            this->stocks[i].price[j] * amount * 1000 * (1 - (this->fee + this->tax)) + balance;
+                            this->stocks[i].price[j] * amount * 1000.0 -
+                            this->stocks[i].price[j] * amount * 1000.0 * this->fee -
+                            this->stocks[i].price[j] * amount * 1000.0 * this->tax + balance;
                 }
             }
         }

@@ -23,8 +23,6 @@ public:
 
     void update(int generation);
 
-    void mutate(int generation);
-
 private:
     Model *model;
     Particle *particle;

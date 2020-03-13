@@ -35,7 +35,7 @@ GNQTS::GNQTS(Model *m) {
     }
 
     // global best
-    this->bestParticle->fitness = -INT_MAX;
+    this->bestParticle->fitness = -DBL_MAX;
     bestGeneration = 0;
 }
 
@@ -52,19 +52,8 @@ void GNQTS::run(int round, int section) {
         measure(i);
         calcFitness(i);
         update(i);
-        mutate(i);
     }
 
-//    Logger result("../log/result.csv");
-//    result.writeComma("Found best at");
-//    result.writeLine(this->bestGeneration);
-//    result.writeComma("Best portfolio");
-//    for (int i = 0; i < this->model->getLength(); i++) {
-//        result.writeComma(this->bestParticle->solution[i]);
-//    }
-//    result.writeLine("");
-//    result.writeComma("Fitness");
-//    result.writeLine(this->bestParticle->fitness);
     this->model->getFitness(this->bestParticle, bestGeneration, -1);
     this->model->result->atGen = this->bestGeneration;
     this->model->result->atRound = round;
@@ -142,10 +131,17 @@ void GNQTS::calcFitness(int gen) {
 
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle->fitness) {
-            for (int j = 0; j < this->model->getLength(); j++) {
-                this->bestParticle->solution[j] = this->particle[i].solution[j];
+            if (this->particle[i].fitness >= 0) {
+                for (int j = 0; j < this->model->getLength(); j++) {
+                    this->bestParticle->solution[j] = this->particle[i].solution[j];
+                }
+                this->bestParticle->fitness = this->particle[i].fitness;
+            } else {
+                for (int j = 0; j < this->model->getLength(); j++) {
+                    this->bestParticle->solution[j] = 0;
+                }
+                this->bestParticle->fitness = 0.0;
             }
-            this->bestParticle->fitness = this->particle[i].fitness;
             bestGeneration = gen;
         }
         // Check if it needs to update worst particle
@@ -210,39 +206,26 @@ void GNQTS::calcFitness(int gen) {
 
 void GNQTS::update(int gen) {
     for (int i = 0; i < this->model->getLength(); i++) {
+        if (this->bestParticle->solution[i] == 0 && this->worstParticle->solution[i] == 1) {
+            if (this->pMatrix[i] > 0.5) {
+                this->pMatrix[i] = 1 - this->pMatrix[i];
+                this->pMatrix[i] -= this->model->getTheta();
+            } else {
+                this->pMatrix[i] -= this->model->getTheta();
+            }
+        }
+
         if (this->bestParticle->solution[i] == 1 && this->worstParticle->solution[i] == 0) {
-            this->pMatrix[i] += this->model->getTheta();
-        } else if (this->bestParticle->solution[i] == 0 && this->worstParticle->solution[i] == 1) {
-            this->pMatrix[i] -= this->model->getTheta();
+            if (this->pMatrix[i] < 0.5) {
+                this->pMatrix[i] = 1 - this->pMatrix[i];
+                this->pMatrix[i] += this->model->getTheta();
+            } else {
+                this->pMatrix[i] += this->model->getTheta();
+            }
         }
     }
 #if DEBUG > 6
     Logger logger("../log/update.csv", 10);
-    if (gen == 0) {
-        logger.writeComma("Generation");
-        for (int j = 0; j < this->model->getLength(); j++) {
-            logger.writeComma(j);
-        }
-        logger.writeLine("");
-    }
-    logger.writeComma(gen);
-    for (int i = 0; i < this->model->getLength(); i++) {
-        logger.writeComma(pMatrix[i]);
-    }
-    logger.writeLine("");
-#endif
-}
-
-void GNQTS::mutate(int gen) {
-    for (int i = 0; i < this->model->getLength(); i++) {
-        if (this->bestParticle->solution[i] == 1 && this->worstParticle->solution[i] == 0 && pMatrix[i] < 0.5) {
-            this->pMatrix[i] = 1 - this->pMatrix[i] - this->model->getTheta();
-        } else if (this->bestParticle->solution[i] == 0 && this->worstParticle->solution[i] == 1 && pMatrix[i] > 0.5) {
-            this->pMatrix[i] = 1 - this->pMatrix[i] + this->model->getTheta();
-        }
-    }
-#if DEBUG > 8
-    Logger logger("../log/mutate.csv", 10);
     if (gen == 0) {
         logger.writeComma("Generation");
         for (int j = 0; j < this->model->getLength(); j++) {
