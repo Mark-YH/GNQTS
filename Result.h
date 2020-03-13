@@ -20,6 +20,7 @@ public:
         this->amount = new int[numOfStocks];
         this->stocks = new Stock[numOfStocks];
         this->solution = new int[numOfStocks];
+        this->totalFS = new double[numOfDays];
         for (int i = 0; i < numOfStocks; i++) {
             this->stocks[i].setPriceSize(numOfDays);
         }
@@ -31,6 +32,7 @@ public:
         delete[] this->allocatedFund;
         delete[] this->balance;
         delete[] this->solution;
+        delete[] this->totalFS;
     };
 
     void generateOutput() {
@@ -108,14 +110,12 @@ public:
             logger.write("FS(");
             logger.write(i + 1);
             logger.writeComma(")");
-            double totalFS = 0;
             for (int j = 0; j < numOfStocks; j++) {
                 if (this->solution[j] == 1) {
-                    totalFS += this->stocks[j].fs[i];
                     logger.writeComma(this->stocks[j].fs[i]);
                 }
             }
-            logger.writeComma(totalFS);
+            logger.writeComma(this->totalFS[i]);
             logger.writeLine("");
         }
         logger.writeLine("");
@@ -144,6 +144,7 @@ public:
     int *amount; // allocate `numOfChosen` amount array
     int *allocatedFund; // allocated fund of each stock
     double *balance; // balance of each stock
+    double *totalFS;
     int numOfStocks;
     int numOfDays;
 };

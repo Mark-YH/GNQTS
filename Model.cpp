@@ -227,17 +227,17 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
 #if DEBUG < 6
     if (pIndex == -1) {
 #endif
-    for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) {
-            logFS.writeComma(gen);
-            logFS.writeComma(pIndex);
-            logFS.writeComma(this->stocks[i].code);
-            for (int j = 0; j < this->numOfDays; j++) {
-                logFS.writeComma(this->stocks[i].fs[j]);
+        for (int i = 0; i < this->numOfStocks; i++) {
+            if (p->solution[i] == 1) {
+                logFS.writeComma(gen);
+                logFS.writeComma(pIndex);
+                logFS.writeComma(this->stocks[i].code);
+                for (int j = 0; j < this->numOfDays; j++) {
+                    logFS.writeComma(this->stocks[i].fs[j]);
+                }
+                logFS.writeLine("");
             }
-            logFS.writeLine("");
         }
-    }
 #if DEBUG < 6
     }
 #endif
@@ -283,7 +283,9 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
         this->result->expectedReturn = slope;
         this->result->risk = risk;
         this->result->gBest = trendVal;
-
+        for (int i = 0; i < this->numOfDays; i++) {
+            this->result->totalFS[i] = totalFS[i];
+        }
         for (int i = 0; i < this->numOfStocks; i++) {
             this->result->solution[i] = p->solution[i];
             for (int j = 0; j < this->numOfDays; j++) {
