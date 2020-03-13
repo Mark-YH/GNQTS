@@ -277,7 +277,11 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     double risk = sqrt(tmp / this->numOfDays);
 
     // calculate trend value
-    double trendVal = slope / risk;
+    double trendVal = 0;
+    if (slope >= 0)
+        trendVal = slope / risk;
+    else
+        trendVal = slope * risk;
     if (pIndex == -1) {
         this->result->initFund = this->fund;
         this->result->expectedReturn = slope;
