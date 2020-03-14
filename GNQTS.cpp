@@ -10,7 +10,6 @@
  * val > 0: generate output including `fitness`, `best and worst particle` and above results.
  * val > 4: generate output including `measure` and above results.
  * val > 6: generate output including `update` and above results.
- * val > 8: generate output including `mutate` and above results.
  * val > 10: generate output including `random matrix` and above results.
  */
 #define DEBUG 0
@@ -47,7 +46,7 @@ GNQTS::~GNQTS() {
     this->model = nullptr;
 }
 
-void GNQTS::run(int round, int section) {
+void GNQTS::run() {
     for (int i = 0; i < this->model->getGeneration(); i++) {
         measure(i);
         calcFitness(i);
@@ -55,8 +54,6 @@ void GNQTS::run(int round, int section) {
     }
 
     this->model->getFitness(this->bestParticle, bestGeneration, -1);
-    this->model->result->atGen = this->bestGeneration;
-    this->model->result->atRound = round;
     this->model->result->generation = this->model->getGeneration();
     this->model->result->population = this->model->getPopulation();
     this->model->result->uBound = this->model->getTheta();
@@ -120,6 +117,7 @@ void GNQTS::measure(int gen) {
         logger.writeLine("");
     }
 #endif
+    delete[] randomMatrix;
 }
 
 void GNQTS::calcFitness(int gen) {
@@ -239,4 +237,8 @@ void GNQTS::update(int gen) {
     }
     logger.writeLine("");
 #endif
+}
+
+int GNQTS::getBestGeneration() {
+    return this->bestGeneration;
 }

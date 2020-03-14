@@ -15,13 +15,15 @@ public:
 
     ~GNQTS();
 
-    void run(int round, int section);
+    void run();
 
     void measure(int generation);
 
     void calcFitness(int generation);
 
     void update(int generation);
+
+    int getBestGeneration();
 
 private:
     Model *model;

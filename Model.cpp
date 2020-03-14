@@ -29,10 +29,15 @@ Model::Model(int population, int generation, double theta, double fund, double f
     this->fee = fee;
     this->tax = tax;
     this->numOfDays = 0;
-    this->numOfStocks = 0;
+}
 
-//    string path = "../data/M2M/train_2009_12(2009 Q1).csv";
-    string path = "../data/M2M/train_2010_01(2010 Q1).csv";
+Model::~Model() {
+    delete[] this->stocks;
+    this->result = nullptr;
+}
+
+void Model::nextSection(int section) {
+    string path = "../data/M2M/" + section_train[section];
     getNumOfRowColumn(path);
     this->stocks = new Stock[this->numOfStocks];
 
@@ -49,11 +54,6 @@ Model::Model(int population, int generation, double theta, double fund, double f
     }
 }
 
-Model::~Model() {
-    delete[] this->stocks;
-    this->result = nullptr;
-}
-
 // get numbers of stocks and days in order to allocate memory for `Stock`
 void Model::getNumOfRowColumn(const string &path) {
     ifstream fin;
@@ -64,7 +64,7 @@ void Model::getNumOfRowColumn(const string &path) {
         getline(fin, line);
 
         this->numOfDays = std::count(std::istreambuf_iterator<char>(fin), std::istreambuf_iterator<char>(), '\n');
-
+        this->numOfStocks = 0;
         for (int pos = line.string::find(',', 0);
              line.string::find(',', pos) != string::npos;
              pos = line.string::find(',', pos) + 1) {

@@ -19,17 +19,29 @@ int main() {
     auto start = std::chrono::steady_clock::now();
     srand(114);
     Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
-    for (int i = 0; i < ROUND; i++) { // round
-        for (int j = 0; j < 2; j++) { // section
-            Result *result = new Result();
-            model->setResult(result);
+    for (int j = 0; j < numOfSection; j++) { // section
+        model->nextSection(j);
+        Result *result = new Result();
+        model->setResult(result);
+        result->foundBestCount = 1;
+        double gBest = -DBL_MAX;
+        for (int i = 0; i < ROUND; i++) { // round
             GNQTS *qts = new GNQTS(model);
-            qts->run(i, j);
-            result->foundBestCount = 1;
-            result->generateOutput();
+            qts->run();
+
+            if (gBest == result->gBest)
+                result->foundBestCount++;
+            else if (gBest < result->gBest) {
+                gBest = result->gBest;
+                result->foundBestCount = 1;
+                result->atRound = i;
+                result->atGen = qts->getBestGeneration();
+            }
             delete qts;
-            delete result;
         }
+        result->generateOutput(j);
+        result->finalOutput(j);
+        delete result;
     }
     delete model;
     auto end = std::chrono::steady_clock::now();

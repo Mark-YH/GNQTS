@@ -7,6 +7,7 @@
 
 #include "Stock.h"
 #include "Logger.h"
+#include "Section.h"
 
 class Result {
 public:
@@ -35,8 +36,8 @@ public:
         delete[] this->totalFS;
     };
 
-    void generateOutput() {
-        Logger logger("../log/section_result.csv");
+    void generateOutput(int section) const {
+        Logger logger("../log/output_" + section_train[section]);
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
         logger.writeComma("Population");
@@ -121,32 +122,64 @@ public:
         logger.writeLine("");
     };
 
-    int generation;
-    int population;
-    int *solution;
-    double uBound; // the upper bound of rotation angle
-    double lBound; // the lower bound of rotation angle
-    double theta; // rotation angle
-    int round; // times of experiments
+    void finalOutput(int section) const {
+        Logger logger("../log/" + tag + "_final_result.csv");
+        if (section == 0) {
+            logger.writeComma(tag);
+            logger.writeComma("Number of chosen");
+            logger.writeLine("Portfolio");
+        }
+        logger.writeComma(section + 1);
+        logger.writeComma(this->numOfChosen);
+        for (int i = 0; i < this->numOfStocks; i++) {
+            if (this->solution[i] == 1) {
+                logger.write(this->stocks[i].code);
+                logger.write("(");
+                logger.write(i);
+                logger.writeSpace(")");
+            }
+        }
+        logger.writeComma("");
+        logger.writeComma("gBest");
+        logger.writeComma(this->gBest);
+        logger.writeComma("Expected return");
+        logger.writeComma(this->expectedReturn);
+        logger.writeComma("Risk");
+        logger.writeComma(this->risk);
+        logger.writeComma("at round");
+        logger.writeComma(this->atRound + 1);
+        logger.writeComma("at generation");
+        logger.writeComma(atGen + 1);
+        logger.writeComma("Found best count");
+        logger.writeLine(this->foundBestCount);
+    }
 
-    double initFund;
-    double finalFund;
-    double realReturn;
-    double expectedReturn;
-    double risk;
-    double gBest; // the best trend value
-    double atGen; // found the best solution at which generation
-    double atRound; // found the best solution at which round
+    int generation{};
+    int population{};
+    int *solution{};
+    double uBound{}; // the upper bound of rotation angle
+    double lBound{}; // the lower bound of rotation angle
+    double theta{}; // rotation angle
+    int round{}; // times of experiments
+
+    double initFund{};
+    double finalFund{};
+    double realReturn{};
+    double expectedReturn{};
+    double risk{};
+    double gBest{}; // the best trend value
+    double atGen{}; // found the best solution at which generation
+    double atRound{}; // found the best solution at which round
     double foundBestCount; // how many times it found the best solution in N rounds
 
-    double numOfChosen; // how many stock been chosen
-    Stock *stocks; // allocate `numOfChosen` stocks array
-    int *amount; // allocate `numOfChosen` amount array
-    int *allocatedFund; // allocated fund of each stock
-    double *balance; // balance of each stock
-    double *totalFS;
-    int numOfStocks;
-    int numOfDays;
+    double numOfChosen{}; // how many stock been chosen
+    Stock *stocks{}; // allocate `numOfChosen` stocks array
+    int *amount{}; // allocate `numOfChosen` amount array
+    int *allocatedFund{}; // allocated fund of each stock
+    double *balance{}; // balance of each stock
+    double *totalFS{};
+    int numOfStocks{};
+    int numOfDays{};
 };
 
 #endif //GNQTS_STOCK_RESULT_H

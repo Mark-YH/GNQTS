@@ -35,6 +35,8 @@ public:
 
     void setResult(Result *rs);
 
+    void nextSection(int section);
+
 private:
     int population;
     int generation;
