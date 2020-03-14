@@ -18,29 +18,64 @@ int main() {
     std::remove("../log/section_result.csv");
     auto start = std::chrono::steady_clock::now();
     srand(114);
-    Model *model = new Model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model *model = new Model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int j = 0; j < numOfSection; j++) { // section
         model->nextSection(j);
         Result *result = new Result();
+        Result *finalResult = new Result();
+        result->setStock(model->getNumOfStocks(), model->getNumOfDays());
+        finalResult->setStock(model->getNumOfStocks(), model->getNumOfDays());
         model->setResult(result);
         result->foundBestCount = 1;
-        double gBest = -DBL_MAX;
+        double gBest = -std::numeric_limits<double>::max();
         for (int i = 0; i < ROUND; i++) { // round
             GNQTS *qts = new GNQTS(model);
             qts->run();
 
-            if (gBest == result->gBest)
+            if (gBest == result->gBest) {
                 result->foundBestCount++;
-            else if (gBest < result->gBest) {
+                finalResult->foundBestCount++;
+            }
+            else if (gBest < result->gBest) { // found the global best which is a brand new solution
                 gBest = result->gBest;
                 result->foundBestCount = 1;
                 result->atRound = i;
                 result->atGen = qts->getBestGeneration();
+
+                finalResult->numOfDays = result->numOfDays;
+                finalResult->numOfStocks = result->numOfStocks;
+                finalResult->numOfChosen = result->numOfChosen;
+                finalResult->initFund = result->initFund;
+                finalResult->foundBestCount = result->foundBestCount;
+                finalResult->gBest = result->gBest;
+                finalResult->expectedReturn = result->expectedReturn;
+                finalResult->realReturn = result->realReturn;
+                finalResult->finalFund = result->finalFund;
+                finalResult->round = result->round;
+                finalResult->theta = result->theta;
+                finalResult->lBound = result->lBound;
+                finalResult->uBound = result->uBound;
+                finalResult->risk = result->risk;
+                finalResult->atRound = result->atRound;
+                finalResult->atGen = result->atGen;
+                for (int j = 0; j < model->getNumOfStocks(); j++) {
+                    finalResult->solution[j] = result->solution[j];
+                    finalResult->allocatedFund[j] = result->allocatedFund[j];
+                    finalResult->balance[j] = result->balance[j];
+                    finalResult->amount[j] = result->amount[j];
+                    finalResult->stocks[j].setPriceSize(model->getNumOfDays());
+                    finalResult->stocks[j].code = result->stocks[j].code;
+                    finalResult->stocks[j].fs = result->stocks[j].fs;
+                    finalResult->stocks[j].price = result->stocks[j].price;
+                }
+                for (int j = 0; j < model->getNumOfDays(); j++) {
+                    finalResult->totalFS[j] = result->totalFS[j];
+                }
             }
             delete qts;
         }
-        result->generateOutput(j);
-        result->finalOutput(j);
+        finalResult->generateOutput(j);
+        finalResult->finalOutput(j);
         delete result;
     }
     delete model;

@@ -136,7 +136,6 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
 
     if (pIndex == -1) {
         this->result->numOfChosen = numOfChosen;
-        this->result->setStock(this->numOfStocks, this->numOfDays);
     }
 
     totalBalance = fund;
@@ -422,4 +421,12 @@ void Model::setResult(Result *rs) {
 
 double Model::getFund() {
     return this->fund;
+}
+
+int Model::getNumOfStocks() {
+    return this->numOfStocks;
+}
+
+int Model::getNumOfDays() {
+    return this->numOfDays;
 }

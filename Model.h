@@ -9,7 +9,7 @@
 #include "Result.h"
 #include <string>
 
-#define ROUND 1
+#define ROUND 50
 
 class Model {
 public:
@@ -34,6 +34,10 @@ public:
     double getFitness(Particle *p, int generation, int pIndex);
 
     void setResult(Result *rs);
+
+    int getNumOfStocks();
+
+    int getNumOfDays();
 
     void nextSection(int section);
 
