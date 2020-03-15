@@ -37,7 +37,7 @@ public:
     };
 
     void generateOutput(int section) const {
-        Logger logger("../log/output_" + section_train[section]);
+        Logger logger("../log/" + tag + "/output_" + trainingSection[section]);
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
         logger.writeComma("Population");
@@ -123,7 +123,7 @@ public:
     };
 
     void finalOutput(int section) const {
-        Logger logger("../log/" + tag + "_final_result.csv");
+        Logger logger("../log/" + tag + "/" + tag + "_final_result.csv");
         if (section == 0) {
             logger.writeComma(tag);
             logger.writeComma("Number of chosen");

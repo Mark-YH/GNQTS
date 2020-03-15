@@ -35,7 +35,7 @@ GNQTS::GNQTS(Model *m) {
 
     // global best
     this->bestParticle->fitness = -std::numeric_limits<double>::max();
-    bestGeneration = 0;
+    this->bestGeneration = 0;
 }
 
 GNQTS::~GNQTS() {

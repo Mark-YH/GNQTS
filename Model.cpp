@@ -37,7 +37,7 @@ Model::~Model() {
 }
 
 void Model::nextSection(int section) {
-    string path = "../data/M2M/" + section_train[section];
+    string path = "../data/" + tag + "/" + trainingSection[section];
     getNumOfRowColumn(path);
     this->stocks = new Stock[this->numOfStocks];
 
