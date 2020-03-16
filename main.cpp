@@ -35,8 +35,7 @@ int main() {
             if (gBest == result->gBest) {
                 result->foundBestCount++;
                 finalResult->foundBestCount++;
-            }
-            else if (gBest < result->gBest) { // found the global best which is a brand new solution
+            } else if (gBest < result->gBest) { // found the global best which is a brand new solution
                 gBest = result->gBest;
                 result->foundBestCount = 1;
                 result->atRound = i;

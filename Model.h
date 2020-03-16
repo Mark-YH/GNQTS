@@ -21,23 +21,21 @@ public:
 
     ~Model();
 
-    int getGeneration();
+    int getGeneration() const;
 
-    int getPopulation();
+    int getPopulation() const;
 
-    double getTheta();
+    double getTheta() const;
 
-    int getLength();
-
-    double getFund();
+    int getLength() const;
 
     double getFitness(Particle *p, int generation, int pIndex);
 
     void setResult(Result *rs);
 
-    int getNumOfStocks();
+    int getNumOfStocks() const;
 
-    int getNumOfDays();
+    int getNumOfDays() const;
 
     void nextSection(int section);
 

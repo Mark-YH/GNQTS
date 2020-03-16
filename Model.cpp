@@ -125,7 +125,7 @@ void Model::readData(const string &path) {
 
 double Model::getFitness(Particle *p, int gen, int pIndex) {
     int numOfChosen = 0; // how much stock is chosen
-    double totalBalance;
+    double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
 
     for (int i = 0; i < this->numOfStocks; i++) {
@@ -138,20 +138,15 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
         this->result->numOfChosen = numOfChosen;
     }
 
-    totalBalance = this->initFund;
-
     // allocate fund
-    if (numOfChosen == 0)
-        for (int i = 0; i < this->numOfStocks; i++)
+    for (int i = 0; i < this->numOfStocks; i++) {
+        if (p->solution[i] == 1) {
+            allocatedFund[i] = floor(this->initFund / numOfChosen);
+        } else {
             allocatedFund[i] = 0;
-    else {
-        for (int i = 0; i < this->numOfStocks; i++) {
-            if (p->solution[i] == 1)
-                allocatedFund[i] = floor(this->initFund / numOfChosen);
-            else
-                allocatedFund[i] = 0;
         }
     }
+
     // calculate the rest fund
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p->solution[i] == 1)
@@ -194,7 +189,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     calcFS(p, allocatedFund, gen, pIndex);
 
     // calculate total fund standardization
-    double *totalFS = new double[this->numOfDays];
+    auto *totalFS = new double[this->numOfDays];
 
     for (int i = 0; i < this->numOfDays; i++) {
         totalFS[i] = 0;
@@ -270,7 +265,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     }
     double slope = tmp / tmp2;
 
-    double *trendLine = new double[this->numOfDays]; // daily expected standardization fund
+    auto *trendLine = new double[this->numOfDays]; // daily expected standardization fund
 
     // calculate trend line
     for (int i = 0; i < this->numOfDays; i++) {
@@ -288,13 +283,13 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
 
     // calculate trend value
     double trendVal = 0.0;
-    if (slope >= 0) {
-        if (risk == 0)
-            trendVal = 0;
-        else
+
+    if (risk > 0) { // if risk == 0 then trendVal = 0
+        if (slope >= 0) {
             trendVal = slope / risk;
-    } else {
-        trendVal = slope * risk;
+        } else {
+            trendVal = slope * risk;
+        }
     }
 
     if (pIndex == -1) {
@@ -358,12 +353,14 @@ void Model::calcFS(Particle *p, int *allocatedFund, int gen, int pIndex) {
 
             for (int j = 0; j < this->numOfDays; j++) {
                 if (j == 0) { // first day
-                    amount = allocatedFund[i] /
-                             (this->stocks[i].price[j] * 1000.0 + this->stocks[i].price[j] * (1000.0 * this->fee));
+                    amount = int(allocatedFund[i] /
+                                 (this->stocks[i].price[j] * 1000.0 +
+                                  this->stocks[i].price[j] * (1000.0 * this->fee)));
                     balance = allocatedFund[i] - amount * this->stocks[i].price[j] * 1000.0 -
                               amount * this->stocks[i].price[j] * 1000.0 * this->fee;
 
-                    this->stocks[i].fs[j] = allocatedFund[i] - this->stocks[i].price[j] * amount * 1000.0 * this->fee;
+                    this->stocks[i].fs[j] =
+                            allocatedFund[i] - this->stocks[i].price[j] * amount * 1000.0 * this->fee;
                     if (pIndex == -1) {
                         this->result->amount[i] = amount;
                         this->result->balance[i] = balance;
@@ -407,19 +404,19 @@ void Model::calcFS(Particle *p, int *allocatedFund, int gen, int pIndex) {
     }
 }
 
-int Model::getGeneration() {
+int Model::getGeneration() const {
     return this->generation;
 }
 
-int Model::getPopulation() {
+int Model::getPopulation() const {
     return this->population;
 }
 
-double Model::getTheta() {
+double Model::getTheta() const {
     return this->theta;
 }
 
-int Model::getLength() {
+int Model::getLength() const {
     return this->numOfStocks;
 }
 
@@ -427,14 +424,10 @@ void Model::setResult(Result *rs) {
     this->result = rs;
 }
 
-double Model::getFund() {
-    return this->initFund;
-}
-
-int Model::getNumOfStocks() {
+int Model::getNumOfStocks() const {
     return this->numOfStocks;
 }
 
-int Model::getNumOfDays() {
+int Model::getNumOfDays() const {
     return this->numOfDays;
 }
