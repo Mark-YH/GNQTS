@@ -9,7 +9,7 @@
 #include "Result.h"
 #include <string>
 
-#define ROUND 50
+#define ROUND 1
 
 class Model {
 public:
@@ -47,7 +47,7 @@ private:
     Stock *stocks;
     int numOfStocks;
     int numOfDays;
-    double fund;
+    double initFund;
     double theta;
     double fee;
     double tax;
@@ -56,7 +56,7 @@ private:
 
     void readData(const std::string &path);
 
-    void calcFS(Particle *p, double lFund, int gen, int pIndex);
+    void calcFS(Particle *p, int *allocatedFund, int gen, int pIndex);
 };
 
 #endif //GNQTS_STOCK_MODEL_H
