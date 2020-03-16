@@ -5,13 +5,16 @@
 #ifndef GNQTS_STOCK_MODEL_H
 #define GNQTS_STOCK_MODEL_H
 
-#include "Logger.h"
 #include "Particle.h"
-#include "Stock.h"
+#include "Result.h"
 #include <string>
+
+#define ROUND 50
 
 class Model {
 public:
+    Result *result;
+
     Model() = delete;
 
     Model(int population, int generation, double theta, double fund, double fee, double tax);
@@ -26,7 +29,17 @@ public:
 
     int getLength();
 
+    double getFund();
+
     double getFitness(Particle *p, int generation, int pIndex);
+
+    void setResult(Result *rs);
+
+    int getNumOfStocks();
+
+    int getNumOfDays();
+
+    void nextSection(int section);
 
 private:
     int population;

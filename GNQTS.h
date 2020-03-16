@@ -23,7 +23,7 @@ public:
 
     void update(int generation);
 
-    void mutate(int generation);
+    int getBestGeneration();
 
 private:
     Model *model;
