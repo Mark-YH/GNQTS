@@ -2,6 +2,36 @@
 #include <iostream>
 #include <chrono>
 
+void test() {
+    int section = 13;
+    int portfolio_a = 4;
+    int portfolio_b = 17;
+    Model *model = new Model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    model->nextSection(section);
+    Particle *particle = new Particle();
+    particle->setSolutionSize(model->getNumOfStocks());
+    Result *result = new Result();
+    result->setStock(model->getNumOfStocks(), model->getNumOfDays());
+    model->setResult(result);
+
+    for (int i = 0; i < model->getNumOfStocks(); i++) {
+        if (i == portfolio_a || i == portfolio_b)
+            particle->solution[i] = 1;
+        else
+            particle->solution[i] = 0;
+    }
+
+    for (int i = 0; i <= 100; i++) {
+        model->getFitness(particle, 0, -1, std::make_pair(i, 100 - i));
+        result->generateOutput(0);
+        result->finalOutput(1);
+    }
+
+    delete particle;
+    delete result;
+    delete model;
+}
+
 int main() {
     std::remove("../log/result.csv");
     std::remove("../log/best&worst_particle.csv");
@@ -16,7 +46,7 @@ int main() {
     std::remove("../log/trend_value.csv");
     std::remove("../log/update.csv");
     std::remove("../log/section_result.csv");
-    auto start = std::chrono::steady_clock::now();
+    auto start = std::chrono::steady_clock::now();/*
     srand(114);
     Model *model = new Model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int j = 0; j < numOfSection; j++) { // section
@@ -78,6 +108,8 @@ int main() {
         delete result;
     }
     delete model;
+    */
+    test();
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
     return 0;

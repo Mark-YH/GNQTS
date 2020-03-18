@@ -20,6 +20,7 @@ using std::ifstream;
 using std::string;
 using std::stringstream;
 using std::ios;
+using std::pair;
 
 Model::Model(int population, int generation, double theta, double fund, double fee, double tax) {
     this->population = population;
@@ -123,7 +124,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle *p, int gen, int pIndex) {
+double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
@@ -139,9 +140,11 @@ double Model::getFitness(Particle *p, int gen, int pIndex) {
     }
 
     // allocate fund
+    allocatedFund[4] = allocRatio.first;
+    allocatedFund[17] = allocRatio.second;
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p->solution[i] == 1) {
-            allocatedFund[i] = floor(this->initFund / numOfChosen);
+            allocatedFund[i] = floor(this->initFund * allocatedFund[i] / 100.0);
         } else {
             allocatedFund[i] = 0;
         }

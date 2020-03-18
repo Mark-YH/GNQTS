@@ -8,6 +8,7 @@
 #include "Particle.h"
 #include "Result.h"
 #include <string>
+#include <utility>
 
 #define ROUND 1
 
@@ -29,7 +30,7 @@ public:
 
     int getLength() const;
 
-    double getFitness(Particle *p, int generation, int pIndex);
+    double getFitness(Particle *p, int generation, int pIndex, std::pair<int, int> allocRatio);
 
     void setResult(Result *rs);
 
