@@ -1,13 +1,13 @@
 //
 // Created by Mark Hsu on 2020/3/14.
 //
-#ifndef GNQTS_STOCK_SECTION_H
-#define GNQTS_STOCK_SECTION_H
+#ifndef GNQTS_STOCK_SLIDINGWINDOW_H
+#define GNQTS_STOCK_SLIDINGWINDOW_H
 
 #include <string>
 
-#define SECTION 0
-/** @param SECTION
+#define WINDOW 8
+/** @param WINDOW
  *   0: M2M
  *   1: Y2Y
  *   2: Y2Q
@@ -25,7 +25,7 @@
 
 using std::string;
 
-#if SECTION == 0
+#if WINDOW == 0
 const string tag = "M2M";
 const int numOfSection = 96;
 const string trainingSection[] = {
@@ -63,7 +63,7 @@ const string trainingSection[] = {
         "train_2017_09(2017 Q1).csv", "train_2017_10(2017 Q1).csv", "train_2017_11(2017 Q1).csv",
         "train_2017_12(2017 Q1).csv"};
 
-#elif SECTION == 1
+#elif WINDOW == 1
 const string tag = "Y2Y";
 const int numOfSection = 8;
 const string trainingSection[] = {
@@ -71,7 +71,7 @@ const string trainingSection[] = {
         "train_2012(2012 Q1).csv", "train_2013(2013 Q1).csv", "train_2014(2014 Q1).csv",
         "train_2015(2015 Q1).csv", "train_2016(2016 Q1).csv"};;
 
-#elif SECTION == 2
+#elif WINDOW == 2
 const string tag = "Y2Q";
 const int numOfSection = 32;
 const string trainingSection[] = {
@@ -91,7 +91,7 @@ const string trainingSection[] = {
         "train_2015_Q3~2016_Q2(2015 Q1).csv", "train_2015_Q4~2016_Q3(2015 Q1).csv",
         "train_2016(2016 Q1).csv", "train_2016_Q2~2017_Q1(2016 Q1).csv",
         "train_2016_Q3~2017_Q2(2016 Q1).csv", "train_2016_Q4~2017_Q3(2016 Q1).csv"};
-#elif SECTION == 3
+#elif WINDOW == 3
 const string tag = "Y2M";
 const int numOfSection = 96;
 const string trainingSection[] = {
@@ -144,7 +144,7 @@ const string trainingSection[] = {
         "train_2016_09~2017_08(2016 Q1).csv", "train_2016_10~2017_09(2016 Q1).csv",
         "train_2016_11~2017_10(2016 Q1).csv", "train_2016_12~2017_11(2016 Q1).csv"};
 
-#elif SECTION == 4
+#elif WINDOW == 4
 const string tag = "Y2H";
 const int numOfSection = 16;
 const string trainingSection[] = {
@@ -155,7 +155,7 @@ const string trainingSection[] = {
         "train_2015(2015 Q1).csv", "train_2015_Q3~2016_Q2(2015 Q1).csv", "train_2016(2016 Q1).csv",
         "train_2016_Q3~2017_Q2(2016 Q1).csv"};
 
-#elif SECTION == 5
+#elif WINDOW == 5
 const string tag = "Q2Q";
 const int numOfSection = 32;
 const string trainingSection[] = {
@@ -171,7 +171,7 @@ const string trainingSection[] = {
         "train_2016_Q3(2016 Q1).csv", "train_2016_Q4(2016 Q1).csv", "train_2017_Q1(2017 Q1).csv",
         "train_2017_Q2(2017 Q1).csv", "train_2017_Q3(2017 Q1).csv"};
 
-#elif SECTION == 6
+#elif WINDOW == 6
 const string tag = "Q2M";
 const int numOfSection = 96;
 const string trainingSection[] = {
@@ -208,7 +208,7 @@ const string trainingSection[] = {
         "train_2017_04-06(2017 Q1).csv", "train_2017_05-07(2017 Q1).csv", "train_2017_06-08(2017 Q1).csv",
         "train_2017_07-09(2017 Q1).csv", "train_2017_08-10(2017 Q1).csv", "train_2017_09-11(2017 Q1).csv"};
 
-#elif SECTION == 7
+#elif WINDOW == 7
 const string tag = "H2H";
 const int numOfSection = 16;
 const string trainingSection[] = {
@@ -219,7 +219,7 @@ const string trainingSection[] = {
         "train_2015_Q3-Q4(2015 Q1).csv", "train_2016_Q1-Q2(2016 Q1).csv", "train_2016_Q3-Q4(2016 Q1).csv",
         "train_2017_Q1-Q2(2017 Q1).csv"};
 
-#elif SECTION == 8
+#elif WINDOW == 8
 const string tag = "H2Q";
 const int numOfSection = 32;
 const string trainingSection[] = {
@@ -240,7 +240,7 @@ const string trainingSection[] = {
         "train_2016_Q3-Q4(2016 Q1).csv", "train_2016_Q4~2017_Q1(2016 Q1).csv",
         "train_2017_Q1-Q2(2017 Q1).csv", "train_2017_Q2-Q3(2017 Q1).csv"};
 
-#elif SECTION == 9
+#elif WINDOW == 9
 const string tag = "H2M";
 const int numOfSection = 96;
 const string trainingSection[] = {
@@ -281,7 +281,7 @@ const string trainingSection[] = {
         "train_2017_02-07(2017 Q1).csv", "train_2017_03-08(2017 Q1).csv", "train_2017_04-09(2017 Q1).csv",
         "train_2017_05-10(2017 Q1).csv", "train_2017_06-11(2017 Q1).csv"};
 
-#elif SECTION == 10
+#elif WINDOW == 10
 const string tag = "H#";
 const int numOfSection = 16;
 const string trainingSection[] = {
@@ -292,7 +292,7 @@ const string trainingSection[] = {
         "train_2015_Q1-Q2(2015 Q1).csv", "train_2015_Q3-Q4(2015 Q1).csv", "train_2016_Q1-Q2(2016 Q1).csv",
         "train_2016_Q3-Q4(2016 Q1).csv"};
 
-#elif SECTION == 11
+#elif WINDOW == 11
 const string tag = "M#";
 const int numOfSection = 96;
 const string trainingSection[] = {
@@ -329,7 +329,7 @@ const string trainingSection[] = {
         "train_2016_07(2016 Q1).csv", "train_2016_08(2016 Q1).csv", "train_2016_09(2016 Q1).csv",
         "train_2016_10(2016 Q1).csv", "train_2016_11(2016 Q1).csv", "train_2016_12(2016 Q1).csv"};
 
-#elif SECTION == 12
+#elif WINDOW == 12
 const string tag = "Q#";
 const int numOfSection = 32;
 const string trainingSection[] = {
@@ -351,4 +351,4 @@ const string trainingSection[] = {
         "train_2016_Q3(2016 Q1).csv", "train_2016_Q4(2016 Q1).csv"};
 
 #endif
-#endif //GNQTS_STOCK_SECTION_H
+#endif //GNQTS_STOCK_SLIDINGWINDOW_H

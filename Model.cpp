@@ -8,14 +8,6 @@
 #include <cmath>
 #include <algorithm>
 
-/*! @param DEBUG val
- * val > 0: generate output including `chosen stock`, `best individual's total fund standardization and fund standardization of each stock symbol`, `slope`, `risk`, `trend line`, `trend value` results.
- * val > 4: generate output including `each individual's total fund standardization` and above results.
- * val > 6: generate output including `each individual's fund standardization and fund standardization of each stock symbol` and above results.
- * val > 10: generate output including `read data` and above results.
- */
-#define DEBUG 0
-
 using std::ifstream;
 using std::string;
 using std::stringstream;
@@ -106,16 +98,6 @@ void Model::readData(const string &path) {
             lineCount++;
         }
         fin.close();
-#if DEBUG > 10
-        Logger logger("../log/read_data_for_debug.csv", ios::out);
-        for (int i = 0; i < numOfStocks; i++) {
-            logger.writeComma(stocks[i].code);
-            for (int j = 0; j < numOfDays; j++) {
-                logger.writeComma(stocks[i].price[j]);
-            }
-            logger.writeLine("");
-        }
-#endif
     } catch (std::exception &e) {
         fin.close();
         Logger logger("../log/error");
@@ -124,7 +106,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocRatio) {
+double Model::getFitness(Particle *p, int gen, int pIndex, pair<pair<int, int>, pair<int, int>> allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
@@ -140,11 +122,17 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocR
     }
 
     // allocate fund
-    allocatedFund[4] = allocRatio.first;
-    allocatedFund[17] = allocRatio.second;
+#if TESTING
+    allocatedFund[allocRatio.first.first] = allocRatio.first.second;
+    allocatedFund[allocRatio.second.first] = allocRatio.second.second;
+#endif
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p->solution[i] == 1) {
-            allocatedFund[i] = floor(this->initFund * allocatedFund[i] / 100.0);
+#if TESTING
+            allocatedFund[i] = floor(this->initFund * allocatedFund[i] / 1000.0);
+#else
+            allocatedFund[i] = floor(this->initFund / numOfChosen);
+#endif
         } else {
             allocatedFund[i] = 0;
         }
@@ -155,38 +143,6 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocR
         if (p->solution[i] == 1)
             totalBalance -= allocatedFund[i];
     }
-
-#if DEBUG
-    Logger logStock("../log/stock.csv");
-    if (gen == 0 && pIndex == 0) {
-        logStock.writeComma("Generation");
-        logStock.writeComma("Individual");
-        logStock.writeComma("number of chosen stock");
-        logStock.writeComma("Allocated fund");
-        logStock.writeComma("Total balance");
-        logStock.writeComma("Chosen stocks");
-        for (int i = 0; i < this->numOfStocks; i++) {
-            logStock.writeComma(i);
-        }
-        logStock.writeLine("");
-    }
-    logStock.writeComma(gen);
-    if (pIndex == -1) {
-        logStock.writeComma("Best");
-    } else {
-        logStock.writeComma(pIndex);
-    }
-    logStock.writeComma(numOfChosen);
-    logStock.writeComma(fund);
-    logStock.writeComma(totalBalance);
-    logStock.writeComma("");
-    for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) {
-            logStock.writeComma(this->stocks[i].code);
-        }
-    }
-    logStock.writeLine("");
-#endif
 
     // calculate fund standardization
     calcFS(p, allocatedFund, gen, pIndex);
@@ -213,51 +169,6 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocR
         this->result->finalFund = totalFS[this->numOfDays - 1];
         this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
     }
-
-#if DEBUG
-    Logger logFS("../log/fund_standardization.csv", 20);
-    if (gen == 0 && pIndex == 0) {
-        logFS.writeComma("Generation");
-        logFS.writeComma("Individual");
-        for (int i = 0; i < this->numOfDays; i++) {
-            logFS.writeComma(i);
-        }
-        logFS.writeLine("");
-    }
-
-    logFS.writeComma(gen);
-    if (pIndex == -1) {
-        logFS.writeComma("Best");
-    } else {
-        logFS.writeComma(pIndex);
-    }
-#if DEBUG > 4
-#if DEBUG < 6
-    if (pIndex == -1) {
-#endif
-        for (int i = 0; i < this->numOfStocks; i++) {
-            if (p->solution[i] == 1) {
-                logFS.writeComma(gen);
-                logFS.writeComma(pIndex);
-                logFS.writeComma(this->stocks[i].code);
-                for (int j = 0; j < this->numOfDays; j++) {
-                    logFS.writeComma(this->stocks[i].fs[j]);
-                }
-                logFS.writeLine("");
-            }
-        }
-#if DEBUG < 6
-    }
-#endif
-#endif
-    for (int i = 0; i < this->numOfDays; i++) {
-        logFS.writeComma(gen);
-        logFS.writeComma(pIndex);
-        logFS.writeComma("");
-        logFS.writeComma(totalFS[i]);
-    }
-    logFS.writeLine("");
-#endif
 
     // calculate slope
     double tmp = 0, tmp2 = 0;
@@ -305,41 +216,12 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<int, int> allocR
         }
         for (int i = 0; i < this->numOfStocks; i++) {
             this->result->solution[i] = p->solution[i];
+            this->result->stocks[i].code = this->stocks[i].code;
             for (int j = 0; j < this->numOfDays; j++) {
-                this->result->stocks[i].code = this->stocks[i].code;
                 this->result->stocks[i].fs[j] = this->stocks[i].fs[j];
             }
         }
     }
-#if DEBUG
-    Logger logTrend("../log/trend_value.csv");
-    if (gen == 0 && pIndex == 0) {
-        logTrend.writeComma("Generation");
-        logTrend.writeComma("Individual");
-        logTrend.writeComma("Slope");
-        logTrend.writeComma("Risk");
-        logTrend.writeComma("Trend value");
-        logTrend.writeComma("Trend line");
-        for (int i = 0; i < this->numOfDays; i++) {
-            logTrend.writeComma(i);
-        }
-        logTrend.writeLine("");
-    }
-    logTrend.writeComma(gen);
-    if (pIndex == -1) {
-        logTrend.writeComma("Best");
-    } else {
-        logTrend.writeComma(pIndex);
-    }
-    logTrend.writeComma(slope);
-    logTrend.writeComma(risk);
-    logTrend.writeComma(trendVal);
-    logTrend.writeComma("");
-    for (int i = 0; i < this->numOfDays; i++) {
-        logTrend.writeComma(trendLine[i]);
-    }
-    logTrend.writeLine("");
-#endif
 
     delete[] allocatedFund;
     delete[] totalFS;
@@ -369,33 +251,6 @@ void Model::calcFS(Particle *p, int *allocatedFund, int gen, int pIndex) {
                         this->result->balance[i] = balance;
                         this->result->allocatedFund[i] = allocatedFund[i];
                     }
-#if DEBUG
-                    Logger logStock2("../log/stock2.csv");
-                    if (gen == 0 && pIndex == 0 && i == 0) {
-                        logStock2.writeComma("Generation");
-                        logStock2.writeComma("Individual");
-                        logStock2.writeComma("Stock symbol");
-                        logStock2.writeComma("Allocated fund");
-                        logStock2.writeComma("Balance of particular stock");
-                        logStock2.writeComma("Amount");
-                        logStock2.writeComma("Price per stock");
-                        logStock2.writeComma("Total fee");
-                        logStock2.writeLine("");
-                    }
-                    logStock2.writeComma(gen);
-                    if (pIndex == -1) {
-                        logStock2.writeComma("Best");
-                    } else {
-                        logStock2.writeComma(pIndex);
-                    }
-                    logStock2.writeComma(this->stocks[i].code);
-                    logStock2.writeComma(lFund);
-                    logStock2.writeComma(balance);
-                    logStock2.writeComma(amount);
-                    logStock2.writeComma(pricePerStock);
-                    logStock2.writeComma(amount * this->stocks[i].price[j] * 1000 * this->fee);
-                    logStock2.writeLine("");
-#endif
                 } else { // the other days
                     this->stocks[i].fs[j] =
                             this->stocks[i].price[j] * amount * 1000.0 -

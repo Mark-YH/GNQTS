@@ -3,33 +3,31 @@
 #include <chrono>
 
 void test() {
-    int section = 13;
-    int portfolio_a = 4;
-    int portfolio_b = 17;
-    Model *model = new Model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    model->nextSection(section);
-    Particle *particle = new Particle();
-    particle->setSolutionSize(model->getNumOfStocks());
-    Result *result = new Result();
-    result->setStock(model->getNumOfStocks(), model->getNumOfDays());
-    model->setResult(result);
+    int section = 11;
+    int portfolio_a = 2;
+    int portfolio_b = 46;
 
-    for (int i = 0; i < model->getNumOfStocks(); i++) {
+    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    model.nextSection(section);
+    Particle particle;
+    particle.setSolutionSize(model.getNumOfStocks());
+    Result result;
+    result.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    model.setResult(&result);
+
+    for (int i = 0; i < model.getNumOfStocks(); i++) {
         if (i == portfolio_a || i == portfolio_b)
-            particle->solution[i] = 1;
+            particle.solution[i] = 1;
         else
-            particle->solution[i] = 0;
+            particle.solution[i] = 0;
     }
 
-    for (int i = 0; i <= 100; i++) {
-        model->getFitness(particle, 0, -1, std::make_pair(i, 100 - i));
-        result->generateOutput(0);
-        result->finalOutput(1);
+    for (int i = 0; i <= 1000; i++) {
+        model.getFitness(&particle, 0, -1,
+                         std::make_pair(std::make_pair(portfolio_a, i), std::make_pair(portfolio_b, 1000 - i)));
+        result.generateOutput(0);
+        result.finalOutput(1);
     }
-
-    delete particle;
-    delete result;
-    delete model;
 }
 
 int main() {
@@ -46,7 +44,10 @@ int main() {
     std::remove("../log/trend_value.csv");
     std::remove("../log/update.csv");
     std::remove("../log/section_result.csv");
-    auto start = std::chrono::steady_clock::now();/*
+    auto start = std::chrono::steady_clock::now();
+#if TESTING
+    test();
+#else
     srand(114);
     Model *model = new Model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int j = 0; j < numOfSection; j++) { // section
@@ -81,6 +82,8 @@ int main() {
                 finalResult->realReturn = result->realReturn;
                 finalResult->finalFund = result->finalFund;
                 finalResult->round = result->round;
+                finalResult->generation = result->generation;
+                finalResult->population = result->population;
                 finalResult->theta = result->theta;
                 finalResult->lBound = result->lBound;
                 finalResult->uBound = result->uBound;
@@ -94,8 +97,10 @@ int main() {
                     finalResult->amount[j] = result->amount[j];
                     finalResult->stocks[j].setPriceSize(model->getNumOfDays());
                     finalResult->stocks[j].code = result->stocks[j].code;
-                    finalResult->stocks[j].fs = result->stocks[j].fs;
                     finalResult->stocks[j].price = result->stocks[j].price;
+                    for (int k = 0; k < model->getNumOfDays(); k++) {
+                        finalResult->stocks[j].fs[k] = result->stocks[j].fs[k];
+                    }
                 }
                 for (int j = 0; j < model->getNumOfDays(); j++) {
                     finalResult->totalFS[j] = result->totalFS[j];
@@ -108,8 +113,7 @@ int main() {
         delete result;
     }
     delete model;
-    */
-    test();
+#endif
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
     return 0;

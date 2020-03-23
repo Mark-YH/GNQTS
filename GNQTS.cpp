@@ -53,7 +53,8 @@ void GNQTS::run() {
         update(i);
     }
 
-    this->model->getFitness(this->bestParticle, bestGeneration, -1, std::make_pair(0, 0));
+    this->model->getFitness(this->bestParticle, bestGeneration, -1,
+                            std::make_pair(std::make_pair(0, 0), std::make_pair(0, 0)));
     this->model->result->generation = this->model->getGeneration();
     this->model->result->population = this->model->getPopulation();
     this->model->result->uBound = this->model->getTheta();
@@ -125,7 +126,8 @@ void GNQTS::calcFitness(int gen) {
     this->worstParticle->fitness = INT_MAX;
 
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        this->particle[i].fitness = this->model->getFitness((this->particle + i), gen, i, std::make_pair(0, 0));
+        this->particle[i].fitness = this->model->getFitness((this->particle + i), gen, i,
+                                                            std::make_pair(std::make_pair(0, 0), std::make_pair(0, 0)));
 
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle->fitness) {

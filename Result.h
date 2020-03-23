@@ -7,7 +7,7 @@
 
 #include "Stock.h"
 #include "Logger.h"
-#include "Section.h"
+#include "SlidingWindow.h"
 
 class Result {
 public:

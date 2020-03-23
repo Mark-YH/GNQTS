@@ -10,7 +10,8 @@
 #include <string>
 #include <utility>
 
-#define ROUND 1
+#define ROUND 50
+#define TESTING 1
 
 class Model {
 public:
@@ -30,7 +31,8 @@ public:
 
     int getLength() const;
 
-    double getFitness(Particle *p, int generation, int pIndex, std::pair<int, int> allocRatio);
+    double getFitness(Particle *p, int generation, int pIndex,
+                      std::pair<std::pair<int, int>, std::pair<int, int>> allocRatio);
 
     void setResult(Result *rs);
 
