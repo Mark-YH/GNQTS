@@ -97,9 +97,9 @@ int main() {
                     finalResult->amount[j] = result->amount[j];
                     finalResult->stocks[j].setPriceSize(model->getNumOfDays());
                     finalResult->stocks[j].code = result->stocks[j].code;
-                    finalResult->stocks[j].price = result->stocks[j].price;
                     for (int k = 0; k < model->getNumOfDays(); k++) {
                         finalResult->stocks[j].fs[k] = result->stocks[j].fs[k];
+                        finalResult->stocks[j].price[k] = result->stocks[j].price[k];
                     }
                 }
                 for (int j = 0; j < model->getNumOfDays(); j++) {
