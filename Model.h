@@ -31,8 +31,7 @@ public:
 
     int getLength() const;
 
-    double getFitness(Particle *p, int generation, int pIndex,
-                      std::pair<std::pair<int, int>, std::pair<int, int>> allocRatio);
+    double getFitness(Particle *p, int generation, int pIndex, int *allocRatio);
 
     void setResult(Result *rs);
 

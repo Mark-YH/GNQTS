@@ -5,7 +5,9 @@
 void test() {
     int section = 11;
     int portfolio_a = 2;
-    int portfolio_b = 46;
+    int portfolio_b = 27;
+    int portfolio_c = 46;
+    int precision = 100;
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     model.nextSection(section);
@@ -16,18 +18,37 @@ void test() {
     model.setResult(&result);
 
     for (int i = 0; i < model.getNumOfStocks(); i++) {
-        if (i == portfolio_a || i == portfolio_b)
+        if (i == portfolio_a || i == portfolio_b || i == portfolio_c)
             particle.solution[i] = 1;
         else
             particle.solution[i] = 0;
     }
 
-    for (int i = 0; i <= 1000; i++) {
-        model.getFitness(&particle, 0, -1,
-                         std::make_pair(std::make_pair(portfolio_a, i), std::make_pair(portfolio_b, 1000 - i)));
-        result.generateOutput(0);
-        result.finalOutput(1);
+    int *allocRatio = new int[model.getNumOfStocks()];
+    Result bestResult;
+    bestResult.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    bestResult.gBest = -DBL_MAX;
+
+    for (int i = 0; i <= precision; i++) {
+        for (int j = 0; j <= precision - i; j++) {
+            allocRatio[portfolio_a] = i;
+            allocRatio[portfolio_b] = j;
+            allocRatio[portfolio_c] = precision - i - j;
+            model.getFitness(&particle, 0, -1, allocRatio);
+            if (bestResult.gBest < result.gBest) {
+                bestResult.copyResult(result);
+            }
+            if ((i == 0 && j == 0) ||
+                (i == 0 && j == precision) ||
+                (i == precision && j == 0)) {
+                result.generateOutput(0);
+                result.finalOutput(1);
+            }
+        }
     }
+    bestResult.generateOutput(0);
+    bestResult.finalOutput(1);
+    delete[] allocRatio;
 }
 
 int main() {

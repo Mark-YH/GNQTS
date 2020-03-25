@@ -27,6 +27,40 @@ public:
         }
     }
 
+    void copyResult(Result &rs) {
+        this->generation = rs.generation;
+        this->population = rs.population;
+        this->uBound = rs.uBound;
+        this->lBound = rs.lBound;
+        this->theta = rs.theta;
+        this->round = rs.round;
+        this->initFund = rs.initFund;
+        this->finalFund = rs.finalFund;
+        this->realReturn = rs.realReturn;
+        this->expectedReturn = rs.expectedReturn;
+        this->risk = rs.risk;
+        this->gBest = rs.gBest;
+        this->atGen = rs.atGen;
+        this->atRound = rs.atRound;
+        this->foundBestCount = rs.foundBestCount;
+        this->numOfChosen = rs.numOfChosen;
+        this->numOfStocks = rs.numOfStocks;
+        this->numOfDays = rs.numOfDays;
+        for (int i = 0; i < this->numOfStocks; i++) {
+            this->solution[i] = rs.solution[i];
+            this->amount[i] = rs.amount[i];
+            this->allocatedFund[i] = rs.allocatedFund[i];
+            this->balance[i] = rs.balance[i];
+            this->stocks[i].code = rs.stocks[i].code;
+            for (int j = 0; j < this->numOfDays; j++) {
+                this->stocks[i].price[j] = rs.stocks[i].price[j];
+                this->stocks[i].fs[j] = rs.stocks[i].fs[j];
+            }
+        }
+        for (int i = 0; i < numOfDays; i++)
+            this->totalFS[i] = rs.totalFS[i];
+    }
+
     ~Result() {
         delete[] this->stocks;
         delete[] this->amount;

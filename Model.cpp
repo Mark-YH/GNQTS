@@ -106,7 +106,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle *p, int gen, int pIndex, pair<pair<int, int>, pair<int, int>> allocRatio) {
+double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
@@ -122,14 +122,10 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<pair<int, int>, 
     }
 
     // allocate fund
-#if TESTING
-    allocatedFund[allocRatio.first.first] = allocRatio.first.second;
-    allocatedFund[allocRatio.second.first] = allocRatio.second.second;
-#endif
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p->solution[i] == 1) {
 #if TESTING
-            allocatedFund[i] = floor(this->initFund * allocatedFund[i] / 1000.0);
+            allocatedFund[i] = floor(this->initFund * allocRatio[i] / 100.0);
 #else
             allocatedFund[i] = floor(this->initFund / numOfChosen);
 #endif
@@ -219,6 +215,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex, pair<pair<int, int>, 
             this->result->stocks[i].code = this->stocks[i].code;
             for (int j = 0; j < this->numOfDays; j++) {
                 this->result->stocks[i].fs[j] = this->stocks[i].fs[j];
+                this->result->stocks[i].price[j] = this->stocks[i].price[j];
             }
         }
     }
