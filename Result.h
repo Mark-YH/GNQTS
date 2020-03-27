@@ -27,6 +27,99 @@ public:
         }
     }
 
+    Result(const Result &rs) {
+        if (this != &rs) {
+            this->numOfStocks = rs.numOfStocks;
+            this->numOfDays = rs.numOfDays;
+            this->balance = new double[rs.numOfStocks];
+            this->allocatedFund = new int[rs.numOfStocks];
+            this->amount = new int[rs.numOfStocks];
+            this->stocks = new Stock[rs.numOfStocks];
+            this->solution = new int[rs.numOfStocks];
+            this->totalFS = new double[rs.numOfDays];
+            for (int i = 0; i < rs.numOfStocks; i++) {
+                this->stocks[i].setPriceSize(rs.numOfDays);
+            }
+            this->generation = rs.generation;
+            this->population = rs.population;
+            this->uBound = rs.uBound;
+            this->lBound = rs.lBound;
+            this->theta = rs.theta;
+            this->round = rs.round;
+            this->initFund = rs.initFund;
+            this->finalFund = rs.finalFund;
+            this->realReturn = rs.realReturn;
+            this->expectedReturn = rs.expectedReturn;
+            this->risk = rs.risk;
+            this->gBest = rs.gBest;
+            this->atGen = rs.atGen;
+            this->atRound = rs.atRound;
+            this->foundBestCount = rs.foundBestCount;
+            this->numOfChosen = rs.numOfChosen;
+
+            for (int i = 0; i < this->numOfStocks; i++) {
+                this->solution[i] = rs.solution[i];
+                this->amount[i] = rs.amount[i];
+                this->allocatedFund[i] = rs.allocatedFund[i];
+                this->balance[i] = rs.balance[i];
+                this->stocks[i].code = rs.stocks[i].code;
+                for (int j = 0; j < this->numOfDays; j++) {
+                    this->stocks[i].price[j] = rs.stocks[i].price[j];
+                    this->stocks[i].fs[j] = rs.stocks[i].fs[j];
+                }
+            }
+            for (int i = 0; i < numOfDays; i++)
+                this->totalFS[i] = rs.totalFS[i];
+        }
+    }
+
+    Result &Result::operator=(const Result &rs) {
+        if (this != &rs) {
+            this->numOfStocks = rs.numOfStocks;
+            this->numOfDays = rs.numOfDays;
+            this->balance = new double[rs.numOfStocks];
+            this->allocatedFund = new int[rs.numOfStocks];
+            this->amount = new int[rs.numOfStocks];
+            this->stocks = new Stock[rs.numOfStocks];
+            this->solution = new int[rs.numOfStocks];
+            this->totalFS = new double[rs.numOfDays];
+            for (int i = 0; i < rs.numOfStocks; i++) {
+                this->stocks[i].setPriceSize(rs.numOfDays);
+            }
+            this->generation = rs.generation;
+            this->population = rs.population;
+            this->uBound = rs.uBound;
+            this->lBound = rs.lBound;
+            this->theta = rs.theta;
+            this->round = rs.round;
+            this->initFund = rs.initFund;
+            this->finalFund = rs.finalFund;
+            this->realReturn = rs.realReturn;
+            this->expectedReturn = rs.expectedReturn;
+            this->risk = rs.risk;
+            this->gBest = rs.gBest;
+            this->atGen = rs.atGen;
+            this->atRound = rs.atRound;
+            this->foundBestCount = rs.foundBestCount;
+            this->numOfChosen = rs.numOfChosen;
+
+            for (int i = 0; i < this->numOfStocks; i++) {
+                this->solution[i] = rs.solution[i];
+                this->amount[i] = rs.amount[i];
+                this->allocatedFund[i] = rs.allocatedFund[i];
+                this->balance[i] = rs.balance[i];
+                this->stocks[i].code = rs.stocks[i].code;
+                for (int j = 0; j < this->numOfDays; j++) {
+                    this->stocks[i].price[j] = rs.stocks[i].price[j];
+                    this->stocks[i].fs[j] = rs.stocks[i].fs[j];
+                }
+            }
+            for (int i = 0; i < numOfDays; i++)
+                this->totalFS[i] = rs.totalFS[i];
+        }
+        return *this;
+    }
+
     void copyResult(Result &rs) {
         this->generation = rs.generation;
         this->population = rs.population;
@@ -204,7 +297,7 @@ public:
     double gBest{}; // the best trend value
     double atGen{}; // found the best solution at which generation
     double atRound{}; // found the best solution at which round
-    double foundBestCount; // how many times it found the best solution in N rounds
+    double foundBestCount{}; // how many times it found the best solution in N rounds
 
     double numOfChosen{}; // how many stock been chosen
     Stock *stocks{}; // allocate `numOfChosen` stocks array

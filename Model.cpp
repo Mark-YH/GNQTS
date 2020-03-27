@@ -125,7 +125,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
     for (int i = 0; i < this->numOfStocks; i++) {
         if (p->solution[i] == 1) {
 #if TESTING
-            allocatedFund[i] = floor(this->initFund * allocRatio[i] / 100.0);
+            allocatedFund[i] = floor(this->initFund * allocRatio[i] / 1000.0);
 #else
             allocatedFund[i] = floor(this->initFund / numOfChosen);
 #endif
