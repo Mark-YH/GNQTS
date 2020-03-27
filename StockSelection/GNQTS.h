@@ -5,7 +5,8 @@
 #ifndef GNQTS_STOCK_GNQTS_H
 #define GNQTS_STOCK_GNQTS_H
 
-#include "Model.h"
+#include "../Model/Model.h"
+#include "Particle.h"
 
 class GNQTS {
 public:

@@ -1,4 +1,4 @@
-#include "GNQTS.h"
+#include "StockSelection/GNQTS.h"
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -48,7 +48,7 @@ void test() {
 //                    allocRatio[portfolio_c] = k;
 //                    allocRatio[portfolio_d] = l;
 //                    allocRatio[portfolio_e] = precision - i - j - k - l;
-            model.getFitness(&particle, 0, -1, allocRatio);
+            model.getFitness(particle.solution, 0, -1, allocRatio);
             if (bestResults[0].gBest < result.gBest) { // found a better solution
                 bestResults[0].copyResult(result);
                 while (bestResults.size() > 1) {

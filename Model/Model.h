@@ -5,13 +5,12 @@
 #ifndef GNQTS_STOCK_MODEL_H
 #define GNQTS_STOCK_MODEL_H
 
-#include "Particle.h"
 #include "Result.h"
 #include <string>
 #include <utility>
 
 #define ROUND 50
-#define TESTING 1
+#define TESTING 0
 
 class Model {
 public:
@@ -31,7 +30,7 @@ public:
 
     int getLength() const;
 
-    double getFitness(Particle *p, int generation, int pIndex, int *allocRatio);
+    double getFitness(int *solution, int generation, int pIndex, int *allocRatio);
 
     void setResult(Result *rs);
 
@@ -56,7 +55,7 @@ private:
 
     void readData(const std::string &path);
 
-    void calcFS(Particle *p, int *allocatedFund, int gen, int pIndex);
+    void calcFS(int *solution, int *allocatedFund, int gen, int pIndex);
 };
 
 #endif //GNQTS_STOCK_MODEL_H

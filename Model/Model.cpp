@@ -106,13 +106,13 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
+double Model::getFitness(int *solution, int gen, int pIndex, int *allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
 
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) {
+        if (solution[i] == 1) {
             numOfChosen++;
         }
     }
@@ -123,7 +123,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
 
     // allocate fund
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) {
+        if (solution[i] == 1) {
 #if TESTING
             allocatedFund[i] = floor(this->initFund * allocRatio[i] / 1000.0);
 #else
@@ -136,12 +136,12 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
 
     // calculate the rest fund
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1)
+        if (solution[i] == 1)
             totalBalance -= allocatedFund[i];
     }
 
     // calculate fund standardization
-    calcFS(p, allocatedFund, gen, pIndex);
+    calcFS(solution, allocatedFund, gen, pIndex);
 
     // calculate total fund standardization
     auto *totalFS = new double[this->numOfDays];
@@ -150,7 +150,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
         totalFS[i] = 0;
     }
     for (int i = 0; i < numOfStocks; i++) {
-        if (p->solution[i] == 1) {
+        if (solution[i] == 1) {
             for (int j = 0; j < this->numOfDays; j++) {
                 totalFS[j] += this->stocks[i].fs[j];
             }
@@ -211,7 +211,7 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
             this->result->totalFS[i] = totalFS[i];
         }
         for (int i = 0; i < this->numOfStocks; i++) {
-            this->result->solution[i] = p->solution[i];
+            this->result->solution[i] = solution[i];
             this->result->stocks[i].code = this->stocks[i].code;
             for (int j = 0; j < this->numOfDays; j++) {
                 this->result->stocks[i].fs[j] = this->stocks[i].fs[j];
@@ -226,10 +226,10 @@ double Model::getFitness(Particle *p, int gen, int pIndex, int *allocRatio) {
     return trendVal;
 }
 
-void Model::calcFS(Particle *p, int *allocatedFund, int gen, int pIndex) {
+void Model::calcFS(int *solution, int *allocatedFund, int gen, int pIndex) {
     // calculate fund standardization
     for (int i = 0; i < this->numOfStocks; i++) {
-        if (p->solution[i] == 1) { // the chosen stock
+        if (solution[i] == 1) { // the chosen stock
             double balance = 0;
             int amount = 0; // how many stocks can buy
 
