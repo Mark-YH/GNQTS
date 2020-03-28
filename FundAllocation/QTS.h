@@ -5,10 +5,39 @@
 #ifndef GNQTS_STOCK_QTS_H
 #define GNQTS_STOCK_QTS_H
 
+#include "../Model/Model.h"
+#include "Particle_FA.h"
+#include <vector>
+
+using std::vector;
 
 class QTS {
+public:
+    QTS() = delete;
 
+    explicit QTS(Model *m, int *selection);
+
+    ~QTS();
+
+    void run();
+
+    int getBestGeneration();
+
+private:
+    void generate();
+
+    void evaluate(int generation);
+
+    void update(int generation);
+
+    Model *model;
+    int numOfChosen;
+    int bestGeneration;
+    int *stockSelection;
+    vector<ParticleFA> particle;
+    ParticleFA *gBest;
+    ParticleFA *lBest;
+    ParticleFA *lWorst;
 };
-
 
 #endif //GNQTS_STOCK_QTS_H

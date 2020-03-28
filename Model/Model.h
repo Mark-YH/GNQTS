@@ -10,7 +10,12 @@
 #include <utility>
 
 #define ROUND 50
-#define TESTING 0
+#define MODE 1
+/** @param MODE
+ *  0: execute stock selection program
+ *  1: execute fund allocation program
+ *  2: execute fund allocation testing program
+ */
 
 class Model {
 public:
@@ -30,7 +35,7 @@ public:
 
     int getLength() const;
 
-    double getFitness(int *solution, int generation, int pIndex, int *allocRatio);
+    double getFitness(int *solution, int generation, int pIndex, double *allocRatio);
 
     void setResult(Result *rs);
 

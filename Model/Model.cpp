@@ -106,7 +106,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(int *solution, int gen, int pIndex, int *allocRatio) {
+double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     int *allocatedFund = new int[this->numOfStocks];
@@ -124,10 +124,10 @@ double Model::getFitness(int *solution, int gen, int pIndex, int *allocRatio) {
     // allocate fund
     for (int i = 0; i < this->numOfStocks; i++) {
         if (solution[i] == 1) {
-#if TESTING
-            allocatedFund[i] = floor(this->initFund * allocRatio[i] / 1000.0);
-#else
+#if MODE == 0
             allocatedFund[i] = floor(this->initFund / numOfChosen);
+#else
+            allocatedFund[i] = floor(this->initFund * allocRatio[i]);
 #endif
         } else {
             allocatedFund[i] = 0;
