@@ -21,7 +21,7 @@ QTS::QTS(Model *m, int *selection) {
     this->gBest = new ParticleFA(this->model->getNumOfStocks());
     for (int i = 0; i < this->model->getNumOfStocks(); i++) {
         if (this->stockSelection[i] == 1)
-            this->gBest->solution[i] = 0.5;
+            this->gBest->solution[i] = 1.0 / this->numOfChosen;
         else
             this->gBest->solution[i] = 0;
     }
