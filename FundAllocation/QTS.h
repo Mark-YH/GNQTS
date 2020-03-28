@@ -21,8 +21,6 @@ public:
 
     void run();
 
-    int getBestGeneration();
-
 private:
     void generate();
 
@@ -31,7 +29,7 @@ private:
     void update(int generation);
 
     Model *model;
-    int numOfChosen;
+    vector<int> indexOfChosen;
     int bestGeneration;
     int *stockSelection;
     vector<ParticleFA> particle;

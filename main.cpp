@@ -81,13 +81,13 @@ void test() {
 }
 
 void fundAllocation() {
-    int section = 5;
-    int portfolio_a = 45;
-    int portfolio_b = 18;
-    int portfolio_c = 18;
-    int portfolio_d = 18;
-    int portfolio_e = 18;
-    Model model(10, 100, 0.001953125, 10000000.0, 0.001425, 0.003);
+    int section = 2;
+    int portfolio_a = 4;
+    int portfolio_b = 13;
+    int portfolio_c = 13;
+    int portfolio_d = 13;
+    int portfolio_e = 13;
+    Model model(10, 100, powf(2.0, -6), 10000000.0, 0.001425, 0.003);
     model.nextSection(section);
     Result result;
     result.setStock(model.getNumOfStocks(), model.getNumOfDays());

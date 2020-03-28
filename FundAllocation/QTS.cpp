@@ -7,10 +7,9 @@
 QTS::QTS(Model *m, int *selection) {
     this->model = m;
     this->stockSelection = selection;
-    this->numOfChosen = 0;
     for (int i = 0; i < this->model->getNumOfStocks(); i++)
         if (this->stockSelection[i] == 1)
-            this->numOfChosen++;
+            this->indexOfChosen.push_back(i);
 
     this->bestGeneration = 0;
     for (int i = 0; i < model->getPopulation(); i++) {
@@ -19,11 +18,13 @@ QTS::QTS(Model *m, int *selection) {
     this->lBest = new ParticleFA(this->model->getNumOfStocks());
     this->lWorst = new ParticleFA(this->model->getNumOfStocks());
     this->gBest = new ParticleFA(this->model->getNumOfStocks());
-    for (int i = 0; i < this->model->getNumOfStocks(); i++) {
-        if (this->stockSelection[i] == 1)
-            this->gBest->solution[i] = 0.5;
-        else
-            this->gBest->solution[i] = 0;
+    for (int i = 0; i < this->indexOfChosen.size() - 1; i++) {
+        this->gBest->solution[this->indexOfChosen[i]] = 1.0 / (this->indexOfChosen.size());
+    }
+    // allocate the fund of the last stock
+    this->gBest->solution[this->indexOfChosen.back()] = 1;
+    for (int i = 0; i < this->indexOfChosen.size() - 1; i++) {
+        this->gBest->solution[this->indexOfChosen.back()] -= this->gBest->solution[this->indexOfChosen[i]];
     }
     this->gBest->fitness = -DBL_MAX;
 }
@@ -53,20 +54,20 @@ void QTS::run() {
 void QTS::generate() {
     for (int i = 0; i < this->model->getPopulation(); i++) {
         double sum = 0.0;
-        for (int j = 0; j < this->model->getNumOfStocks(); j++) {
-            if (this->stockSelection[j] == 1) {
-                this->particle[i].solution[j] = (double) rand() / RAND_MAX;
-                sum += this->particle[i].solution[j];
-            } else {
-                this->particle[i].solution[j] = 0;
-            }
+        for (int j = 0; j < this->indexOfChosen.size() - 1; j++) {
+            this->particle[i].solution[indexOfChosen[j]] = (double) rand() / RAND_MAX;
+            sum += this->particle[i].solution[indexOfChosen[j]];
         }
         // normalize the probabilities
-        if (sum != 1) {
-            for (int j = 0; j < this->model->getNumOfStocks(); j++) {
-                if (this->stockSelection[j] == 1)
-                    this->particle[i].solution[j] = this->particle[i].solution[j] / sum;
+        if (sum > 1) {
+            for (int j = 0; j < this->indexOfChosen.size() - 1; j++) {
+                this->particle[i].solution[indexOfChosen[j]] = this->particle[i].solution[indexOfChosen[j]] / sum;
             }
+        }
+        // allocate the fund of the last stock
+        this->particle[i].solution[indexOfChosen.back()] = 1;
+        for (int j = 0; j < this->indexOfChosen.size() - 1; j++) {
+            this->particle[i].solution[indexOfChosen.back()] -= this->particle[i].solution[indexOfChosen[j]];
         }
     }
 }
@@ -91,27 +92,25 @@ void QTS::update(int generation) {
     double sum = 0.0;
     ParticleFA tmpBest(this->model->getNumOfStocks());
     tmpBest.operator=(*this->gBest);
-    for (int i = 0; i < this->model->getNumOfStocks(); i++) {
-        if (this->stockSelection[i] == 1) {
-            if (lBest->solution[i] > lWorst->solution[i])
-                tmpBest.solution[i] += this->model->getTheta();
-            if (lBest->solution[i] < lWorst->solution[i])
-                tmpBest.solution[i] -= this->model->getTheta();
-            sum += tmpBest.solution[i];
-        }
+    for (int i = 0; i < this->indexOfChosen.size() - 1; i++) {
+        if (lBest->solution[indexOfChosen[i]] > lWorst->solution[indexOfChosen[i]])
+            tmpBest.solution[indexOfChosen[i]] += this->model->getTheta();
+        if (lBest->solution[indexOfChosen[i]] < lWorst->solution[indexOfChosen[i]])
+            tmpBest.solution[indexOfChosen[i]] -= this->model->getTheta();
+        sum += tmpBest.solution[indexOfChosen[i]];
     }
     // normalize the probabilities
-    if (sum != 1) {
-        for (int i = 0; i < this->model->getNumOfStocks(); i++) {
-            if (this->stockSelection[i] == 1)
-                tmpBest.solution[i] = tmpBest.solution[i] / sum;
+    if (sum > 1) {
+        for (int i = 0; i < this->indexOfChosen.size() - 1; i++) {
+            tmpBest.solution[indexOfChosen[i]] = tmpBest.solution[indexOfChosen[i]] / sum;
         }
+    }
+    // allocate the fund of the last stock
+    tmpBest.solution[indexOfChosen.back()] = 1;
+    for (int i = 0; i < this->indexOfChosen.size() - 1; i++) {
+        tmpBest.solution[indexOfChosen.back()] -= tmpBest.solution[indexOfChosen[i]];
     }
     tmpBest.fitness = this->model->getFitness(this->stockSelection, generation, -2, tmpBest.solution);
     if (tmpBest.fitness >= this->gBest->fitness)
         this->gBest->operator=(tmpBest);
-}
-
-int QTS::getBestGeneration() {
-    return this->bestGeneration;
 }
