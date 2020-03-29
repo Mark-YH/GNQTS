@@ -9,8 +9,9 @@
 #include <string>
 #include <utility>
 
+#define US_MARKET 1
 #define ROUND 50
-#define MODE 1
+#define MODE 2
 /** @param MODE
  *  0: execute stock selection program
  *  1: execute fund allocation program

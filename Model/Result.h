@@ -216,7 +216,7 @@ public:
     };
 
     void finalOutput(int section) const {
-        Logger logger("../log/" + tag + "/" + tag + "_final_result.csv");
+        Logger logger("../log/" + tag + "/" + "final_result.csv");
         if (section == 0) {
             logger.writeComma(tag);
             logger.writeComma("Number of chosen");

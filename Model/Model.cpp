@@ -89,7 +89,7 @@ void Model::readData(const string &path) {
                 if (tmp == "\r")
                     continue;
                 if (lineCount == -1) {
-                    this->stocks[stockCount].code = stoi(tmp);
+                    this->stocks[stockCount].code = tmp;
                 } else {
                     this->stocks[stockCount].price[lineCount] = stod(tmp);
                 }
@@ -235,6 +235,12 @@ void Model::calcFS(int *solution, int *allocatedFund, int gen, int pIndex) {
 
             for (int j = 0; j < this->numOfDays; j++) {
                 if (j == 0) { // first day
+#if US_MARKET
+                    amount = int(allocatedFund[i] / this->stocks[i].price[j]);
+                    balance = allocatedFund[i] - amount * this->stocks[i].price[j];
+
+                    this->stocks[i].fs[j] = allocatedFund[i];
+#else
                     amount = int(allocatedFund[i] /
                                  (this->stocks[i].price[j] * 1000.0 +
                                   this->stocks[i].price[j] * (1000.0 * this->fee)));
@@ -243,16 +249,22 @@ void Model::calcFS(int *solution, int *allocatedFund, int gen, int pIndex) {
 
                     this->stocks[i].fs[j] =
                             allocatedFund[i] - this->stocks[i].price[j] * amount * 1000.0 * this->fee;
+#endif
                     if (pIndex == -1) {
                         this->result->amount[i] = amount;
                         this->result->balance[i] = balance;
                         this->result->allocatedFund[i] = allocatedFund[i];
                     }
                 } else { // the other days
+#if US_MARKET
+                    this->stocks[i].fs[j] =
+                            this->stocks[i].price[j] * amount + balance;
+#else
                     this->stocks[i].fs[j] =
                             this->stocks[i].price[j] * amount * 1000.0 -
                             this->stocks[i].price[j] * amount * 1000.0 * this->fee -
                             this->stocks[i].price[j] * amount * 1000.0 * this->tax + balance;
+#endif
                 }
             }
         }
