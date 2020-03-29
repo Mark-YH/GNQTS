@@ -61,11 +61,11 @@ void test() {
 //               bestResults[size].setStock(mo/del.getNumOfStocks(), model.getNumOfDays());
 //               bestResults[size] = result;
         }
-        if ((allocRatio[portfolio_a] == precision) ||
-            (allocRatio[portfolio_b] == precision) ||
-            (allocRatio[portfolio_c] == precision) ||
-            (allocRatio[portfolio_d] == precision) ||
-            (allocRatio[portfolio_e] == precision)) {
+        if ((allocRatio[portfolio_a] == 1) ||
+            (allocRatio[portfolio_b] == 1) ||
+            (allocRatio[portfolio_c] == 1) ||
+            (allocRatio[portfolio_d] == 1) ||
+            (allocRatio[portfolio_e] == 1)) {
             result.generateOutput(0);
             result.finalOutput(1);
         }
