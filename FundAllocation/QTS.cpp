@@ -93,13 +93,19 @@ void QTS::update(int generation) {
     tmpBest.operator=(*this->gBest);
     for (int i = 0; i < this->model->getNumOfStocks(); i++) {
         if (this->stockSelection[i] == 1) {
-            if (lBest->solution[i] > lWorst->solution[i])
+            if ((lBest->solution[i] > lWorst->solution[i] && lWorst->solution[i] > gBest->solution[i]) // L M S
+                || (gBest->solution[i] > lWorst->solution[i] && lWorst->solution[i] > gBest->solution[i])) // S M L
+                tmpBest.solution[i] = 1 - tmpBest.solution[i];
+            if ((lBest->solution[i] > gBest->solution[i] && gBest->solution[i] > lWorst->solution[i]) // L S M
+                || (lWorst->solution[i] > lBest->solution[i] && lBest->solution[i] > gBest->solution[i])) // M L S
                 tmpBest.solution[i] += this->model->getTheta();
-            if (lBest->solution[i] < lWorst->solution[i])
+            if ((lWorst->solution[i] > gBest->solution[i] && gBest->solution[i] > lBest->solution[i]) // S L M
+                || (gBest->solution[i] > lBest->solution[i] && lBest->solution[i] > lWorst->solution[i]))  // M S L
                 tmpBest.solution[i] -= this->model->getTheta();
-            if (tmpBest.solution[i] > 1)
+
+            if (tmpBest.solution[i] > 1) // upper bound
                 tmpBest.solution[i] = 1;
-            else if (tmpBest.solution[i] < 0)
+            else if (tmpBest.solution[i] < 0) // lower bound
                 tmpBest.solution[i] = 0;
 
             sum += tmpBest.solution[i];
@@ -115,33 +121,6 @@ void QTS::update(int generation) {
     tmpBest.fitness = this->model->getFitness(this->stockSelection, generation, -2, tmpBest.solution);
     if (tmpBest.fitness >= this->gBest->fitness)
         this->gBest->operator=(tmpBest);
-  /*  else { // maybe step over the best case, so change the direction
-        sum = 0.0;
-        tmpBest.operator=(*this->gBest);
-        for (int i = 0; i < this->model->getNumOfStocks(); i++) {
-            if (this->stockSelection[i] == 1) {
-                if (lBest->solution[i] > lWorst->solution[i])
-                    tmpBest.solution[i] -= this->model->getTheta();
-                if (lBest->solution[i] < lWorst->solution[i])
-                    tmpBest.solution[i] += this->model->getTheta();
-                if (tmpBest.solution[i] > 1)
-                    tmpBest.solution[i] = 1;
-                else if (tmpBest.solution[i] < 0)
-                    tmpBest.solution[i] = 0;
-                sum += tmpBest.solution[i];
-            }
-        }
-        // normalize the probabilities
-        if (sum != 1) {
-            for (int i = 0; i < this->model->getNumOfStocks(); i++) {
-                if (this->stockSelection[i] == 1)
-                    tmpBest.solution[i] = tmpBest.solution[i] / sum;
-            }
-        }
-        tmpBest.fitness = this->model->getFitness(this->stockSelection, generation, -2, tmpBest.solution);
-        if (tmpBest.fitness >= this->gBest->fitness)
-            this->gBest->operator=(tmpBest);
-    }*/
 }
 
 int QTS::getBestGeneration() {
