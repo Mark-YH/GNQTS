@@ -31,9 +31,6 @@ void test() {
     }
 
     auto *allocRatio = new double[model.getNumOfStocks()];
-    Result bestResult;
-    bestResult.setStock(model.getNumOfStocks(), model.getNumOfDays());
-    bestResult.gBest = -DBL_MAX;
     vector<Result> bestResults;
     bestResults.emplace_back();
     bestResults[0].gBest = -DBL_MAX;
@@ -50,16 +47,10 @@ void test() {
 //            allocRatio[portfolio_e] = (precision - i - j - k - l) / (double) precision;
         model.getFitness(particle.solution, 0, -1, allocRatio);
         if (bestResults[0].gBest < result.gBest) { // found a better solution
-            bestResults[0] = result;
-            while (bestResults.size() > 1) {
-                bestResults.erase(bestResults.begin() + 1);
-            }
+            bestResults.clear();
+            bestResults.push_back(result);
         } else if (bestResults[0].gBest == result.gBest) { // found a solution with the same fitness
-            //TODO: to fix class `result` copy constructor and class `stock` copy constructor
-//               int size = bestResults.size();
-//               bestResults.emplace_back(Result());
-//               bestResults[size].setStock(mo/del.getNumOfStocks(), model.getNumOfDays());
-//               bestResults[size] = result;
+            bestResults.push_back(result);
         }
         if ((allocRatio[portfolio_a] == 1) ||
             (allocRatio[portfolio_b] == 1) ||
