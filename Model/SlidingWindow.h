@@ -354,10 +354,11 @@ const string trainingSection[] = {
 
 #elif WINDOW == 13
 const string tag = "US/M2M";
-const int numOfSection = 3;
+const int numOfSection = 4;
 const string trainingSection[] = {
         "train_2013_01(2013 Q1)_five.csv",
         "train_2013_01(2013 Q1)_high.csv",
-        "train_2013_01(2013 Q1)_low.csv",};
+        "train_2013_01(2013 Q1)_low.csv",
+        "train_2013_01(2013 Q1)_init.csv"};
 #endif
 #endif //GNQTS_STOCK_SLIDINGWINDOW_H
