@@ -21,23 +21,19 @@ public:
 
     void run();
 
-    int getBestGeneration();
-
 private:
-    void generate();
+    void measure(int generation);
 
     void evaluate(int generation);
 
     void update(int generation);
 
     Model *model;
-    int numOfChosen;
-    int bestGeneration;
     int *stockSelection;
     vector<ParticleFA> particle;
     ParticleFA *gBest;
-    ParticleFA *lBest;
     ParticleFA *lWorst;
+    double *pMatrix;
 };
 
 #endif //GNQTS_STOCK_QTS_H

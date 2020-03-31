@@ -7,22 +7,23 @@
 
 class ParticleFA {
 public:
-    double *solution; // ratio
+    //TODO 把 solution 改成多維陣列 有幾檔就有幾個solution陣列
+    int *solution; // ratio
     double fitness;
     int length;
 
-    /** @param length: the number of bits */
-    explicit ParticleFA(int length) {
+    /** @param _length: the number of bits */
+    explicit ParticleFA(int _length) {
         this->fitness = -DBL_MAX;
-        this->length = length;
-        this->solution = new double[length];
+        this->length = _length;
+        this->solution = new int[_length];
     }
 
     ParticleFA(const ParticleFA &copy) {
         if (this != &copy) {
             this->fitness = copy.fitness;
             this->length = copy.length;
-            this->solution = new double[copy.length];
+            this->solution = new int[copy.length];
             for (int i = 0; i < length; i++)
                 this->solution[i] = copy.solution[i];
         }
@@ -32,7 +33,7 @@ public:
         if (this != &copy) {
             this->fitness = copy.fitness;
             this->length = copy.length;
-            this->solution = new double[copy.length];
+            this->solution = new int[copy.length];
             for (int i = 0; i < length; i++)
                 this->solution[i] = copy.solution[i];
         }
