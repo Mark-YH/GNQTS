@@ -7,8 +7,7 @@
 
 class ParticleFA {
 public:
-    //TODO 把 solution 改成多維陣列 有幾檔就有幾個solution陣列
-    int *solution; // ratio
+    int **solution; // ratio
     double fitness;
     int length;
 
@@ -16,16 +15,24 @@ public:
     explicit ParticleFA(int _length) {
         this->fitness = -DBL_MAX;
         this->length = _length;
-        this->solution = new int[_length];
+        this->solution = new int *[_length];
+        for (int i = 0; i < length; i++) {
+            this->solution[i] = new int[24];
+            for (int j = 0; j < 24; j++)
+                this->solution[i][j] = 0;
+        }
     }
 
     ParticleFA(const ParticleFA &copy) {
         if (this != &copy) {
             this->fitness = copy.fitness;
             this->length = copy.length;
-            this->solution = new int[copy.length];
-            for (int i = 0; i < length; i++)
-                this->solution[i] = copy.solution[i];
+            this->solution = new int *[copy.length];
+            for (int i = 0; i < length; i++) {
+                this->solution[i] = new int[24];
+                for (int j = 0; j < 24; j++)
+                    this->solution[i][j] = copy.solution[i][j];
+            }
         }
     }
 
@@ -33,14 +40,39 @@ public:
         if (this != &copy) {
             this->fitness = copy.fitness;
             this->length = copy.length;
-            this->solution = new int[copy.length];
-            for (int i = 0; i < length; i++)
-                this->solution[i] = copy.solution[i];
+            this->solution = new int *[copy.length];
+            for (int i = 0; i < length; i++) {
+                this->solution[i] = new int[24];
+                for (int j = 0; j < 24; j++)
+                    this->solution[i][j] = copy.solution[i][j];
+            }
         }
         return *this;
     }
 
+    bool operator>(const ParticleFA &instance) {
+        return this->fitness > instance.fitness;
+    }
+
+    bool operator>=(const ParticleFA &instance) {
+        return this->fitness >= instance.fitness;
+    }
+
+    bool operator<(const ParticleFA &instance) {
+        return this->fitness < instance.fitness;
+    }
+
+    bool operator<=(const ParticleFA &instance) {
+        return this->fitness <= instance.fitness;
+    }
+
+    bool operator==(const ParticleFA &instance) {
+        return this->fitness == instance.fitness;
+    }
+
     ~ParticleFA() {
+        for (int i = 0; i < length; i++)
+            delete[] solution[i];
         delete[] solution;
     }
 };
