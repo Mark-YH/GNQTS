@@ -5,9 +5,11 @@
 #ifndef GNQTS_STOCK_STOCK_H
 #define GNQTS_STOCK_STOCK_H
 
+#include <string>
+
 class Stock {
 public:
-    int code{};
+    std::string code{};
     double *price{};
     double *fs{}; // fund standardization
     int length;

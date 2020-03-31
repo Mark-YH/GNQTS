@@ -36,13 +36,13 @@ void ranking() {
 }
 
 void test() {
-    int section = 1;
-    int portfolio_a = 4;
-    int portfolio_b = 20;
-    int portfolio_c = 44;
-    int portfolio_d = 20;
-    int portfolio_e = 20;
-    int precision = 1000;
+    int section = 0;
+    int portfolio_a = 0;
+    int portfolio_b = 1;
+    int portfolio_c = 2;
+    int portfolio_d = 3;
+    int portfolio_e = 4;
+    int precision = 100;
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     model.nextSection(section);

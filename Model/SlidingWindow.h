@@ -6,7 +6,7 @@
 
 #include <string>
 
-#define WINDOW 0
+#define WINDOW 13
 /** @param WINDOW
  *   0: M2M
  *   1: Y2Y
@@ -21,6 +21,8 @@
  *  10: H*
  *  11: M*
  *  12: Q*
+ *  --- U.S. Market ---
+ *  13: M2M
  */
 
 using std::string;
@@ -350,5 +352,12 @@ const string trainingSection[] = {
         "train_2016_Q1(2016 Q1).csv", "train_2016_Q2(2016 Q1).csv",
         "train_2016_Q3(2016 Q1).csv", "train_2016_Q4(2016 Q1).csv"};
 
+#elif WINDOW == 13
+const string tag = "US/M2M";
+const int numOfSection = 3;
+const string trainingSection[] = {
+        "train_2013_01(2013 Q1)_five.csv",
+        "train_2013_01(2013 Q1)_high.csv",
+        "train_2013_01(2013 Q1)_low.csv",};
 #endif
 #endif //GNQTS_STOCK_SLIDINGWINDOW_H
