@@ -6,6 +6,35 @@
 
 using std::vector;
 
+void ranking() {
+    int section = 0;
+    int portfolio_a = 0;
+
+    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    model.nextSection(section);
+    Particle particle;
+    particle.setSolutionSize(model.getNumOfStocks());
+    Result result;
+    result.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    model.setResult(&result);
+
+    for (int count = 0; count < model.getNumOfStocks(); count++) {
+        for (int i = 0; i < model.getNumOfStocks(); i++) {
+            if (i == portfolio_a)
+                particle.solution[i] = 1;
+            else
+                particle.solution[i] = 0;
+        }
+        auto *allocRatio = new double[model.getNumOfStocks()];
+        std::memset(allocRatio, 0, sizeof(double) * model.getNumOfStocks());
+        allocRatio[portfolio_a] = 1;
+        model.getFitness(particle.solution, 0, -1, allocRatio);
+        result.finalOutput(section);
+        delete[] allocRatio;
+        portfolio_a++;
+    }
+}
+
 void test() {
     int section = 1;
     int portfolio_a = 4;
@@ -139,6 +168,8 @@ int main() {
     fundAllocation();
 #elif MODE == 2
     test();
+#elif MODE == 3
+    ranking();
 #endif
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;

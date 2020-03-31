@@ -15,6 +15,7 @@
  *  0: execute stock selection program
  *  1: execute fund allocation program
  *  2: execute fund allocation testing program
+ *  3: execute ranking program
  */
 
 class Model {
