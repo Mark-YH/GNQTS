@@ -6,7 +6,7 @@
 
 #include <string>
 
-#define WINDOW 0
+#define WINDOW 6
 /** @param WINDOW
  *   0: M2M
  *   1: Y2Y
