@@ -26,6 +26,7 @@ QTS::QTS(Model *m, int *selection) {
         for (int j = 0; j < this->numOfBit; j++)
             this->pMatrix[i][j] = 0.5;
     }
+    this->model->result->round = ROUND;
     this->model->result->generation = this->model->getGeneration();
     this->model->result->population = this->model->getPopulation();
     this->model->result->uBound = this->model->getTheta();
@@ -61,7 +62,7 @@ void QTS::run() {
     normalize(allocRatio);
     for (int i = 0; i < this->indexOfChosen.size(); i++)
         std::cout << allocRatio[indexOfChosen[i]] * 100.0 << '\t';
-    std::cout << endl << this->model->getFitness(this->stockSelection, -1, -1, allocRatio) << endl;
+    std::cout << endl << this->model->getFitness(this->stockSelection, this->bestGeneration, -1, allocRatio) << endl;
     delete[] allocRatio;
 }
 
@@ -139,4 +140,8 @@ void QTS::update(int generation) {
             }
         }
     }
+}
+
+int QTS::getBestGeneration() {
+    return this->bestGeneration;
 }

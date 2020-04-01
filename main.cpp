@@ -101,29 +101,47 @@ void test() {
 }
 
 void fundAllocation() {
-    int section = 26;
-    int portfolio_a = 42;
-    int portfolio_b = 48;
-    int portfolio_c = 48;
-    int portfolio_d = 48;
-    int portfolio_e = 48;
-    Model model(10, 100, 0.0004, 10000000.0, 0.001425, 0.003);
+    int section = 0;
+    int portfolio_a = 0;
+    int portfolio_b = 1;
+    int portfolio_c = 2;
+    int portfolio_d = 3;
+    int portfolio_e = 20;
+    int portfolio_f = 0;
+    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     model.nextSection(section);
     Result result;
     result.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    result.foundBestCount = 1;
     model.setResult(&result);
+    Result finalResult;
+    finalResult.setStock(model.getNumOfStocks(), model.getNumOfDays());
     int *stockSelection = new int[model.getNumOfStocks()];
     for (int i = 0; i < model.getNumOfStocks(); i++) {
-        if (i == portfolio_a || i == portfolio_b || i == portfolio_c || i == portfolio_d || i == portfolio_e)
+        if (i == portfolio_a || i == portfolio_b || i == portfolio_c || i == portfolio_d || i == portfolio_e ||
+            i == portfolio_f)
             stockSelection[i] = 1;
         else
             stockSelection[i] = 0;
     }
 
-    QTS qts(&model, stockSelection);
-    qts.run();
-    result.generateOutput(section);
-    result.finalOutput(section);
+    double gBest = -std::numeric_limits<double>::max();
+    for (int i = 0; i < ROUND; i++) { // round
+        QTS qts(&model, stockSelection);
+        qts.run();
+        if (gBest == result.gBest) {
+            result.foundBestCount++;
+            finalResult.foundBestCount++;
+        } else if (gBest < result.gBest) { // found the global best which is a brand new solution
+            gBest = result.gBest;
+            result.foundBestCount = 1;
+            result.atRound = i;
+            result.atGen = qts.getBestGeneration();
+            finalResult = result;
+        }
+    }
+    finalResult.generateOutput(section);
+    finalResult.finalOutput(section);
     delete[] stockSelection;
 }
 

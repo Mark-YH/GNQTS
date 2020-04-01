@@ -21,6 +21,8 @@ public:
 
     void run();
 
+    int getBestGeneration();
+
 private:
     void measure(int generation);
 
