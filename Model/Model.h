@@ -10,7 +10,7 @@
 #include <utility>
 
 #define US_MARKET 1
-#define ROUND 50
+#define ROUND 1
 #define MODE 1
 /** @param MODE
  *  0: execute stock selection program

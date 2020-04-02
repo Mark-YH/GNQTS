@@ -4,6 +4,9 @@
 
 #include "QTS.h"
 #include <cmath>
+#include <bitset>
+
+using std::bitset;
 
 QTS::QTS(Model *m, int *selection) {
     this->numOfBit = 7;
@@ -18,14 +21,7 @@ QTS::QTS(Model *m, int *selection) {
         this->particle.emplace_back(ParticleFA(this->numOfBit, this->indexOfChosen.size()));
     }
     this->gBest = new ParticleFA(this->numOfBit, this->indexOfChosen.size());
-    this->lWorst = new ParticleFA(this->numOfBit, this->indexOfChosen.size());
 
-    this->pMatrix = new double *[this->indexOfChosen.size()];
-    for (int i = 0; i < this->indexOfChosen.size(); i++) {
-        this->pMatrix[i] = new double[this->numOfBit];
-        for (int j = 0; j < this->numOfBit; j++)
-            this->pMatrix[i][j] = 0.5;
-    }
     this->model->result->round = ROUND;
     this->model->result->generation = this->model->getGeneration();
     this->model->result->population = this->model->getPopulation();
@@ -36,10 +32,6 @@ QTS::QTS(Model *m, int *selection) {
 
 QTS::~QTS() {
     delete this->gBest;
-    delete this->lWorst;
-    for (int i = 0; i < this->indexOfChosen.size(); i++)
-        delete[] this->pMatrix[i];
-    delete[] this->pMatrix;
     this->stockSelection = nullptr;
     this->model = nullptr;
 }
@@ -48,7 +40,6 @@ void QTS::run() {
     for (int i = 0; i < this->model->getGeneration(); i++) {
         measure(i);
         evaluate(i);
-        update(i);
     }
     auto *allocRatio = new double[this->model->getNumOfStocks()]; // the fund ratio of each chosen stock
     std::memset(allocRatio, 0, sizeof(double) * this->model->getNumOfStocks());
@@ -67,42 +58,50 @@ void QTS::run() {
 }
 
 void QTS::measure(int generation) {
-    for (int i = 0; i < this->model->getPopulation(); i++) {
-        for (int j = 0; j < this->indexOfChosen.size(); j++) {
+    string binary = bitset<21>(generation).to_string();
+    for (int j = 0; j < this->indexOfChosen.size(); j++) {
+        if (j == 0) { // stock #1
             for (int k = 0; k < this->numOfBit; k++) {
-                if (this->pMatrix[j][k] > (double) rand() / RAND_MAX) {
-                    this->particle[i].solution[j][k] = 1;
-                } else {
-                    this->particle[i].solution[j][k] = 0;
-                }
+                if (binary[k] == '1')
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 1;
+                else
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 0;
+            }
+        } else if (j == 1) { // stock #2
+            for (int k = this->numOfBit; k < this->numOfBit + this->numOfBit; k++) { // bit = 7~13
+                if (binary[k] == '1')
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 1;
+                else
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 0;
+            }
+        } else if (j == 2) { // stock #3
+            for (int k = this->numOfBit * 2; k < this->numOfBit * 3; k++) { // bit = 14~20
+                if (binary[k] == '1')
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 1;
+                else
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 0;
             }
         }
     }
 }
 
 void QTS::evaluate(int generation) {
-    this->lWorst->fitness = DBL_MAX;
     auto *allocRatio = new double[this->model->getNumOfStocks()]; // the fund ratio of each chosen stock;
-    for (int i = 0; i < this->model->getPopulation(); i++) {
-        std::memset(allocRatio, 0, sizeof(double) * this->model->getNumOfStocks());
-        for (int j = 0; j < this->indexOfChosen.size(); j++) {
-            for (int k = 0; k < this->numOfBit; k++) {
-                if (this->particle[i].solution[j][k] == 1) {
-                    allocRatio[this->indexOfChosen[j]] += powf(2.0, float(-(k + 1)));
-                }
+    std::memset(allocRatio, 0, sizeof(double) * this->model->getNumOfStocks());
+    for (int j = 0; j < this->indexOfChosen.size(); j++) {
+        for (int k = 0; k < this->numOfBit; k++) {
+            if (this->particle[0].solution[j][k] == 1) {
+                allocRatio[this->indexOfChosen[j]] += powf(2.0, float(-(k + 1)));
             }
         }
-        normalize(allocRatio);
-        this->particle[i].fitness = this->model->getFitness(this->stockSelection, generation, i, allocRatio);
+    }
+    normalize(allocRatio);
+    this->particle[0].fitness = this->model->getFitness(this->stockSelection, generation, 0, allocRatio);
 
-        // update best particle
-        if (this->particle[i] > *this->gBest) {
-            *this->gBest = this->particle[i];
-            this->bestGeneration = generation;
-        }
-        // update worst particle
-        if (this->particle[i] < *this->lWorst)
-            *this->lWorst = this->particle[i];
+    // update best particle
+    if (this->particle[0] > *this->gBest) {
+        *this->gBest = this->particle[0];
+        this->bestGeneration = generation;
     }
     delete[] allocRatio;
 }
@@ -112,33 +111,12 @@ void QTS::normalize(double *_allocRatio) const {
     for (int i = 0; i < this->indexOfChosen.size(); i++) {
         sum += _allocRatio[indexOfChosen[i]];
     }
-    if (sum != 1) {
+    if (sum == 0) {
+        for (int i = 0; i < this->indexOfChosen.size(); i++)
+            _allocRatio[this->indexOfChosen[i]] = 1.0 / indexOfChosen.size();
+    } else if (sum != 1) {
         for (int i = 0; i < this->indexOfChosen.size(); i++)
             _allocRatio[indexOfChosen[i]] = _allocRatio[indexOfChosen[i]] / sum;
-    }
-}
-
-void QTS::update(int generation) {
-    for (int i = 0; i < this->indexOfChosen.size(); i++) {
-        for (int j = 0; j < this->numOfBit; j++) {
-            if (this->gBest->solution[i][j] == 0 && this->lWorst->solution[i][j] == 1) {
-                if (this->pMatrix[i][j] > 0.5) {
-                    this->pMatrix[i][j] = 1 - this->pMatrix[i][j];
-                    this->pMatrix[i][j] -= this->model->getTheta();
-                } else {
-                    this->pMatrix[i][j] -= this->model->getTheta();
-                }
-            }
-
-            if (this->gBest->solution[i][j] == 1 && this->lWorst->solution[i][j] == 0) {
-                if (this->pMatrix[i][j] < 0.5) {
-                    this->pMatrix[i][j] = 1 - this->pMatrix[i][j];
-                    this->pMatrix[i][j] += this->model->getTheta();
-                } else {
-                    this->pMatrix[i][j] += this->model->getTheta();
-                }
-            }
-        }
     }
 }
 

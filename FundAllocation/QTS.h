@@ -28,8 +28,6 @@ private:
 
     void evaluate(int generation);
 
-    void update(int generation);
-
     void normalize(double *_allocRatio) const;
 
     int numOfBit;
@@ -38,8 +36,6 @@ private:
     vector<int> indexOfChosen;
     vector<ParticleFA> particle;
     ParticleFA *gBest;
-    ParticleFA *lWorst;
-    double **pMatrix;
     int bestGeneration;
 };
 
