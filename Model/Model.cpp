@@ -31,6 +31,7 @@ Model::~Model() {
 }
 
 void Model::nextSection(int section) {
+    this->stocks.clear();
     string path = "../data/" + tag + "/" + trainingSection[section];
     getNumOfRowColumn(path);
 
@@ -92,7 +93,7 @@ void Model::readData(const string &path) {
                     tmp.erase(remove_if(tmp.begin(), tmp.end(), isspace), tmp.end());
                     this->stocks[stockCount].code = tmp;
                 } else {
-                    this->stocks[stockCount].price.at(lineCount) = stod(tmp);
+                    this->stocks[stockCount].price[lineCount] = stod(tmp);
                 }
                 stockCount++;
             }
