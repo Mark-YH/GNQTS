@@ -117,9 +117,9 @@ void exhaustion() {
 //        }
 //    }
 //    }
-    for (int i = 0; i < bestResults.size(); i++) {
-        bestResults[i].generateOutput(section);
-        bestResults[i].finalOutput(section);
+    for (auto &bestResult : bestResults) {
+        bestResult.generateOutput(section);
+        bestResult.finalOutput(section);
     }
 }
 
@@ -131,6 +131,7 @@ void fundAllocation() {
     const string portfolio_d = "GOOG";
     const string portfolio_e = "BRK.A";
     const string portfolio_f = "FB";
+    const string portfolio_g = "BABA";
     for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
@@ -146,7 +147,8 @@ void fundAllocation() {
                 model.getStockSymbol(i) == portfolio_c ||
                 model.getStockSymbol(i) == portfolio_d ||
                 model.getStockSymbol(i) == portfolio_e ||
-                model.getStockSymbol(i) == portfolio_f) {
+                model.getStockSymbol(i) == portfolio_f ||
+                model.getStockSymbol(i) == portfolio_g) {
                 stockSelection[i] = 1;
             } else
                 stockSelection[i] = 0;
