@@ -2,31 +2,63 @@
 #include "FundAllocation/QTS.h"
 #include <chrono>
 #include <cstring>
+#include <tuple>
+
+using std::tuple;
+using std::get;
 
 void ranking() {
-    int section = 0;
-    int portfolio_a = 0;
-
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    model.nextSection(section);
-    Particle particle(model.getNumOfStocks());
-    Result result(model.getNumOfStocks(), model.getNumOfDays());
-    model.setResult(&result);
+    for (int section = 0; section < numOfSection; section++) {
+        int portfolio_a = 0;
+        model.nextSection(section);
+        Particle particle(model.getNumOfStocks());
+        Result result(model.getNumOfStocks(), model.getNumOfDays());
+        model.setResult(&result);
 
-    for (int count = 0; count < model.getNumOfStocks(); count++) {
-        for (int i = 0; i < model.getNumOfStocks(); i++) {
-            if (i == portfolio_a)
-                particle.solution[i] = 1;
-            else
-                particle.solution[i] = 0;
+        vector<tuple<string, double, double, double>> rank;
+        for (int count = 0; count < model.getNumOfStocks(); count++) {
+            for (int i = 0; i < model.getNumOfStocks(); i++) {
+                if (i == portfolio_a)
+                    particle.solution[i] = 1;
+                else
+                    particle.solution[i] = 0;
+            }
+            vector<double> allocRatio(model.getNumOfStocks());
+            allocRatio[portfolio_a] = 1;
+            double gBest = model.getFitness(particle.solution, -1, allocRatio);
+            double risk = result.risk;
+            double expectedReturn = result.expectedReturn;
+            string symbol = model.getStockSymbol(count);
+            rank.emplace_back(symbol, gBest, expectedReturn, risk);
+            portfolio_a++;
         }
-        auto *allocRatio = new double[model.getNumOfStocks()];
-        std::memset(allocRatio, 0, sizeof(double) * model.getNumOfStocks());
-        allocRatio[portfolio_a] = 1;
-        model.getFitness(particle.solution, -1, allocRatio);
-        result.finalOutput(section);
-        delete[] allocRatio;
-        portfolio_a++;
+        Logger logger("../log/" + tag + "/rank_" + trainingSection[section]);
+        logger.writeComma("Stock(rank#)");
+        logger.writeComma("Trend ratio");
+        logger.writeComma("Expected return");
+        logger.writeLine("Risk");
+        int count = 0;
+        int size = rank.size();
+        while (count < size) {
+            double max = -DBL_MAX;
+            int iMax = -1;
+            for (int i = 0; i < rank.size(); i++) {
+                if (get<1>(rank[i]) > max) {
+                    max = get<1>(rank[i]);
+                    iMax = i;
+                }
+            }
+            logger.write(get<0>(rank[iMax]));
+            logger.write("(");
+            logger.write(count + 1);
+            logger.writeComma(")");
+            logger.writeComma(get<1>(rank[iMax]));
+            logger.writeComma(get<2>(rank[iMax]));
+            logger.writeLine(get<3>(rank[iMax]));
+            rank.erase(rank.begin() + iMax);
+            count++;
+        }
     }
 }
 
@@ -52,7 +84,7 @@ void exhaustion() {
             particle.solution[i] = 0;
     }
 
-    auto *allocRatio = new double[model.getNumOfStocks()];
+    vector<double> allocRatio(model.getNumOfStocks());
     vector<Result> bestResults;
     bestResults.emplace_back(model.getNumOfStocks(), model.getNumOfDays());
     bestResults[0].gBest = -DBL_MAX;
@@ -89,7 +121,6 @@ void exhaustion() {
         bestResults[i].generateOutput(section);
         bestResults[i].finalOutput(section);
     }
-    delete[] allocRatio;
 }
 
 void fundAllocation() {
@@ -100,7 +131,7 @@ void fundAllocation() {
     const string portfolio_d = "GOOG";
     const string portfolio_e = "BRK.A";
     const string portfolio_f = "FB";
-    for (int section = 12; section < numOfSection; section++) {
+    for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
@@ -184,5 +215,6 @@ int main() {
 #endif
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
+    system("pause");
     return 0;
 }

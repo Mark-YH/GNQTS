@@ -42,8 +42,7 @@ void QTS::run() {
         evaluate(i);
         update();
     }
-    auto *allocRatio = new double[this->model->getNumOfStocks()]; // the fund ratio of each chosen stock
-    std::memset(allocRatio, 0, sizeof(double) * this->model->getNumOfStocks());
+    vector<double> allocRatio(this->model->getNumOfStocks()); // the fund ratio of each chosen stock
     for (int i = 0; i < this->indexOfChosen.size(); i++) {
         for (int j = 0; j < this->numOfBit; j++) {
             if (this->gBest->solution[i][j] == 1) {
@@ -53,7 +52,6 @@ void QTS::run() {
     }
     normalize(allocRatio);
     this->model->getFitness(this->stockSelection, -1, allocRatio);
-    delete[] allocRatio;
 }
 
 void QTS::measure() {
@@ -72,9 +70,8 @@ void QTS::measure() {
 
 void QTS::evaluate(int generation) {
     this->lWorst->fitness = DBL_MAX;
-    auto *allocRatio = new double[this->model->getNumOfStocks()]; // the fund ratio of each chosen stock;
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        std::memset(allocRatio, 0, sizeof(double) * this->model->getNumOfStocks());
+        vector<double> allocRatio(this->model->getNumOfStocks()); // the fund ratio of each chosen stock;
         for (int j = 0; j < this->indexOfChosen.size(); j++) {
             for (int k = 0; k < this->numOfBit; k++) {
                 if (this->particle[i].solution[j][k] == 1) {
@@ -94,10 +91,9 @@ void QTS::evaluate(int generation) {
         if (this->particle[i] < *this->lWorst)
             *this->lWorst = this->particle[i];
     }
-    delete[] allocRatio;
 }
 
-void QTS::normalize(double *_allocRatio) const {
+void QTS::normalize(vector<double> &_allocRatio) const {
     double sum = 0.0;
     for (int i = 0; i < this->indexOfChosen.size(); i++) {
         sum += _allocRatio[indexOfChosen[i]];

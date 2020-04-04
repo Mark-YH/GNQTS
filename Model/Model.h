@@ -34,7 +34,7 @@ public:
 
     double getTheta() const;
 
-    double getFitness(vector<int> &solution, int pIndex, const double *allocRatio);
+    double getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio);
 
     void setResult(Result *rs);
 

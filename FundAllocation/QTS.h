@@ -27,7 +27,7 @@ private:
 
     void update();
 
-    void normalize(double *_allocRatio) const;
+    void normalize(vector<double> &_allocRatio) const;
 
     int numOfBit;
     Model *model;

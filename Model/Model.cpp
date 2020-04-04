@@ -108,7 +108,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(vector<int> &solution, int pIndex, const double *allocRatio) {
+double Model::getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     for (int i = 0; i < this->numOfStocks; i++) {
