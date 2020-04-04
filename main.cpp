@@ -100,7 +100,7 @@ void fundAllocation() {
     const string portfolio_d = "GOOG";
     const string portfolio_e = "BRK.A";
     const string portfolio_f = "FB";
-    for (int section = 12; section < 20; section++) {
+    for (int section = 12; section < numOfSection; section++) {
         model.nextSection(section);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
