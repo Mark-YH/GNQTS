@@ -8,125 +8,24 @@
 #include "Stock.h"
 #include "Logger.h"
 #include "SlidingWindow.h"
+#include <vector>
+
+using std::vector;
 
 class Result {
 public:
-    Result() = default;
+    Result() = delete;
 
-    void setStock(int numOfStocks, int numOfDays) {
-        this->numOfStocks = numOfStocks;
-        this->numOfDays = numOfDays;
-        this->balance = new double[numOfStocks];
-        this->allocatedFund = new int[numOfStocks];
-        this->amount = new int[numOfStocks];
-        this->stocks = new Stock[numOfStocks];
-        this->solution = new int[numOfStocks];
-        this->totalFS = new double[numOfDays];
-        for (int i = 0; i < numOfStocks; i++) {
-            this->stocks[i].setPriceSize(numOfDays);
-        }
-    }
-
-    Result(const Result &rs) {
-        if (this != &rs) {
-            this->numOfStocks = rs.numOfStocks;
-            this->numOfDays = rs.numOfDays;
-            this->balance = new double[rs.numOfStocks];
-            this->allocatedFund = new int[rs.numOfStocks];
-            this->amount = new int[rs.numOfStocks];
-            this->stocks = new Stock[rs.numOfStocks];
-            this->solution = new int[rs.numOfStocks];
-            this->totalFS = new double[rs.numOfDays];
-            for (int i = 0; i < rs.numOfStocks; i++) {
-                this->stocks[i].setPriceSize(rs.numOfDays);
-            }
-            this->generation = rs.generation;
-            this->population = rs.population;
-            this->uBound = rs.uBound;
-            this->lBound = rs.lBound;
-            this->theta = rs.theta;
-            this->round = rs.round;
-            this->initFund = rs.initFund;
-            this->finalFund = rs.finalFund;
-            this->realReturn = rs.realReturn;
-            this->expectedReturn = rs.expectedReturn;
-            this->risk = rs.risk;
-            this->gBest = rs.gBest;
-            this->atGen = rs.atGen;
-            this->atRound = rs.atRound;
-            this->foundBestCount = rs.foundBestCount;
-            this->numOfChosen = rs.numOfChosen;
-
-            for (int i = 0; i < this->numOfStocks; i++) {
-                this->solution[i] = rs.solution[i];
-                this->amount[i] = rs.amount[i];
-                this->allocatedFund[i] = rs.allocatedFund[i];
-                this->balance[i] = rs.balance[i];
-                this->stocks[i].code = rs.stocks[i].code;
-                for (int j = 0; j < this->numOfDays; j++) {
-                    this->stocks[i].price[j] = rs.stocks[i].price[j];
-                    this->stocks[i].fs[j] = rs.stocks[i].fs[j];
-                }
-            }
-            for (int i = 0; i < numOfDays; i++)
-                this->totalFS[i] = rs.totalFS[i];
-        }
-    }
-
-    Result &Result::operator=(const Result &rs) {
-        if (this != &rs) {
-            this->numOfStocks = rs.numOfStocks;
-            this->numOfDays = rs.numOfDays;
-            this->balance = new double[rs.numOfStocks];
-            this->allocatedFund = new int[rs.numOfStocks];
-            this->amount = new int[rs.numOfStocks];
-            this->stocks = new Stock[rs.numOfStocks];
-            this->solution = new int[rs.numOfStocks];
-            this->totalFS = new double[rs.numOfDays];
-            for (int i = 0; i < rs.numOfStocks; i++) {
-                this->stocks[i].setPriceSize(rs.numOfDays);
-            }
-            this->generation = rs.generation;
-            this->population = rs.population;
-            this->uBound = rs.uBound;
-            this->lBound = rs.lBound;
-            this->theta = rs.theta;
-            this->round = rs.round;
-            this->initFund = rs.initFund;
-            this->finalFund = rs.finalFund;
-            this->realReturn = rs.realReturn;
-            this->expectedReturn = rs.expectedReturn;
-            this->risk = rs.risk;
-            this->gBest = rs.gBest;
-            this->atGen = rs.atGen;
-            this->atRound = rs.atRound;
-            this->foundBestCount = rs.foundBestCount;
-            this->numOfChosen = rs.numOfChosen;
-
-            for (int i = 0; i < this->numOfStocks; i++) {
-                this->solution[i] = rs.solution[i];
-                this->amount[i] = rs.amount[i];
-                this->allocatedFund[i] = rs.allocatedFund[i];
-                this->balance[i] = rs.balance[i];
-                this->stocks[i].code = rs.stocks[i].code;
-                for (int j = 0; j < this->numOfDays; j++) {
-                    this->stocks[i].price[j] = rs.stocks[i].price[j];
-                    this->stocks[i].fs[j] = rs.stocks[i].fs[j];
-                }
-            }
-            for (int i = 0; i < numOfDays; i++)
-                this->totalFS[i] = rs.totalFS[i];
-        }
-        return *this;
-    }
-
-    ~Result() {
-        delete[] this->stocks;
-        delete[] this->amount;
-        delete[] this->allocatedFund;
-        delete[] this->balance;
-        delete[] this->solution;
-        delete[] this->totalFS;
+    Result(int _numOfStocks, int _numOfDays) :
+            numOfStocks{_numOfStocks},
+            numOfDays{_numOfDays},
+            balance(_numOfStocks),
+            allocatedFund(_numOfStocks),
+            amount(_numOfStocks),
+            solution(_numOfStocks),
+            totalFS(_numOfDays) {
+        for (int i = 0; i < _numOfStocks; i++)
+            stocks.emplace_back(_numOfDays);
     };
 
     void generateOutput(int section) const {
@@ -249,7 +148,7 @@ public:
 
     int generation{};
     int population{};
-    int *solution{};
+    vector<int> solution{};
     double uBound{}; // the upper bound of rotation angle
     double lBound{}; // the lower bound of rotation angle
     double theta{}; // rotation angle
@@ -266,11 +165,11 @@ public:
     double foundBestCount{}; // how many times it found the best solution in N rounds
 
     double numOfChosen{}; // how many stock been chosen
-    Stock *stocks{}; // allocate `numOfChosen` stocks array
-    int *amount{}; // allocate `numOfChosen` amount array
-    int *allocatedFund{}; // allocated fund of each stock
-    double *balance{}; // balance of each stock
-    double *totalFS{};
+    vector<Stock> stocks{}; // allocate `numOfChosen` stocks array
+    vector<int> amount{}; // allocate `numOfChosen` amount array
+    vector<int> allocatedFund{}; // allocated fund of each stock
+    vector<double> balance{}; // balance of each stock
+    vector<double> totalFS{};
     int numOfStocks{};
     int numOfDays{};
 };

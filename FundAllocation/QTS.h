@@ -7,34 +7,31 @@
 
 #include "../Model/Model.h"
 #include "Particle_FA.h"
-#include <vector>
-
-using std::vector;
 
 class QTS {
 public:
     QTS() = delete;
 
-    explicit QTS(Model *m, int *selection);
+    explicit QTS(Model &m, vector<int> &selection);
 
     ~QTS();
 
     void run();
 
-    int getBestGeneration();
+    int getBestGeneration() const;
 
 private:
-    void measure(int generation);
+    void measure();
 
     void evaluate(int generation);
 
-    void update(int generation);
+    void update();
 
     void normalize(double *_allocRatio) const;
 
     int numOfBit;
     Model *model;
-    int *stockSelection;
+    vector<int> stockSelection;
     vector<int> indexOfChosen;
     vector<ParticleFA> particle;
     ParticleFA *gBest;

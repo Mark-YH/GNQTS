@@ -6,16 +6,15 @@
 #define GNQTS_STOCK_MODEL_H
 
 #include "Result.h"
-#include <string>
-#include <utility>
 
 #define US_MARKET 1
-#define ROUND 50
+#define ROUND 1
 #define MODE 1
+
 /** @param MODE
  *  0: execute stock selection program
  *  1: execute fund allocation program
- *  2: execute fund allocation testing program
+ *  2: execute fund allocation with method of exhaustion program
  *  3: execute ranking program
  */
 
@@ -35,9 +34,7 @@ public:
 
     double getTheta() const;
 
-    int getLength() const;
-
-    double getFitness(int *solution, int generation, int pIndex, double *allocRatio);
+    double getFitness(vector<int> &solution, int pIndex, const double *allocRatio);
 
     void setResult(Result *rs);
 
@@ -47,10 +44,12 @@ public:
 
     void nextSection(int section);
 
+    string getStockSymbol(int i);
+
 private:
     int population;
     int generation;
-    Stock *stocks;
+    vector<Stock> stocks;
     int numOfStocks;
     int numOfDays;
     double initFund;
@@ -62,7 +61,7 @@ private:
 
     void readData(const std::string &path);
 
-    void calcFS(int *solution, int *allocatedFund, int gen, int pIndex);
+    void calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex);
 };
 
 #endif //GNQTS_STOCK_MODEL_H

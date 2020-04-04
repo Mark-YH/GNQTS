@@ -22,27 +22,27 @@ Model::Model(int population, int generation, double theta, double fund, double f
     this->fee = fee;
     this->tax = tax;
     this->numOfDays = 0;
+    this->numOfStocks = 0;
+    this->result = nullptr;
 }
 
 Model::~Model() {
-    delete[] this->stocks;
     this->result = nullptr;
 }
 
 void Model::nextSection(int section) {
     string path = "../data/" + tag + "/" + trainingSection[section];
     getNumOfRowColumn(path);
-    this->stocks = new Stock[this->numOfStocks];
 
     for (int i = 0; i < this->numOfStocks; i++) {
-        this->stocks[i].setPriceSize(this->numOfDays);
+        this->stocks.emplace_back(this->numOfDays);
     }
 
     readData(path);
 
     for (int i = 0; i < this->numOfStocks; i++) {
         for (int j = 0; j < this->numOfDays; j++) {
-            this->stocks[i].fs[j] = 0;
+            this->stocks[i].fs.push_back(0);
         }
     }
 }
@@ -89,9 +89,10 @@ void Model::readData(const string &path) {
                 if (tmp == "\r")
                     continue;
                 if (lineCount == -1) {
+                    tmp.erase(remove_if(tmp.begin(), tmp.end(), isspace), tmp.end());
                     this->stocks[stockCount].code = tmp;
                 } else {
-                    this->stocks[stockCount].price[lineCount] = stod(tmp);
+                    this->stocks[stockCount].price.at(lineCount) = stod(tmp);
                 }
                 stockCount++;
             }
@@ -106,11 +107,9 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio) {
+double Model::getFitness(vector<int> &solution, int pIndex, const double *allocRatio) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
-    int *allocatedFund = new int[this->numOfStocks];
-
     for (int i = 0; i < this->numOfStocks; i++) {
         if (solution[i] == 1) {
             numOfChosen++;
@@ -122,6 +121,7 @@ double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio)
     }
 
     // allocate fund
+    vector<int> allocatedFund(this->numOfStocks);
     for (int i = 0; i < this->numOfStocks; i++) {
         if (solution[i] == 1) {
 #if MODE == 0
@@ -141,14 +141,11 @@ double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio)
     }
 
     // calculate fund standardization
-    calcFS(solution, allocatedFund, gen, pIndex);
+    calcFS(solution, allocatedFund, pIndex);
 
     // calculate total fund standardization
-    auto *totalFS = new double[this->numOfDays];
+    vector<double> totalFS(this->numOfDays); // initialized with value 0
 
-    for (int i = 0; i < this->numOfDays; i++) {
-        totalFS[i] = 0;
-    }
     for (int i = 0; i < numOfStocks; i++) {
         if (solution[i] == 1) {
             for (int j = 0; j < this->numOfDays; j++) {
@@ -175,8 +172,7 @@ double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio)
     }
     double slope = tmp / tmp2;
 
-    auto *trendLine = new double[this->numOfDays]; // daily expected standardization fund
-
+    vector<double> trendLine(this->numOfDays); // daily expected standardization fund
     // calculate trend line
     for (int i = 0; i < this->numOfDays; i++) {
         trendLine[i] = slope * (i + 1) + this->initFund;
@@ -212,21 +208,13 @@ double Model::getFitness(int *solution, int gen, int pIndex, double *allocRatio)
         }
         for (int i = 0; i < this->numOfStocks; i++) {
             this->result->solution[i] = solution[i];
-            this->result->stocks[i].code = this->stocks[i].code;
-            for (int j = 0; j < this->numOfDays; j++) {
-                this->result->stocks[i].fs[j] = this->stocks[i].fs[j];
-                this->result->stocks[i].price[j] = this->stocks[i].price[j];
-            }
+            this->result->stocks[i] = this->stocks[i];
         }
     }
-
-    delete[] allocatedFund;
-    delete[] totalFS;
-    delete[] trendLine;
     return trendVal;
 }
 
-void Model::calcFS(int *solution, int *allocatedFund, int gen, int pIndex) {
+void Model::calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex) {
     // calculate fund standardization
     for (int i = 0; i < this->numOfStocks; i++) {
         if (solution[i] == 1) { // the chosen stock
@@ -283,12 +271,14 @@ double Model::getTheta() const {
     return this->theta;
 }
 
-int Model::getLength() const {
-    return this->numOfStocks;
-}
-
 void Model::setResult(Result *rs) {
     this->result = rs;
+    this->result->generation = this->getGeneration();
+    this->result->population = this->getPopulation();
+    this->result->uBound = this->getTheta();
+    this->result->lBound = this->getTheta();
+    this->result->theta = this->getTheta();
+    this->result->round = ROUND;
 }
 
 int Model::getNumOfStocks() const {
@@ -297,4 +287,8 @@ int Model::getNumOfStocks() const {
 
 int Model::getNumOfDays() const {
     return this->numOfDays;
+}
+
+string Model::getStockSymbol(int i) {
+    return this->stocks[i].code;
 }

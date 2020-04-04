@@ -18,17 +18,17 @@ public:
 
     void run();
 
-    void measure(int generation);
+    void measure();
 
-    void calcFitness(int generation);
+    void evaluate(int generation);
 
-    void update(int generation);
+    void update();
 
-    int getBestGeneration();
+    int getBestGeneration() const;
 
 private:
     Model *model;
-    Particle *particle;
+    vector<Particle> particle;
     Particle *bestParticle;
     Particle *worstParticle;
     int bestGeneration;

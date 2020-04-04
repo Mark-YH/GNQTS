@@ -6,53 +6,23 @@
 #define GNQTS_STOCK_STOCK_H
 
 #include <string>
+#include <vector>
 
 class Stock {
 public:
     std::string code{};
-    double *price{};
-    double *fs{}; // fund standardization
-    int length;
+    std::vector<double> price{};
+    std::vector<double> fs{}; // fund standardization
+    int length{};
 
-    Stock() = default;
+    Stock() = delete;
 
-    void setPriceSize(int size) {
-        this->price = new double[size];
-        this->fs = new double[size];
-        this->length = size;
-    }
-
-    ~Stock() {
-        delete[] this->price;
-        delete[] this->fs;
-    }
-
-    Stock(const Stock &instance) {
-        if (this != &instance) {
-            this->code = instance.code;
-            this->length = instance.length;
-            this->price = new double[instance.length];
-            this->fs = new double[instance.length];
-            for (int i = 0; i < instance.length; i++) {
-                this->price[i] = instance.price[i];
-                this->fs[i] = instance.fs[i];
-            }
+    explicit Stock(int _numOfDay) : length{_numOfDay}, code{""} {
+        for (int i = 0; i < _numOfDay; i++) {
+            this->price.emplace_back(0);
+            this->fs.emplace_back(0);
         }
-    }
-
-    Stock &operator=(const Stock &instance) {
-        if (this != &instance) {
-            this->code = instance.code;
-            this->length = instance.length;
-            this->price = new double[instance.length];
-            this->fs = new double[instance.length];
-            for (int i = 0; i < instance.length; i++) {
-                this->price[i] = instance.price[i];
-                this->fs[i] = instance.fs[i];
-            }
-        }
-        return *this;
-    }
+    };
 };
 
 

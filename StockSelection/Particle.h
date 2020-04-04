@@ -5,20 +5,14 @@
 #ifndef GNQTS_STOCK_PARTICLE_H
 #define GNQTS_STOCK_PARTICLE_H
 
+#include <cfloat>
+
 class Particle {
 public:
-    int *solution;
-    double fitness;
+    vector<int> solution{};
+    double fitness{-DBL_MAX};
 
-    Particle() = default;
-
-    void setSolutionSize(int size) {
-        this->solution = new int[size];
-    }
-
-    ~Particle() {
-        delete[] this->solution;
-    }
+    explicit Particle(int size) : solution(size), fitness{-DBL_MAX} {};
 };
 
 #endif //GNQTS_STOCK_PARTICLE_H

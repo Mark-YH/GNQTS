@@ -1,10 +1,7 @@
 #include "StockSelection/GNQTS.h"
 #include "FundAllocation/QTS.h"
-#include <iostream>
 #include <chrono>
-#include <vector>
-
-using std::vector;
+#include <cstring>
 
 void ranking() {
     int section = 0;
@@ -12,10 +9,8 @@ void ranking() {
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     model.nextSection(section);
-    Particle particle;
-    particle.setSolutionSize(model.getNumOfStocks());
-    Result result;
-    result.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    Particle particle(model.getNumOfStocks());
+    Result result(model.getNumOfStocks(), model.getNumOfDays());
     model.setResult(&result);
 
     for (int count = 0; count < model.getNumOfStocks(); count++) {
@@ -28,28 +23,26 @@ void ranking() {
         auto *allocRatio = new double[model.getNumOfStocks()];
         std::memset(allocRatio, 0, sizeof(double) * model.getNumOfStocks());
         allocRatio[portfolio_a] = 1;
-        model.getFitness(particle.solution, 0, -1, allocRatio);
+        model.getFitness(particle.solution, -1, allocRatio);
         result.finalOutput(section);
         delete[] allocRatio;
         portfolio_a++;
     }
 }
 
-void test() {
+void exhaustion() {
     int section = 0;
     int portfolio_a = 0;
     int portfolio_b = 1;
-    int portfolio_c = 2;
-    int portfolio_d = 3;
-    int portfolio_e = 4;
+    int portfolio_c = 0;
+    int portfolio_d = 0;
+    int portfolio_e = 0;
     int precision = 100;
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     model.nextSection(section);
-    Particle particle;
-    particle.setSolutionSize(model.getNumOfStocks());
-    Result result;
-    result.setStock(model.getNumOfStocks(), model.getNumOfDays());
+    Particle particle(model.getNumOfStocks());
+    Result result(model.getNumOfStocks(), model.getNumOfDays());
     model.setResult(&result);
 
     for (int i = 0; i < model.getNumOfStocks(); i++) {
@@ -61,9 +54,8 @@ void test() {
 
     auto *allocRatio = new double[model.getNumOfStocks()];
     vector<Result> bestResults;
-    bestResults.emplace_back();
+    bestResults.emplace_back(model.getNumOfStocks(), model.getNumOfDays());
     bestResults[0].gBest = -DBL_MAX;
-    bestResults[0].setStock(model.getNumOfStocks(), model.getNumOfDays());
 
     for (int i = 0; i <= precision; i++) {
 //        for (int j = 0; j <= precision - i; j++) {
@@ -74,7 +66,7 @@ void test() {
 //        allocRatio[portfolio_c] = (k) / (double) precision;
 //        allocRatio[portfolio_d] = (precision - i - j - k) / (double) precision;
 //            allocRatio[portfolio_e] = (precision - i - j - k - l) / (double) precision;
-        model.getFitness(particle.solution, 0, -1, allocRatio);
+        model.getFitness(particle.solution, -1, allocRatio);
         if (bestResults[0].gBest < result.gBest) { // found a better solution
             bestResults.clear();
             bestResults.push_back(result);
@@ -101,61 +93,62 @@ void test() {
 }
 
 void fundAllocation() {
-    int section = 0;
-    int portfolio_a = 0;
-    int portfolio_b = 1;
-    int portfolio_c = 2;
-    int portfolio_d = 3;
-    int portfolio_e = 20;
-    int portfolio_f = 0;
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    model.nextSection(section);
-    Result result;
-    result.setStock(model.getNumOfStocks(), model.getNumOfDays());
-    result.foundBestCount = 1;
-    model.setResult(&result);
-    Result finalResult;
-    finalResult.setStock(model.getNumOfStocks(), model.getNumOfDays());
-    int *stockSelection = new int[model.getNumOfStocks()];
-    for (int i = 0; i < model.getNumOfStocks(); i++) {
-        if (i == portfolio_a || i == portfolio_b || i == portfolio_c || i == portfolio_d || i == portfolio_e ||
-            i == portfolio_f)
-            stockSelection[i] = 1;
-        else
-            stockSelection[i] = 0;
-    }
+    const string portfolio_a = "MSFT";
+    const string portfolio_b = "AAPL";
+    const string portfolio_c = "AMZN";
+    const string portfolio_d = "GOOG";
+    const string portfolio_e = "BRK.A";
+    const string portfolio_f = "FB";
+    for (int section = 12; section < 20; section++) {
+        model.nextSection(section);
+        Result result(model.getNumOfStocks(), model.getNumOfDays());
+        Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
+        model.setResult(&result);
+        result.foundBestCount = 1;
+        double gBest = -DBL_MAX;
+        vector<int> stockSelection(model.getNumOfStocks());
 
-    double gBest = -std::numeric_limits<double>::max();
-    for (int i = 0; i < ROUND; i++) { // round
-        QTS qts(&model, stockSelection);
-        qts.run();
-        if (gBest == result.gBest) {
-            result.foundBestCount++;
-            finalResult.foundBestCount++;
-        } else if (gBest < result.gBest) { // found the global best which is a brand new solution
-            gBest = result.gBest;
-            result.foundBestCount = 1;
-            result.atRound = i;
-            result.atGen = qts.getBestGeneration();
-            finalResult = result;
+        for (int i = 0; i < model.getNumOfStocks(); i++) {
+            if (model.getStockSymbol(i) == portfolio_a ||
+                model.getStockSymbol(i) == portfolio_b ||
+                model.getStockSymbol(i) == portfolio_c ||
+                model.getStockSymbol(i) == portfolio_d ||
+                model.getStockSymbol(i) == portfolio_e ||
+                model.getStockSymbol(i) == portfolio_f) {
+                stockSelection[i] = 1;
+            } else
+                stockSelection[i] = 0;
         }
+
+        for (int i = 0; i < ROUND; i++) { // round
+            QTS qts(model, stockSelection);
+            qts.run();
+            if (gBest == result.gBest) {
+                result.foundBestCount++;
+                finalResult.foundBestCount++;
+            } else if (gBest < result.gBest) { // found the global best which is a brand new solution
+                gBest = result.gBest;
+                result.foundBestCount = 1;
+                result.atRound = i;
+                result.atGen = qts.getBestGeneration();
+                finalResult = result;
+            }
+        }
+        finalResult.generateOutput(section);
+        finalResult.finalOutput(section);
     }
-    finalResult.generateOutput(section);
-    finalResult.finalOutput(section);
-    delete[] stockSelection;
 }
 
 void stockSelection() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int j = 0; j < numOfSection; j++) { // section
         model.nextSection(j);
-        Result result;
-        Result finalResult;
-        result.setStock(model.getNumOfStocks(), model.getNumOfDays());
-        finalResult.setStock(model.getNumOfStocks(), model.getNumOfDays());
+        Result result(model.getNumOfStocks(), model.getNumOfDays());
+        Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
         result.foundBestCount = 1;
-        double gBest = -std::numeric_limits<double>::max();
+        double gBest = -DBL_MAX;
         for (int i = 0; i < ROUND; i++) { // round
             GNQTS qts(&model);
             qts.run();
@@ -185,7 +178,7 @@ int main() {
 #elif MODE == 1
     fundAllocation();
 #elif MODE == 2
-    test();
+    exhaustion();
 #elif MODE == 3
     ranking();
 #endif

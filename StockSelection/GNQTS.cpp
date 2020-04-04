@@ -3,43 +3,27 @@
 //
 
 #include "GNQTS.h"
-#include <climits>
-
-/*! @param DEBUG val
- * val = 0: only generate the final result.
- * val > 0: generate output including `fitness`, `best and worst particle` and above results.
- * val > 4: generate output including `measure` and above results.
- * val > 6: generate output including `update` and above results.
- * val > 10: generate output including `random matrix` and above results.
- */
-#define DEBUG 0
 
 GNQTS::GNQTS(Model *m) {
     this->model = m;
 
     // allocate memory
-    this->pMatrix = new double[this->model->getLength()];
-    this->particle = new Particle[this->model->getPopulation()];
+    this->pMatrix = new double[this->model->getNumOfStocks()];
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        this->particle[i].setSolutionSize(this->model->getLength());
+        this->particle.emplace_back(this->model->getNumOfStocks());
     }
-    this->bestParticle = new Particle;
-    this->worstParticle = new Particle;
-    this->bestParticle->setSolutionSize(this->model->getLength());
-    this->worstParticle->setSolutionSize(this->model->getLength());
+    this->bestParticle = new Particle{this->model->getNumOfStocks()};
+    this->worstParticle = new Particle{this->model->getNumOfStocks()};
 
     // initialize probability matrix
-    for (int i = 0; i < this->model->getLength(); i++) {
+    for (int i = 0; i < this->model->getNumOfStocks(); i++) {
         this->pMatrix[i] = 0.5;
     }
 
-    // global best
-    this->bestParticle->fitness = -std::numeric_limits<double>::max();
     this->bestGeneration = 0;
 }
 
 GNQTS::~GNQTS() {
-    delete[] this->particle;
     delete[] this->pMatrix;
     delete this->bestParticle;
     delete this->worstParticle;
@@ -48,94 +32,42 @@ GNQTS::~GNQTS() {
 
 void GNQTS::run() {
     for (int i = 0; i < this->model->getGeneration(); i++) {
-        measure(i);
-        calcFitness(i);
-        update(i);
+        measure();
+        evaluate(i);
+        update();
     }
-
-    this->model->getFitness(this->bestParticle->solution, bestGeneration, -1, nullptr);
-    this->model->result->generation = this->model->getGeneration();
-    this->model->result->population = this->model->getPopulation();
-    this->model->result->uBound = this->model->getTheta();
-    this->model->result->lBound = this->model->getTheta();
-    this->model->result->theta = this->model->getTheta();
-    this->model->result->round = ROUND;
+    this->model->getFitness(this->bestParticle->solution, -1, nullptr);
 }
 
-void GNQTS::measure(int gen) {
-    auto *randomMatrix = new double[this->model->getLength()];
-
+void GNQTS::measure() {
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        // generate a random matrix
-        for (int j = 0; j < this->model->getLength(); j++) {
-            randomMatrix[j] = (double) rand() / RAND_MAX;
-        }
-#if DEBUG > 10
-        Logger logger("../log/random_matrix.csv", 5);
-        if (gen == 0 && i == 0) {
-            logger.writeComma("Generation");
-            logger.writeComma("Individual");
-            for (int j = 0; j < this->model->getLength(); j++) {
-                logger.writeComma(j);
-            }
-            logger.writeLine("");
-        }
-        logger.writeComma(gen);
-        logger.writeComma(i);
-        for (int j = 0; j < this->model->getLength(); j++) {
-            logger.writeComma(randomMatrix[j]);
-        }
-        logger.writeLine("");
-#endif
-        for (int j = 0; j < this->model->getLength(); j++) {
-            if (this->pMatrix[j] > randomMatrix[j]) {
+        for (int j = 0; j < this->model->getNumOfStocks(); j++) {
+            if (this->pMatrix[j] > (double) rand() / RAND_MAX) {
                 this->particle[i].solution[j] = 1;
             } else {
                 this->particle[i].solution[j] = 0;
             }
         }
     }
-
-#if DEBUG > 4
-    Logger logger("../log/measure.csv");
-
-    for (int i = 0; i < this->model->getPopulation(); i++) {
-        if (gen == 0 && i == 0) {
-            logger.writeComma("Generation");
-            logger.writeComma("Individual");
-            for (int j = 0; j < this->model->getLength(); j++) {
-                logger.writeComma(j);
-            }
-            logger.writeLine("");
-        }
-        logger.writeComma(gen);
-        logger.writeComma(i);
-
-        for (int j = 0; j < this->model->getLength(); j++) {
-            logger.writeComma(this->particle[i].solution[j]);
-        }
-        logger.writeLine("");
-    }
-#endif
-    delete[] randomMatrix;
 }
 
-void GNQTS::calcFitness(int gen) {
+void GNQTS::evaluate(int gen) {
     // local worst
-    this->worstParticle->fitness = INT_MAX;
+    this->worstParticle->fitness = DBL_MAX;
 
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        this->particle[i].fitness = this->model->getFitness((this->particle + i)->solution, gen, i, nullptr);
+        this->particle[i].fitness = this->model->getFitness(this->particle[i].solution, i, nullptr);
 
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle->fitness) {
             if (this->particle[i].fitness >= 0) {
-                for (int j = 0; j < this->model->getLength(); j++) {
+                *this->bestParticle = this->particle[i];
+                for (int j = 0; j < this->model->getNumOfStocks(); j++) {
                     this->bestParticle->solution[j] = this->particle[i].solution[j];
                 }
                 this->bestParticle->fitness = this->particle[i].fitness;
             } else {
-                for (int j = 0; j < this->model->getLength(); j++) {
+                for (int j = 0; j < this->model->getNumOfStocks(); j++) {
                     this->bestParticle->solution[j] = 0;
                 }
                 this->bestParticle->fitness = 0.0;
@@ -144,66 +76,13 @@ void GNQTS::calcFitness(int gen) {
         }
         // Check if it needs to update worst particle
         if (this->worstParticle->fitness > this->particle[i].fitness) {
-            for (int j = 0; j < this->model->getLength(); j++) {
-                this->worstParticle->solution[j] = this->particle[i].solution[j];
-            }
-            this->worstParticle->fitness = this->particle[i].fitness;
+            *this->worstParticle = this->particle[i];
         }
-
-#if DEBUG
-        Logger logger("../log/fitness.csv");
-        if (gen == 0 && i == 0) {
-            logger.writeComma("Generation");
-            logger.writeComma("Individual");
-            logger.writeComma("Fitness");
-            logger.writeLine("");
-        }
-        logger.writeComma(gen);
-        logger.writeComma(i);
-        logger.writeLine(this->particle[i].fitness);
-        if (i == this->model->getPopulation() - 1) {
-            logger.writeComma(gen);
-            logger.writeComma("Global best");
-            logger.writeLine(this->bestParticle->fitness);
-            logger.writeComma(gen);
-            logger.writeComma("Local worst");
-            logger.writeLine(this->worstParticle->fitness);
-        }
-#endif
     }
-#if DEBUG
-    Logger logger("../log/best&worst_particle.csv");
-    if (gen == 0) {
-        logger.writeComma("Generation");
-        logger.writeComma("Type");
-        logger.writeComma("Fitness:");
-        for (int j = 0; j < this->model->getLength(); j++) {
-            logger.writeComma(j);
-        }
-        logger.writeLine("");
-    }
-    logger.writeComma(gen);
-    logger.writeComma("Best");
-    logger.writeComma(this->bestParticle->fitness);
-
-    for (int j = 0; j < this->model->getLength(); j++) {
-        logger.writeComma(this->bestParticle->solution[j]);
-    }
-    logger.writeLine("");
-
-    logger.writeComma(gen);
-    logger.writeComma("Worst");
-    logger.writeComma(this->worstParticle->fitness);
-
-    for (int j = 0; j < this->model->getLength(); j++) {
-        logger.writeComma(this->worstParticle->solution[j]);
-    }
-    logger.writeLine("");
-#endif
 }
 
-void GNQTS::update(int gen) {
-    for (int i = 0; i < this->model->getLength(); i++) {
+void GNQTS::update() {
+    for (int i = 0; i < this->model->getNumOfStocks(); i++) {
         if (this->bestParticle->solution[i] == 0 && this->worstParticle->solution[i] == 1) {
             if (this->pMatrix[i] > 0.5) {
                 this->pMatrix[i] = 1 - this->pMatrix[i];
@@ -222,23 +101,8 @@ void GNQTS::update(int gen) {
             }
         }
     }
-#if DEBUG > 6
-    Logger logger("../log/update.csv", 10);
-    if (gen == 0) {
-        logger.writeComma("Generation");
-        for (int j = 0; j < this->model->getLength(); j++) {
-            logger.writeComma(j);
-        }
-        logger.writeLine("");
-    }
-    logger.writeComma(gen);
-    for (int i = 0; i < this->model->getLength(); i++) {
-        logger.writeComma(pMatrix[i]);
-    }
-    logger.writeLine("");
-#endif
 }
 
-int GNQTS::getBestGeneration() {
+int GNQTS::getBestGeneration() const {
     return this->bestGeneration;
 }
