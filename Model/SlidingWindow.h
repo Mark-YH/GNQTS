@@ -8,33 +8,20 @@
 
 #define WINDOW 13
 /** @param WINDOW
- *   0: M2M
- *   1: Y2Y
- *   2: Y2Q
- *   3: Y2M
- *   4: Y2H
- *   5: Q2Q
- *   6: Q2M
- *   7: H2H
- *   8: H2Q
- *   9: H2M
- *  10: H*
- *  11: M*
- *  12: Q*
- *  --- U.S. Market ---
- *  13: M2M
- *  14: Y2Y
- *  15: Y2Q
- *  16: Y2M
- *  17: Y2H
- *  18: Q2Q
- *  19: Q2M
- *  20: H2H
- *  21: H2Q
- *  22: H2M
- *  23: H*
- *  24: M*
- *  25: Q*
+ *  --- Taiwan Market ---+--- U.S. Market ---
+ *       0: M2M               13: M2M
+ *       1: Y2Y               14: Y2Y
+ *       2: Y2Q               15: Y2Q
+ *       3: Y2M               16: Y2M
+ *       4: Y2H               17: Y2H
+ *       5: Q2Q               18: Q2Q
+ *       6: Q2M               19: Q2M
+ *       7: H2H               20: H2H
+ *       8: H2Q               21: H2Q
+ *       9: H2M               22: H2M
+ *      10: H*                23: H*
+ *      11: M*                24: M*
+ *      12: Q*                25: Q*
  */
 
 using std::string;
