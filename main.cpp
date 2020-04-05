@@ -34,6 +34,7 @@ void ranking() {
             portfolio_a++;
         }
         Logger logger("../log/" + tag + "/rank_" + trainingSection[section]);
+        logger.writeComma("Section");
         logger.writeComma("Stock(rank#)");
         logger.writeComma("Trend ratio");
         logger.writeComma("Expected return");
@@ -49,6 +50,7 @@ void ranking() {
                     iMax = i;
                 }
             }
+            logger.writeComma(section + 1);
             logger.write(get<0>(rank[iMax]));
             logger.write("(");
             logger.write(count + 1);

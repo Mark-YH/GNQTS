@@ -7,7 +7,11 @@
 
 #include "Result.h"
 
+#if WINDOW >= 13
 #define US_MARKET 1
+#else
+#define US_MARKET 0
+#endif
 #define ROUND 50
 #define MODE 1
 
