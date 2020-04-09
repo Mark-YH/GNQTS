@@ -51,6 +51,7 @@ void QTS::run() {
         }
     }
     normalize(allocRatio);
+    std::cout << setprecision(20);
     for (int i = 0; i < this->indexOfChosen.size(); i++)
         std::cout << allocRatio[indexOfChosen[i]] * 100.0 << '\t';
     std::cout << endl << this->model->getFitness(this->stockSelection, this->bestGeneration, -1, allocRatio) << endl;
@@ -58,7 +59,7 @@ void QTS::run() {
 }
 
 void QTS::measure(int generation) {
-    string binary = bitset<21>(generation).to_string();
+    string binary = bitset<28>(generation).to_string();
     for (int j = 0; j < this->indexOfChosen.size(); j++) {
         if (j == 0) { // stock #1
             for (int k = 0; k < this->numOfBit; k++) {
@@ -76,6 +77,13 @@ void QTS::measure(int generation) {
             }
         } else if (j == 2) { // stock #3
             for (int k = this->numOfBit * 2; k < this->numOfBit * 3; k++) { // bit = 14~20
+                if (binary[k] == '1')
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 1;
+                else
+                    this->particle[0].solution[j][k - this->numOfBit * j] = 0;
+            }
+        } else if (j == 3) { // stock #4
+            for (int k = this->numOfBit * 3; k < this->numOfBit * 4; k++) { // bit = 21~28
                 if (binary[k] == '1')
                     this->particle[0].solution[j][k - this->numOfBit * j] = 1;
                 else
