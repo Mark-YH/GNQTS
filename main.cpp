@@ -127,14 +127,28 @@ void exhaustion() {
 
 void fundAllocation() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    const string portfolio_a = "MSFT";
-    const string portfolio_b = "AAPL";
-    const string portfolio_c = "AMZN";
-    const string portfolio_d = "GOOG";
-    const string portfolio_e = "BRK.A";
-    const string portfolio_f = "FB";
-    const string portfolio_g = "BABA";
-    for (int section = 0; section < numOfSection; section++) {
+    const string portfolio_1 = "MSFT";
+    const string portfolio_2 = "AAPL";
+    const string portfolio_3 = "AMZN";
+    const string portfolio_4 = "GOOG";
+    const string portfolio_5 = "BRK.A";
+    const string portfolio_6 = "FB";
+    const string portfolio_7;// = "BABA";
+    const string portfolio_8;// = "TCEHY";
+    const string portfolio_9;// = "JNJ";
+    const string portfolio_10;// = "XOM";
+    const string portfolio_11;// = "JPM";
+    const string portfolio_12;// = "V";
+    const string portfolio_13;// = "WMT";
+    const string portfolio_14;// = "BAC";
+    const string portfolio_15;// = "PG";
+    const string portfolio_16;// = "VZ";
+    const string portfolio_17;// = "MA";
+    const string portfolio_18;// = "INTC";
+    const string portfolio_19;// = "CSCO";
+    const string portfolio_20;// = "UNH";
+
+    for (int section = 33; section < 34; section++) {
         model.nextSection(section);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
@@ -144,13 +158,26 @@ void fundAllocation() {
         vector<int> stockSelection(model.getNumOfStocks());
 
         for (int i = 0; i < model.getNumOfStocks(); i++) {
-            if (model.getStockSymbol(i) == portfolio_a ||
-                model.getStockSymbol(i) == portfolio_b ||
-                model.getStockSymbol(i) == portfolio_c ||
-                model.getStockSymbol(i) == portfolio_d ||
-                model.getStockSymbol(i) == portfolio_e ||
-                model.getStockSymbol(i) == portfolio_f ||
-                model.getStockSymbol(i) == portfolio_g) {
+            if (model.getStockSymbol(i) == portfolio_1 ||
+                model.getStockSymbol(i) == portfolio_2 ||
+                model.getStockSymbol(i) == portfolio_3 ||
+                model.getStockSymbol(i) == portfolio_4 ||
+                model.getStockSymbol(i) == portfolio_5 ||
+                model.getStockSymbol(i) == portfolio_6 ||
+                model.getStockSymbol(i) == portfolio_7 ||
+                model.getStockSymbol(i) == portfolio_8 ||
+                model.getStockSymbol(i) == portfolio_9 ||
+                model.getStockSymbol(i) == portfolio_10 ||
+                model.getStockSymbol(i) == portfolio_11 ||
+                model.getStockSymbol(i) == portfolio_12 ||
+                model.getStockSymbol(i) == portfolio_13 ||
+                model.getStockSymbol(i) == portfolio_14 ||
+                model.getStockSymbol(i) == portfolio_15 ||
+                model.getStockSymbol(i) == portfolio_16 ||
+                model.getStockSymbol(i) == portfolio_17 ||
+                model.getStockSymbol(i) == portfolio_18 ||
+                model.getStockSymbol(i) == portfolio_19 ||
+                model.getStockSymbol(i) == portfolio_20) {
                 stockSelection[i] = 1;
             } else
                 stockSelection[i] = 0;

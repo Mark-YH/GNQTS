@@ -46,6 +46,31 @@ void Model::nextSection(int section) {
             this->stocks[i].fs.push_back(0);
         }
     }
+    auto it = this->stocks.begin();
+
+    while (it != this->stocks.end()) {
+        if (it->code == "BRK.B" ||
+//            it->code == "TCEHY" ||
+//            it->code == "JNJ" ||
+//            it->code == "XOM" ||
+//            it->code == "JPM" ||
+//            it->code == "V" ||
+//            it->code == "WMT" ||
+//            it->code == "BAC" ||
+//            it->code == "PG" ||
+//            it->code == "VZ" ||
+//            it->code == "MA" ||
+//            it->code == "INTC" ||
+//            it->code == "CSCO" ||
+//            it->code == "UNH" ||
+            it->code == "GOOGL") {
+            it--;
+            this->stocks.erase(it + 1);
+            this->numOfStocks--;
+            continue;
+        }
+        it++;
+    }
 }
 
 // get numbers of stocks and days in order to allocate memory for `Stock`
