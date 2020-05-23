@@ -32,7 +32,11 @@ Model::~Model() {
 
 void Model::nextSection(int section) {
     this->stocks.clear();
+#if US_MARKET
+    string path = "../data/US/" + tag + "/" + trainingSection[section];
+#else
     string path = "../data/" + tag + "/" + trainingSection[section];
+#endif
     getNumOfRowColumn(path);
 
     for (int i = 0; i < this->numOfStocks; i++) {
@@ -45,9 +49,9 @@ void Model::nextSection(int section) {
         for (int j = 0; j < this->numOfDays; j++) {
             this->stocks[i].fs.push_back(0);
         }
-    }
+    }/*
+    // kick the particular stock out
     auto it = this->stocks.begin();
-
     while (it != this->stocks.end()) {
         if (it->code == "BRK.B" ||
 //            it->code == "TCEHY" ||
@@ -70,7 +74,7 @@ void Model::nextSection(int section) {
             continue;
         }
         it++;
-    }
+    }*/
 }
 
 // get numbers of stocks and days in order to allocate memory for `Stock`
@@ -144,6 +148,12 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
 
     if (pIndex == -1) {
         this->result->numOfChosen = numOfChosen;
+        // fix the real number of chosen stocks
+        for (int i = 0; i < this->numOfStocks; i++) {
+            if (solution[i] == 1 && allocRatio[i] == 0) {
+                this->result->numOfChosen--;
+            }
+        }
     }
 
     // allocate fund

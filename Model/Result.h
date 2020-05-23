@@ -29,7 +29,11 @@ public:
     };
 
     void generateOutput(int section) const {
+#if WINDOW >= 13
+        Logger logger("../log/US/" + tag + "/output_" + trainingSection[section]);
+#else
         Logger logger("../log/" + tag + "/output_" + trainingSection[section]);
+#endif
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
         logger.writeComma("Population");
@@ -115,19 +119,27 @@ public:
     };
 
     void finalOutput(int section) const {
-        Logger logger("../log/" + tag + "/" + "final_result.csv");
+#if WINDOW >= 13
+        Logger logger("../log/US/" + tag + "/" + tag + "_final_result.csv");
+#else
+        Logger logger("../log/" + tag + "_final_result.csv");
+#endif
         if (section == 0) {
             logger.writeComma(tag);
+            logger.writeComma("Period");
             logger.writeComma("Number of chosen");
             logger.writeLine("Portfolio");
         }
         logger.writeComma(section + 1);
+        logger.writeComma(trainingSection[section]);
         logger.writeComma(this->numOfChosen);
         for (int i = 0; i < this->numOfStocks; i++) {
-            if (this->solution[i] == 1) {
+            if (this->solution[i] == 1 && this->allocatedFund[i] > 0) {
                 logger.write(this->stocks[i].code);
-                logger.write("(");
+                logger.write("[");
                 logger.write(i);
+                logger.write("](");
+                logger.write(this->allocatedFund[i]);
                 logger.writeSpace(")");
             }
         }

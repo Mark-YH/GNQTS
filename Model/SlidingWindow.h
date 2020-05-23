@@ -616,5 +616,14 @@ const string trainingSection[] = {
         "train_2017_Q2(2017 Q1).csv", "train_2017_Q3(2017 Q1).csv", "train_2017_Q4(2017 Q1).csv",
         "train_2018_Q1(2018 Q1).csv", "train_2018_Q2(2018 Q1).csv", "train_2018_Q3(2018 Q1).csv",
         "train_2018_Q4(2018 Q1).csv"};
+#elif WINDOW == 26
+const string tag = "JUMP";
+const int numOfSection = 4;
+const string trainingSection[] = {
+        "train_20200427-20200522.csv",
+        "train_20200504-20200522.csv",
+        "train_20200511-20200522.csv",
+        "train_20200518-20200522.csv"
+};
 #endif
 #endif //GNQTS_STOCK_SLIDINGWINDOW_H

@@ -148,7 +148,7 @@ void fundAllocation() {
     const string portfolio_19;// = "CSCO";
     const string portfolio_20;// = "UNH";
 
-    for (int section = 33; section < 34; section++) {
+    for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
