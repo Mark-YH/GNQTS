@@ -148,8 +148,6 @@ public:
                 logger.write(this->amount[i]);
                 logger.write(")(");
                 logger.write(this->allocatedFund[i]);
-                logger.write(")(");
-                logger.write(this->amount[i]);
                 logger.writeSpace(")");
             }
         }
