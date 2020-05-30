@@ -352,7 +352,7 @@ const string trainingSection[] = {
         "train_2016_Q3(2016 Q1).csv", "train_2016_Q4(2016 Q1).csv"};
 
 #elif WINDOW == 13
-const string tag = "US/M2M";
+const string tag = "M2M";
 const int numOfSection = 84;
 const string trainingSection[] = {
         "train_2012_12(2012 Q1).csv", "train_2013_01(2013 Q1).csv", "train_2013_02(2013 Q1).csv",
@@ -384,13 +384,13 @@ const string trainingSection[] = {
         "train_2019_06(2019 Q1).csv", "train_2019_07(2019 Q1).csv", "train_2019_08(2019 Q1).csv",
         "train_2019_09(2019 Q1).csv", "train_2019_10(2019 Q1).csv", "train_2019_11(2019 Q1).csv"};
 #elif WINDOW == 14
-const string tag = "US/Y2Y";
+const string tag = "Y2Y";
 const int numOfSection = 7;
 const string trainingSection[] = {
         "train_2012(2012 Q1).csv", "train_2013(2013 Q1).csv", "train_2014(2014 Q1).csv", "train_2015(2015 Q1).csv",
         "train_2016(2016 Q1).csv", "train_2017(2017 Q1).csv", "train_2018(2018 Q1).csv"};
 #elif WINDOW == 15
-const string tag = "US/Y2Q";
+const string tag = "Y2Q";
 const int numOfSection = 28;
 const string trainingSection[] = {
         "train_2012(2012 Q1).csv", "train_2012_Q2~2013_Q1(2012 Q1).csv", "train_2012_Q3~2013_Q2(2012 Q1).csv",
@@ -405,7 +405,7 @@ const string trainingSection[] = {
         "train_2018_Q2~2019_Q1(2018 Q1).csv", "train_2018_Q3~2019_Q2(2018 Q1).csv",
         "train_2018_Q4~2019_Q3(2018 Q1).csv"};
 #elif WINDOW == 16
-const string tag = "US/Y2M";
+const string tag = "Y2M";
 const int numOfSection = 84;
 const string trainingSection[] = {
         "train_2012(2012 Q1).csv", "train_2012_02~2013_01(2012 Q1).csv", "train_2012_03~2013_02(2012 Q1).csv",
@@ -448,7 +448,7 @@ const string trainingSection[] = {
         "train_2018_10~2019_09(2018 Q1).csv", "train_2018_11~2019_10(2018 Q1).csv",
         "train_2018_12~2019_11(2018 Q1).csv"};
 #elif WINDOW == 17
-const string tag = "US/Y2H";
+const string tag = "Y2H";
 const int numOfSection = 14;
 const string trainingSection[] = {
         "train_2012(2012 Q1).csv", "train_2012_Q3~2013_Q2(2012 Q1).csv", "train_2013(2013 Q1).csv",
@@ -457,7 +457,7 @@ const string trainingSection[] = {
         "train_2016_Q3~2017_Q2(2016 Q1).csv", "train_2017(2017 Q1).csv", "train_2017_Q3~2018_Q2(2017 Q1).csv",
         "train_2018(2018 Q1).csv", "train_2018_Q3~2019_Q2(2018 Q1).csv"};
 #elif WINDOW == 18
-const string tag = "US/Q2Q";
+const string tag = "Q2Q";
 const int numOfSection = 28;
 const string trainingSection[] = {
         "train_2012_Q4(2012 Q1).csv", "train_2013_Q1(2013 Q1).csv", "train_2013_Q2(2013 Q1).csv",
@@ -471,7 +471,7 @@ const string trainingSection[] = {
         "train_2018_Q4(2018 Q1).csv", "train_2019_Q1(2019 Q1).csv", "train_2019_Q2(2019 Q1).csv",
         "train_2019_Q3(2019 Q1).csv"};
 #elif WINDOW == 19
-const string tag = "US/Q2M";
+const string tag = "Q2M";
 const int numOfSection = 84;
 const string trainingSection[] = {
         "train_2012_10-12(2012 Q1).csv", "train_2012_11~2013_01(2012 Q1).csv", "train_2012_12~2013_02(2012 Q1).csv",
@@ -503,7 +503,7 @@ const string trainingSection[] = {
         "train_2019_04-06(2019 Q1).csv", "train_2019_05-07(2019 Q1).csv", "train_2019_06-08(2019 Q1).csv",
         "train_2019_07-09(2019 Q1).csv", "train_2019_08-10(2019 Q1).csv", "train_2019_09-11(2019 Q1).csv"};
 #elif WINDOW == 20
-const string tag = "US/H2H";
+const string tag = "H2H";
 const int numOfSection = 14;
 const string trainingSection[] = {
         "train_2012_Q3-Q4(2012 Q1).csv", "train_2013_Q1-Q2(2013 Q1).csv", "train_2013_Q3-Q4(2013 Q1).csv",
@@ -512,7 +512,7 @@ const string trainingSection[] = {
         "train_2017_Q1-Q2(2017 Q1).csv", "train_2017_Q3-Q4(2017 Q1).csv", "train_2018_Q1-Q2(2018 Q1).csv",
         "train_2018_Q3-Q4(2018 Q1).csv", "train_2019_Q1-Q2(2019 Q1).csv"};
 #elif WINDOW == 21
-const string tag = "US/H2Q";
+const string tag = "H2Q";
 const int numOfSection = 28;
 const string trainingSection[] = {
         "train_2012_Q3-Q4(2012 Q1).csv", "train_2012_Q4~2013_Q1(2012 Q1).csv", "train_2013_Q1-Q2(2013 Q1).csv",
@@ -526,7 +526,7 @@ const string trainingSection[] = {
         "train_2018_Q3-Q4(2018 Q1).csv", "train_2018_Q4~2019_Q1(2018 Q1).csv", "train_2019_Q1-Q2(2019 Q1).csv",
         "train_2019_Q2-Q3(2019 Q1).csv"};
 #elif WINDOW == 22
-const string tag = "US/H2M";
+const string tag = "H2M";
 const int numOfSection = 84;
 const string trainingSection[] = {
         "train_2012_07-12(2012 Q1).csv", "train_2012_08~2013_01(2012 Q1).csv", "train_2012_09~2013_02(2012 Q1).csv",
@@ -562,7 +562,7 @@ const string trainingSection[] = {
         "train_2019_03-08(2019 Q1).csv", "train_2019_04-09(2019 Q1).csv", "train_2019_05-10(2019 Q1).csv",
         "train_2019_06-11(2019 Q1).csv"};
 #elif WINDOW == 23
-const string tag = "US/H#";
+const string tag = "H#";
 const int numOfSection = 14;
 const string trainingSection[] = {
         "train_2012_Q1-Q2(2012 Q1).csv", "train_2012_Q3-Q4(2012 Q1).csv", "train_2013_Q1-Q2(2013 Q1).csv",
@@ -571,7 +571,7 @@ const string trainingSection[] = {
         "train_2016_Q3-Q4(2016 Q1).csv", "train_2017_Q1-Q2(2017 Q1).csv", "train_2017_Q3-Q4(2017 Q1).csv",
         "train_2018_Q1-Q2(2018 Q1).csv", "train_2018_Q3-Q4(2018 Q1).csv"};
 #elif WINDOW == 24
-const string tag = "US/M#";
+const string tag = "M#";
 const int numOfSection = 84;
 const string trainingSection[] = {
         "train_2012_01(2012 Q1).csv", "train_2012_02(2012 Q1).csv", "train_2012_03(2012 Q1).csv",
@@ -603,7 +603,7 @@ const string trainingSection[] = {
         "train_2018_07(2018 Q1).csv", "train_2018_08(2018 Q1).csv", "train_2018_09(2018 Q1).csv",
         "train_2018_10(2018 Q1).csv", "train_2018_11(2018 Q1).csv", "train_2018_12(2018 Q1).csv"};
 #elif WINDOW == 25
-const string tag = "US/Q#";
+const string tag = "Q#";
 const int numOfSection = 28;
 const string trainingSection[] = {
         "train_2012_Q1(2012 Q1).csv", "train_2012_Q2(2012 Q1).csv", "train_2012_Q3(2012 Q1).csv",

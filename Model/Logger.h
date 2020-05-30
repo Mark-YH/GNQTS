@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
 
 using std::ofstream;
 using std::ios;
@@ -17,14 +18,17 @@ using std::cerr;
 using std::endl;
 using std::setprecision;
 using std::exception;
+namespace fs = std::filesystem;
 
 class Logger {
 private:
     ofstream fOut;
     int precision;
 public:
-    explicit Logger(const string &path) {
+    explicit Logger(const fs::path &path) {
         try {
+            if (!fs::is_directory(path.parent_path()))
+                fs::create_directories(path.parent_path());
             fOut.open(path, ios::app);
             this->precision = 20;
         } catch (exception &e) {
@@ -32,7 +36,7 @@ public:
         }
     }
 
-    Logger(const string &path, int precision) {
+    Logger(const fs::path &path, int precision) {
         try {
             fOut.open(path, ios::app);
             this->precision = precision;
@@ -41,7 +45,7 @@ public:
         }
     }
 
-    Logger(const string &path, ios_base::openmode mode, int precision) {
+    Logger(const fs::path &path, ios_base::openmode mode, int precision) {
         try {
             fOut.open(path, mode);
             this->precision = precision;
