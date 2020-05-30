@@ -122,13 +122,19 @@ public:
 #if WINDOW >= 13
         Logger logger("../log/US/" + tag + "/" + tag + "_final_result.csv");
 #else
-        Logger logger("../log/" + tag + "_final_result.csv");
+        Logger logger("../log/" + tag + "/" + tag + "_final_result.csv");
 #endif
         if (section == 0) {
             logger.writeComma(tag);
             logger.writeComma("Period");
             logger.writeComma("Number of chosen");
-            logger.writeLine("Portfolio");
+            logger.writeComma("Portfolio");
+            logger.writeComma("gBest");
+            logger.writeComma("Expected return");
+            logger.writeComma("Risk");
+            logger.writeComma("at round");
+            logger.writeComma("at generation");
+            logger.writeLine("Found best count");
         }
         logger.writeComma(section + 1);
         logger.writeComma(trainingSection[section]);
@@ -140,21 +146,17 @@ public:
                 logger.write(i);
                 logger.write("](");
                 logger.write(this->allocatedFund[i]);
+                logger.write(")(");
+                logger.write(this->amount[i]);
                 logger.writeSpace(")");
             }
         }
         logger.writeComma("");
-        logger.writeComma("gBest");
         logger.writeComma(this->gBest);
-        logger.writeComma("Expected return");
         logger.writeComma(this->expectedReturn);
-        logger.writeComma("Risk");
         logger.writeComma(this->risk);
-        logger.writeComma("at round");
         logger.writeComma(this->atRound + 1);
-        logger.writeComma("at generation");
         logger.writeComma(atGen + 1);
-        logger.writeComma("Found best count");
         logger.writeLine(this->foundBestCount);
     }
 

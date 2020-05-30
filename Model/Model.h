@@ -12,6 +12,7 @@
 #else
 #define US_MARKET 0
 #endif
+#define EXIST_BANK 0
 #define ROUND 50
 #define MODE 1
 

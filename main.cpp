@@ -33,7 +33,11 @@ void ranking() {
             rank.emplace_back(symbol, gBest, expectedReturn, risk);
             portfolio_a++;
         }
+#if WINDOW >= 13
+        Logger logger("../log/US/" + tag + "/rank_" + trainingSection[section]);
+#else
         Logger logger("../log/" + tag + "/rank_" + trainingSection[section]);
+#endif
         logger.writeComma("Section");
         logger.writeComma("Stock(rank#)");
         logger.writeComma("Trend ratio");
@@ -127,26 +131,27 @@ void exhaustion() {
 
 void fundAllocation() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    const string portfolio_bank = "BANK";
     const string portfolio_1 = "MSFT";
     const string portfolio_2 = "AAPL";
     const string portfolio_3 = "AMZN";
     const string portfolio_4 = "GOOG";
     const string portfolio_5 = "BRK.A";
     const string portfolio_6 = "FB";
-    const string portfolio_7;// = "BABA";
-    const string portfolio_8;// = "TCEHY";
-    const string portfolio_9;// = "JNJ";
-    const string portfolio_10;// = "XOM";
-    const string portfolio_11;// = "JPM";
-    const string portfolio_12;// = "V";
-    const string portfolio_13;// = "WMT";
-    const string portfolio_14;// = "BAC";
-    const string portfolio_15;// = "PG";
-    const string portfolio_16;// = "VZ";
-    const string portfolio_17;// = "MA";
-    const string portfolio_18;// = "INTC";
-    const string portfolio_19;// = "CSCO";
-    const string portfolio_20;// = "UNH";
+    const string portfolio_7 = "BABA";
+    const string portfolio_8 = "TCEHY";
+    const string portfolio_9 = "JNJ";
+    const string portfolio_10 = "XOM";
+    const string portfolio_11 = "JPM";
+    const string portfolio_12 = "V";
+    const string portfolio_13 = "WMT";
+    const string portfolio_14 = "BAC";
+    const string portfolio_15 = "PG";
+    const string portfolio_16 = "VZ";
+    const string portfolio_17 = "MA";
+    const string portfolio_18 = "INTC";
+    const string portfolio_19 = "CSCO";
+    const string portfolio_20 = "UNH";
 
     for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section);
@@ -158,7 +163,8 @@ void fundAllocation() {
         vector<int> stockSelection(model.getNumOfStocks());
 
         for (int i = 0; i < model.getNumOfStocks(); i++) {
-            if (model.getStockSymbol(i) == portfolio_1 ||
+            if (model.getStockSymbol(i) == portfolio_bank ||
+                model.getStockSymbol(i) == portfolio_1 ||
                 model.getStockSymbol(i) == portfolio_2 ||
                 model.getStockSymbol(i) == portfolio_3 ||
                 model.getStockSymbol(i) == portfolio_4 ||
@@ -246,6 +252,13 @@ int main() {
 #endif
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
+#if WINDOW >= 13
+    Logger logger("../log/US/" + tag + "/" + tag + "_final_result.csv");
+#else
+    Logger logger("../log/" + tag + "_final_result.csv");
+#endif
+    logger.writeComma("\nExecution time (s)");
+    logger.writeLine(std::chrono::duration<double>(end - start).count());
     system("pause");
     return 0;
 }

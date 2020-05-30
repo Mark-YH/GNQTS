@@ -49,7 +49,18 @@ void Model::nextSection(int section) {
         for (int j = 0; j < this->numOfDays; j++) {
             this->stocks[i].fs.push_back(0);
         }
-    }/*
+    }
+#if EXIST_BANK
+    this->numOfStocks++;
+    this->stocks.emplace_back(this->numOfDays);
+    this->stocks.back().code = "BANK";
+
+    for (int i = 0; i < this->numOfDays; i++) {
+        this->stocks.back().price[i] = this->initFund * 2.0;
+        this->stocks.back().fs.push_back(0);
+    }
+#endif
+    /*
     // kick the particular stock out
     auto it = this->stocks.begin();
     while (it != this->stocks.end()) {
@@ -82,6 +93,8 @@ void Model::getNumOfRowColumn(const string &path) {
     ifstream fin;
     try {
         fin.open(path, ios::in);
+        if (!fin.is_open())
+            exit(-999);
         string line;
 
         getline(fin, line);
@@ -146,16 +159,6 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
         }
     }
 
-    if (pIndex == -1) {
-        this->result->numOfChosen = numOfChosen;
-        // fix the real number of chosen stocks
-        for (int i = 0; i < this->numOfStocks; i++) {
-            if (solution[i] == 1 && allocRatio[i] == 0) {
-                this->result->numOfChosen--;
-            }
-        }
-    }
-
     // allocate fund
     vector<int> allocatedFund(this->numOfStocks);
     for (int i = 0; i < this->numOfStocks; i++) {
@@ -167,6 +170,16 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
 #endif
         } else {
             allocatedFund[i] = 0;
+        }
+    }
+
+    if (pIndex == -1) {
+        this->result->numOfChosen = numOfChosen;
+        // fix the real number of chosen stocks
+        for (int i = 0; i < this->numOfStocks; i++) {
+            if (solution[i] == 1 && allocatedFund[i] == 0) {
+                this->result->numOfChosen--;
+            }
         }
     }
 
