@@ -36,7 +36,7 @@ QTS::~QTS() {
     this->model = nullptr;
 }
 
-void QTS::run() {
+vector<double> QTS::run() {
     for (int i = 0; i < this->model->getGeneration(); i++) {
         measure();
         evaluate(i);
@@ -52,6 +52,7 @@ void QTS::run() {
     }
     normalize(allocRatio);
     this->model->getFitness(this->stockSelection, -1, allocRatio);
+    return allocRatio;
 }
 
 void QTS::measure() {

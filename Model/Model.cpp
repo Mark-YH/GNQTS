@@ -30,12 +30,19 @@ Model::~Model() {
     this->result = nullptr;
 }
 
-void Model::nextSection(int section) {
+void Model::nextSection(int section, bool isTraining) {
     this->stocks.clear();
+    string path;
 #if US_MARKET
-    string path = "../data/US/" + tag + "/" + trainingSection[section];
+    if (isTraining)
+        path = "../data/US/" + tag + "/" + trainingSection[section];
+    else
+        path = "../data/US/" + tag + "/" + testingSection[section];
 #else
-    string path = "../data/" + tag + "/" + trainingSection[section];
+    if (isTraining)
+        path = "../data/" + tag + "/" + trainingSection[section];
+    else
+        path = "../data/" + tag + "/" + testingSection[section];
 #endif
     getNumOfRowColumn(path);
 
@@ -340,4 +347,8 @@ int Model::getNumOfDays() const {
 
 string Model::getStockSymbol(int i) {
     return this->stocks[i].code;
+}
+
+void Model::setInitialFund(double fund) {
+    this->initFund = fund;
 }

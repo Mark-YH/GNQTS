@@ -16,7 +16,7 @@ public:
 
     ~QTS();
 
-    void run();
+    vector<double> run();
 
     int getBestGeneration() const;
 

@@ -28,11 +28,18 @@ public:
             stocks.emplace_back(_numOfDays);
     };
 
-    void generateOutput(int section) const {
+    void generateOutput(int section, bool isTraining) const {
+        Logger logger;
 #if WINDOW >= 13
-        Logger logger("../log/US/" + tag + "/output_" + trainingSection[section]);
+        if (isTraining)
+            logger.setPath("../log/US/" + tag + "/output_" + trainingSection[section]);
+        else
+            logger.setPath("../log/US/" + tag + "/output_" + testingSection[section]);
 #else
-        Logger logger("../log/" + tag + "/output_" + trainingSection[section]);
+        if (isTraining)
+            logger.setPath("../log/" + tag + "/output_" + trainingSection[section]);
+        else
+            logger.setPath("../log/" + tag + "/output_" + testingSection[section]);
 #endif
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
@@ -62,13 +69,15 @@ public:
         logger.writeLine(this->risk);
         logger.writeComma("Global best");
         logger.writeLine(this->gBest);
-        logger.writeComma("Found at generation");
-        logger.writeLine(this->atGen + 1);
-        logger.writeComma("Found at round");
-        logger.writeLine(this->atRound + 1);
-        logger.writeComma("Found the best solution frequency");
-        logger.writeLine(this->foundBestCount);
-        logger.writeLine("");
+        if (isTraining) {
+            logger.writeComma("Found at generation");
+            logger.writeLine(this->atGen + 1);
+            logger.writeComma("Found at round");
+            logger.writeLine(this->atRound + 1);
+            logger.writeComma("Found the best solution frequency");
+            logger.writeLine(this->foundBestCount);
+            logger.writeLine("");
+        }
 
         logger.writeComma("Number of chosen");
         logger.writeLine(this->numOfChosen);
@@ -118,11 +127,18 @@ public:
         logger.writeLine("");
     };
 
-    void finalOutput(int section) const {
+    void finalOutput(int section, bool isTraining) const {
+        Logger logger;
 #if WINDOW >= 13
-        Logger logger("../log/US/" + tag + "/" + tag + "_final_result.csv");
+        if (isTraining)
+            logger.setPath("../log/US/" + tag + "/" + tag + "_final_result.csv");
+        else
+            logger.setPath("../log/US/" + tag + "/" + tag + "_final_test_result.csv");
 #else
-        Logger logger("../log/" + tag + "/" + tag + "_final_result.csv");
+        if (isTraining)
+            logger.setPath("../log/" + tag + "/" + tag + "_final_result.csv");
+        else
+            logger.setPath("../log/" + tag + "/" + tag + "_final_test_result.csv");
 #endif
         if (section == 0) {
             logger.writeComma(tag);
@@ -132,12 +148,19 @@ public:
             logger.writeComma("gBest");
             logger.writeComma("Expected return");
             logger.writeComma("Risk");
-            logger.writeComma("at round");
-            logger.writeComma("at generation");
-            logger.writeLine("Found best count");
+            if (isTraining) {
+                logger.writeComma("at round");
+                logger.writeComma("at generation");
+                logger.writeLine("Found best count");
+            } else {
+                logger.writeLine("Real return");
+            }
         }
         logger.writeComma(section + 1);
-        logger.writeComma(trainingSection[section]);
+        if (isTraining)
+            logger.writeComma(trainingSection[section]);
+        else
+            logger.writeComma(testingSection[section]);
         logger.writeComma(this->numOfChosen);
         for (int i = 0; i < this->numOfStocks; i++) {
             if (this->solution[i] == 1 && this->allocatedFund[i] > 0) {
@@ -155,9 +178,13 @@ public:
         logger.writeComma(this->gBest);
         logger.writeComma(this->expectedReturn);
         logger.writeComma(this->risk);
-        logger.writeComma(this->atRound + 1);
-        logger.writeComma(atGen + 1);
-        logger.writeLine(this->foundBestCount);
+        if (isTraining) {
+            logger.writeComma(this->atRound + 1);
+            logger.writeComma(atGen + 1);
+            logger.writeLine(this->foundBestCount);
+        } else {
+            logger.writeLine(this->realReturn);
+        }
     }
 
     int generation{};

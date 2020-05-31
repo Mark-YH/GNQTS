@@ -11,7 +11,7 @@ void ranking() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int section = 0; section < numOfSection; section++) {
         int portfolio_a = 0;
-        model.nextSection(section);
+        model.nextSection(section, true);
         Particle particle(model.getNumOfStocks());
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
@@ -78,7 +78,7 @@ void exhaustion() {
     int precision = 100;
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    model.nextSection(section);
+    model.nextSection(section, true);
     Particle particle(model.getNumOfStocks());
     Result result(model.getNumOfStocks(), model.getNumOfDays());
     model.setResult(&result);
@@ -116,21 +116,22 @@ void exhaustion() {
             (allocRatio[portfolio_c] == 1) ||
             (allocRatio[portfolio_d] == 1) ||
             (allocRatio[portfolio_e] == 1)) {
-            result.generateOutput(section);
-            result.finalOutput(section);
+            result.generateOutput(section, true);
+            result.finalOutput(section, true);
         }
     }
 //        }
 //    }
 //    }
     for (auto &bestResult : bestResults) {
-        bestResult.generateOutput(section);
-        bestResult.finalOutput(section);
+        bestResult.generateOutput(section, true);
+        bestResult.finalOutput(section, true);
     }
 }
 
 void fundAllocation() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     const string portfolio_bank = "BANK";
     const string portfolio_1 = "MSFT";
     const string portfolio_2 = "AAPL";
@@ -154,7 +155,10 @@ void fundAllocation() {
     const string portfolio_20 = "UNH";
 
     for (int section = 0; section < numOfSection; section++) {
-        model.nextSection(section);
+        model.nextSection(section, true);
+        testingModel.nextSection(section, false);
+        Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
+        testingModel.setResult(&testingResult);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
@@ -189,9 +193,10 @@ void fundAllocation() {
                 stockSelection[i] = 0;
         }
 
+        vector<double> allocRatio, tmp;
         for (int i = 0; i < ROUND; i++) { // round
             QTS qts(model, stockSelection);
-            qts.run();
+            tmp = qts.run();
             if (gBest == result.gBest) {
                 result.foundBestCount++;
                 finalResult.foundBestCount++;
@@ -201,17 +206,28 @@ void fundAllocation() {
                 result.atRound = i;
                 result.atGen = qts.getBestGeneration();
                 finalResult = result;
+                allocRatio = tmp;
             }
         }
-        finalResult.generateOutput(section);
-        finalResult.finalOutput(section);
+        if (finalResult.gBest > 0) {
+            testingModel.getFitness(finalResult.solution, -1, allocRatio);
+            testingModel.setInitialFund(testingResult.finalFund);
+        }
+        finalResult.generateOutput(section, true);
+        finalResult.finalOutput(section, true);
+        testingResult.generateOutput(section, false);
+        testingResult.finalOutput(section, false);
     }
 }
 
 void stockSelection() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     for (int j = 0; j < numOfSection; j++) { // section
-        model.nextSection(j);
+        model.nextSection(j, true);
+        testingModel.nextSection(j, false);
+        Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
+        testingModel.setResult(&testingResult);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         Result finalResult(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
@@ -233,8 +249,14 @@ void stockSelection() {
                 finalResult = result;
             }
         }
-        finalResult.generateOutput(j);
-        finalResult.finalOutput(j);
+        if (finalResult.gBest > 0) {
+            testingModel.getFitness(finalResult.solution, -1, vector<double>());
+            testingModel.setInitialFund(testingResult.finalFund);
+        }
+        finalResult.generateOutput(j, true);
+        finalResult.finalOutput(j, true);
+        testingResult.generateOutput(j, false);
+        testingResult.finalOutput(j, false);
     }
 }
 
@@ -255,10 +277,9 @@ int main() {
 #if WINDOW >= 13
     Logger logger("../log/US/" + tag + "/" + tag + "_final_result.csv");
 #else
-    Logger logger("../log/" + tag + "_final_result.csv");
+    Logger logger("../log/" + tag + "/" + tag + "_final_result.csv");
 #endif
     logger.writeComma("\nExecution time (s)");
     logger.writeLine(std::chrono::duration<double>(end - start).count());
-    system("pause");
     return 0;
 }

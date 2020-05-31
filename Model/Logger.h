@@ -25,6 +25,10 @@ private:
     ofstream fOut;
     int precision;
 public:
+    Logger() {
+        this->precision = 20;
+    }
+
     explicit Logger(const fs::path &path) {
         try {
             if (!fs::is_directory(path.parent_path()))
@@ -56,6 +60,17 @@ public:
 
     ~Logger() {
         fOut.close();
+    }
+
+    void setPath(const fs::path &path) {
+        try {
+            if (!fs::is_directory(path.parent_path()))
+                fs::create_directories(path.parent_path());
+            fOut.open(path, ios::app);
+            this->precision = 20;
+        } catch (exception &e) {
+            cerr << "Got an exception: " << e.what() << endl;
+        }
     }
 
     template<class T>

@@ -47,9 +47,11 @@ public:
 
     int getNumOfDays() const;
 
-    void nextSection(int section);
+    void nextSection(int section, bool isTraining);
 
     string getStockSymbol(int i);
+
+    void setInitialFund(double fund);
 
 private:
     int population;
