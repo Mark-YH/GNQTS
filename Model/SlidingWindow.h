@@ -1081,13 +1081,14 @@ const string testingSection[] = {
 
 #elif WINDOW == 26
 const string tag = "JUMP";
-const int numOfSection = 4;
+const int numOfSection = 5;
 const string trainingSection[] = {
         "train_20200427-20200522.csv",
         "train_20200504-20200522.csv",
         "train_20200511-20200522.csv",
-        "train_20200518-20200522.csv"
+        "train_20200518-20200522.csv",
+        "train_20200501-20200529.csv"
 };
-const string testingSection[] = {};
+const string testingSection[] = {""};
 #endif
 #endif //GNQTS_STOCK_SLIDINGWINDOW_H

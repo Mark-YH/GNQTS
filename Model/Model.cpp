@@ -215,50 +215,6 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
     }
 
     if (pIndex == -1) {
-        this->result->finalFund = totalFS[this->numOfDays - 1];
-        this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
-    }
-
-    // calculate slope
-    double tmp = 0, tmp2 = 0;
-
-    for (int i = 0; i < this->numOfDays; i++) {
-        tmp += (i + 1) * totalFS[i] - (i + 1) * this->initFund;
-        tmp2 += (i + 1) * (i + 1);
-    }
-    double slope = tmp / tmp2;
-
-    vector<double> trendLine(this->numOfDays); // daily expected standardization fund
-    // calculate trend line
-    for (int i = 0; i < this->numOfDays; i++) {
-        trendLine[i] = slope * (i + 1) + this->initFund;
-    }
-
-    // calculate risk
-    tmp = 0.0;
-
-    for (int i = 0; i < this->numOfDays; i++) {
-        tmp += (totalFS[i] - trendLine[i]) * (totalFS[i] - trendLine[i]);
-    }
-
-    double risk = sqrt(tmp / this->numOfDays);
-
-    // calculate trend value
-    double trendVal = 0.0;
-
-    if (risk > 0) { // if risk == 0 then trendVal = 0
-        if (slope >= 0) {
-            trendVal = slope / risk;
-        } else {
-            trendVal = slope * risk;
-        }
-    }
-
-    if (pIndex == -1) {
-        this->result->initFund = this->initFund;
-        this->result->expectedReturn = slope;
-        this->result->risk = risk;
-        this->result->gBest = trendVal;
         for (int i = 0; i < this->numOfDays; i++) {
             this->result->totalFS[i] = totalFS[i];
         }
@@ -266,8 +222,56 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
             this->result->solution[i] = solution[i];
             this->result->stocks[i] = this->stocks[i];
         }
+        this->result->finalFund = totalFS[this->numOfDays - 1];
+        this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
     }
-    return trendVal;
+
+    return calcTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex);
+}
+
+double Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex) const {
+    // calculate slope
+    double tmp = 0, tmp2 = 0;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        tmp += (i + 1) * totalFS[i] - (i + 1) * _initFund;
+        tmp2 += (i + 1) * (i + 1);
+    }
+    double slope = tmp / tmp2;
+
+    vector<double> trendLine(_numOfDays); // daily expected fund standardization
+    // calculate trend line
+    for (int i = 0; i < _numOfDays; i++) {
+        trendLine[i] = slope * (i + 1) + _initFund;
+    }
+
+    // calculate risk
+    tmp = 0.0;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        tmp += (totalFS[i] - trendLine[i]) * (totalFS[i] - trendLine[i]);
+    }
+
+    double risk = sqrt(tmp / _numOfDays);
+
+    // calculate trend ratio
+    double trendRatio = 0.0;
+
+    if (risk > 0) { // if risk == 0 then trendRatio = 0
+        if (slope >= 0) {
+            trendRatio = slope / risk;
+        } else {
+            trendRatio = slope * risk;
+        }
+    }
+
+    if (pIndex == -1) {
+        this->result->initFund = _initFund;
+        this->result->expectedReturn = slope;
+        this->result->risk = risk;
+        this->result->gBest = trendRatio;
+    }
+    return trendRatio;
 }
 
 void Model::calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex) {

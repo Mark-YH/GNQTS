@@ -53,6 +53,8 @@ public:
 
     void setInitialFund(double fund);
 
+    double calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex) const;
+
 private:
     int population;
     int generation;

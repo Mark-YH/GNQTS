@@ -28,6 +28,60 @@ public:
             stocks.emplace_back(_numOfDays);
     };
 
+    void totalTestResult() const {
+        Logger logger;
+#if WINDOW >= 13
+        logger.setPath("../log/US/" + tag + "/" + tag + "_total_test_result.csv");
+#else
+        logger.setPath("../log/" + tag + "/" + tag + "_total_test_result.csv");
+#endif
+        logger.writeComma("Testing period");
+        logger.writeSpace(testingSection[0]);
+        logger.writeSpace("-");
+        logger.writeLine(testingSection[numOfSection - 1]);
+
+        logger.writeComma("Generation");
+        logger.writeLine(this->generation);
+        logger.writeComma("Population");
+        logger.writeLine(this->population);
+        logger.writeComma("Upper bound of theta");
+        logger.writeLine(this->uBound);
+        logger.writeComma("Lower bound of theta");
+        logger.writeLine(this->lBound);
+        logger.writeComma("theta");
+        logger.writeLine(this->theta);
+        logger.writeComma("Round");
+        logger.writeLine(this->round);
+        logger.writeLine("");
+
+        logger.writeComma("Initial fund");
+        logger.writeLine(this->initFund);
+        logger.writeComma("Final fund");
+        logger.writeLine(this->finalFund);
+        logger.writeComma("Real return");
+        logger.writeLine(this->realReturn);
+        logger.writeLine("");
+
+        logger.writeComma("Expected return");
+        logger.writeLine(this->expectedReturn);
+        logger.writeComma("Risk");
+        logger.writeLine(this->risk);
+        logger.writeComma("Global best");
+        logger.writeLine(this->gBest);
+        logger.writeLine("");
+
+        logger.writeComma("Total number of days");
+        logger.writeLine(this->totalFS.size());
+        for (int i = 0; i < this->numOfDays; i++) {
+            logger.write("FS(");
+            logger.write(i + 1);
+            logger.writeComma(")");
+
+            logger.writeComma(this->totalFS[i]);
+            logger.writeLine("");
+        }
+    }
+
     void generateOutput(int section, bool isTraining) const {
         Logger logger;
 #if WINDOW >= 13

@@ -132,6 +132,7 @@ void exhaustion() {
 void fundAllocation() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    vector<double> finalFS;
     const string portfolio_bank = "BANK";
     const string portfolio_1 = "MSFT";
     const string portfolio_2 = "AAPL";
@@ -140,19 +141,19 @@ void fundAllocation() {
     const string portfolio_5 = "BRK.A";
     const string portfolio_6 = "FB";
     const string portfolio_7 = "BABA";
-    const string portfolio_8 = "TCEHY";
-    const string portfolio_9 = "JNJ";
-    const string portfolio_10 = "XOM";
-    const string portfolio_11 = "JPM";
-    const string portfolio_12 = "V";
-    const string portfolio_13 = "WMT";
-    const string portfolio_14 = "BAC";
-    const string portfolio_15 = "PG";
-    const string portfolio_16 = "VZ";
-    const string portfolio_17 = "MA";
-    const string portfolio_18 = "INTC";
-    const string portfolio_19 = "CSCO";
-    const string portfolio_20 = "UNH";
+    const string portfolio_8;// = "TCEHY";
+    const string portfolio_9;// = "JNJ";
+    const string portfolio_10;// = "XOM";
+    const string portfolio_11;// = "JPM";
+    const string portfolio_12;// = "V";
+    const string portfolio_13;// = "WMT";
+    const string portfolio_14;// = "BAC";
+    const string portfolio_15;// = "PG";
+    const string portfolio_16;// = "VZ";
+    const string portfolio_17;// = "MA";
+    const string portfolio_18;// = "INTC";
+    const string portfolio_19;// = "CSCO";
+    const string portfolio_20;// = "UNH";
 
     for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section, true);
@@ -212,20 +213,31 @@ void fundAllocation() {
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, allocRatio);
             testingModel.setInitialFund(testingResult.finalFund);
+            for (auto it: testingModel.result->totalFS) {
+                finalFS.push_back(it);
+            }
         }
         finalResult.generateOutput(section, true);
         finalResult.finalOutput(section, true);
         testingResult.generateOutput(section, false);
         testingResult.finalOutput(section, false);
     }
+    Result rs(model.getNumOfStocks(), finalFS.size());
+    testingModel.setResult(&rs);
+    rs.totalFS = finalFS;
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1);
+    rs.finalFund = finalFS.back();
+    rs.realReturn = finalFS.back() - model.result->initFund;
+    rs.totalTestResult();
 }
 
 void stockSelection() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    for (int j = 0; j < numOfSection; j++) { // section
-        model.nextSection(j, true);
-        testingModel.nextSection(j, false);
+    vector<double> finalFS;
+    for (int i = 0; i < numOfSection; i++) { // section
+        model.nextSection(i, true);
+        testingModel.nextSection(i, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
@@ -233,7 +245,7 @@ void stockSelection() {
         model.setResult(&result);
         result.foundBestCount = 1;
         double gBest = -DBL_MAX;
-        for (int i = 0; i < ROUND; i++) { // round
+        for (int j = 0; j < ROUND; j++) { // round
             GNQTS qts(&model);
             qts.run();
 
@@ -243,7 +255,7 @@ void stockSelection() {
             } else if (gBest < result.gBest) { // found the global best which is a brand new solution
                 gBest = result.gBest;
                 result.foundBestCount = 1;
-                result.atRound = i;
+                result.atRound = j;
                 result.atGen = qts.getBestGeneration();
 
                 finalResult = result;
@@ -252,12 +264,22 @@ void stockSelection() {
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, vector<double>());
             testingModel.setInitialFund(testingResult.finalFund);
+            for (auto it: testingModel.result->totalFS) {
+                finalFS.push_back(it);
+            }
         }
-        finalResult.generateOutput(j, true);
-        finalResult.finalOutput(j, true);
-        testingResult.generateOutput(j, false);
-        testingResult.finalOutput(j, false);
+        finalResult.generateOutput(i, true);
+        finalResult.finalOutput(i, true);
+        testingResult.generateOutput(i, false);
+        testingResult.finalOutput(i, false);
     }
+    Result rs(model.getNumOfStocks(), finalFS.size());
+    testingModel.setResult(&rs);
+    rs.totalFS = finalFS;
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1);
+    rs.finalFund = finalFS.back();
+    rs.realReturn = finalFS.back() - model.result->initFund;
+    rs.totalTestResult();
 }
 
 int main() {
