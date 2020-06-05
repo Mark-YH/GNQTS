@@ -141,19 +141,19 @@ void fundAllocation() {
     const string portfolio_5 = "BRK.A";
     const string portfolio_6 = "FB";
     const string portfolio_7 = "BABA";
-    const string portfolio_8;// = "TCEHY";
-    const string portfolio_9;// = "JNJ";
-    const string portfolio_10;// = "XOM";
-    const string portfolio_11;// = "JPM";
-    const string portfolio_12;// = "V";
-    const string portfolio_13;// = "WMT";
-    const string portfolio_14;// = "BAC";
-    const string portfolio_15;// = "PG";
-    const string portfolio_16;// = "VZ";
-    const string portfolio_17;// = "MA";
-    const string portfolio_18;// = "INTC";
-    const string portfolio_19;// = "CSCO";
-    const string portfolio_20;// = "UNH";
+    const string portfolio_8 = "TCEHY";
+    const string portfolio_9 = "JNJ";
+    const string portfolio_10 = "XOM";
+    const string portfolio_11 = "JPM";
+    const string portfolio_12 = "V";
+    const string portfolio_13 = "WMT";
+    const string portfolio_14 = "BAC";
+    const string portfolio_15 = "PG";
+    const string portfolio_16 = "VZ";
+    const string portfolio_17 = "MA";
+    const string portfolio_18 = "INTC";
+    const string portfolio_19 = "CSCO";
+    const string portfolio_20 = "UNH";
 
     for (int section = 0; section < numOfSection; section++) {
         model.nextSection(section, true);
@@ -216,6 +216,11 @@ void fundAllocation() {
             for (auto it: testingModel.result->totalFS) {
                 finalFS.push_back(it);
             }
+        } else {
+            double tmp = finalFS.back();
+            for (int j = 0; j < testingModel.getNumOfDays(); j++) {
+                finalFS.push_back(tmp);
+            }
         }
         finalResult.generateOutput(section, true);
         finalResult.finalOutput(section, true);
@@ -266,6 +271,11 @@ void stockSelection() {
             testingModel.setInitialFund(testingResult.finalFund);
             for (auto it: testingModel.result->totalFS) {
                 finalFS.push_back(it);
+            }
+        } else {
+            double tmp = finalFS.back();
+            for (int j = 0; j < testingModel.getNumOfDays(); j++) {
+                finalFS.push_back(tmp);
             }
         }
         finalResult.generateOutput(i, true);
