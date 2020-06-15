@@ -7,13 +7,10 @@
 
 #include "Result.h"
 
-#if WINDOW >= 13
 #define US_MARKET 1
-#else
-#define US_MARKET 0
-#endif
 #define EXIST_BANK 0
 #define ROUND 50
+#define RUN_TESTING 1
 #define MODE 1
 
 /** @param MODE
@@ -21,10 +18,22 @@
  *  1: execute fund allocation program
  *  2: execute fund allocation with method of exhaustion program
  *  3: execute ranking program
+ *  4: execute single stock program
  */
 
 class Model {
 public:
+    inline static string slidingWindow = "M2M";
+    inline static string market = "DJI30";
+    /**
+     * @param market
+     * TW0050: Component stocks of ETF 0050 in Taiwan.
+     * US_TOP20: Top 20 stocks firm by market capitalization in the U.S. stock market.
+     * DJI30: Component stocks of DJI.
+     * DJIA: Dow Jones industrial average.
+     */
+    vector<string> trainingSection;
+    vector<string> testingSection;
     Result *result;
 
     Model() = delete;
@@ -32,6 +41,8 @@ public:
     Model(int population, int generation, double theta, double fund, double fee, double tax);
 
     ~Model();
+
+    void init();
 
     int getGeneration() const;
 

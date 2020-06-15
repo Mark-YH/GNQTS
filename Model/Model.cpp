@@ -7,12 +7,15 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <filesystem>
 
 using std::ifstream;
 using std::string;
 using std::stringstream;
 using std::ios;
 using std::pair;
+
+namespace fs = std::filesystem;
 
 Model::Model(int population, int generation, double theta, double fund, double fee, double tax) {
     this->population = population;
@@ -30,20 +33,32 @@ Model::~Model() {
     this->result = nullptr;
 }
 
+void Model::init() {
+    string path = "../data/" + market + "/" + slidingWindow + "/train";
+
+    if (fs::exists(path))
+        for (const auto &entry : fs::directory_iterator(path)) {
+            trainingSection.emplace_back(entry.path().filename().generic_string());
+        }
+
+    path = "../data/" + market + "/" + slidingWindow + "/test";
+
+    if (fs::exists(path))
+        for (const auto &entry : fs::directory_iterator(path)) {
+            auto filename = entry.path().filename();
+            testingSection.emplace_back(filename.generic_string());
+        }
+}
+
 void Model::nextSection(int section, bool isTraining) {
     this->stocks.clear();
     string path;
-#if US_MARKET
+
     if (isTraining)
-        path = "../data/US/" + tag + "/" + trainingSection[section];
+        path = "../data/" + market + "/" + slidingWindow + "/train/" + trainingSection[section];
     else
-        path = "../data/US/" + tag + "/" + testingSection[section];
-#else
-    if (isTraining)
-        path = "../data/" + tag + "/" + trainingSection[section];
-    else
-        path = "../data/" + tag + "/" + testingSection[section];
-#endif
+        path = "../data/" + market + "/" + slidingWindow + "/test/" + testingSection[section];
+
     getNumOfRowColumn(path);
 
     for (int i = 0; i < this->numOfStocks; i++) {

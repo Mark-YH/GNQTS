@@ -7,7 +7,6 @@
 
 #include "Stock.h"
 #include "Logger.h"
-#include "SlidingWindow.h"
 #include <vector>
 
 using std::vector;
@@ -28,17 +27,14 @@ public:
             stocks.emplace_back(_numOfDays);
     };
 
-    void totalTestResult() const {
-        Logger logger;
-#if WINDOW >= 13
-        logger.setPath("../log/US/" + tag + "/" + tag + "_total_test_result.csv");
-#else
-        logger.setPath("../log/" + tag + "/" + tag + "_total_test_result.csv");
-#endif
+    void totalTestResult(string market, string sw, vector<string> &trainingSection,
+                         vector<string> &testingSection) const {
+        Logger logger("../log/" + market + "/" + sw + "/" + sw + "_total_test_result.csv");
+
         logger.writeComma("Testing period");
-        logger.writeSpace(testingSection[0]);
+        logger.writeSpace(testingSection.front());
         logger.writeSpace("-");
-        logger.writeLine(testingSection[numOfSection - 1]);
+        logger.writeLine(testingSection.back());
 
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
@@ -82,19 +78,15 @@ public:
         }
     }
 
-    void generateOutput(int section, bool isTraining) const {
+    void generateOutput(int section, bool isTraining, string market, string sw,
+                        vector<string> &trainingSection, vector<string> &testingSection) const {
         Logger logger;
-#if WINDOW >= 13
+
         if (isTraining)
-            logger.setPath("../log/US/" + tag + "/output_" + trainingSection[section]);
+            logger.setPath("../log/" + market + "/" + sw + "/output_" + trainingSection[section]);
         else
-            logger.setPath("../log/US/" + tag + "/output_" + testingSection[section]);
-#else
-        if (isTraining)
-            logger.setPath("../log/" + tag + "/output_" + trainingSection[section]);
-        else
-            logger.setPath("../log/" + tag + "/output_" + testingSection[section]);
-#endif
+            logger.setPath("../log/" + market + "/" + sw + "/output_" + testingSection[section]);
+
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
         logger.writeComma("Population");
@@ -181,24 +173,19 @@ public:
         logger.writeLine("");
     };
 
-    void finalOutput(int section, bool isTraining) const {
+    void finalOutput(int section, bool isTraining, string market, string sw,
+                     vector<string> &trainingSection, vector<string> &testingSection) const {
         Logger logger;
-#if WINDOW >= 13
         if (isTraining)
-            logger.setPath("../log/US/" + tag + "/" + tag + "_final_result.csv");
+            logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_result.csv");
         else
-            logger.setPath("../log/US/" + tag + "/" + tag + "_final_test_result.csv");
-#else
-        if (isTraining)
-            logger.setPath("../log/" + tag + "/" + tag + "_final_result.csv");
-        else
-            logger.setPath("../log/" + tag + "/" + tag + "_final_test_result.csv");
-#endif
+            logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_test_result.csv");
+
         if (section == 0) {
-            logger.writeComma(tag);
+            logger.writeComma(sw);
             logger.writeComma("Period");
             logger.writeComma("Number of chosen");
-            logger.writeComma("Portfolio");
+            logger.writeComma("Portfolio[index](amount)(fund)");
             logger.writeComma("gBest");
             logger.writeComma("Expected return");
             logger.writeComma("Risk");
