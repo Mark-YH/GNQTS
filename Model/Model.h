@@ -11,6 +11,7 @@
 #define EXIST_BANK 0
 #define ROUND 50
 #define RUN_TESTING 1
+#define COMPOUND_INTEREST 0
 #define MODE 1
 
 /** @param MODE

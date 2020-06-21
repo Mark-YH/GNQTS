@@ -230,7 +230,9 @@ void fundAllocation() {
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, allocRatio);
+#if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
+#endif
             totalReturn += testingResult.finalFund - testingResult.initFund;
             for (auto it: testingModel.result->totalFS) {
                 finalFS.push_back(it);
@@ -310,7 +312,9 @@ void stockSelection() {
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, vector<double>());
+#if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
+#endif
             totalReturn += testingResult.finalFund - testingResult.initFund;
             for (auto it: testingModel.result->totalFS) {
                 finalFS.push_back(it);
@@ -378,7 +382,9 @@ void singleStock() {
                                model.trainingSection, model.testingSection);
 #if RUN_TESTING
             testingModel.getFitness(solution, -1, allocRatio);
+#if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
+#endif
             totalReturn += testingResult.finalFund - testingResult.initFund;
             for (auto it: testingModel.result->totalFS) {
                 finalFS.push_back(it);
