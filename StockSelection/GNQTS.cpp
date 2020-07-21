@@ -36,7 +36,7 @@ void GNQTS::run() {
         evaluate(i);
         update();
     }
-    this->model->getFitness(this->bestParticle->solution, -1, vector<double>());
+    this->model->getFitness(this->bestParticle->solution, -1, vector<double>(), true);
 }
 
 void GNQTS::measure() {
@@ -56,7 +56,7 @@ void GNQTS::evaluate(int gen) {
     this->worstParticle->fitness = DBL_MAX;
 
     for (int i = 0; i < this->model->getPopulation(); i++) {
-        this->particle[i].fitness = this->model->getFitness(this->particle[i].solution, i, vector<double>());
+        this->particle[i].fitness = this->model->getFitness(this->particle[i].solution, i, vector<double>(), true);
 
         // Check if it needs to update best particle
         if (this->particle[i].fitness > this->bestParticle->fitness) {

@@ -172,7 +172,7 @@ void Model::readData(const string &path) {
     }
 }
 
-double Model::getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio) {
+double Model::getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio, bool isTraining) {
     int numOfChosen = 0; // how much stock is chosen
     double totalBalance = this->initFund;
     for (int i = 0; i < this->numOfStocks; i++) {
@@ -241,10 +241,11 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
         this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
     }
 
-    return calcTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex);
+    return calcTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
 }
 
-double Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex) const {
+double
+Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
     // calculate slope
     double tmp = 0, tmp2 = 0;
 
@@ -278,6 +279,27 @@ double Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _in
         } else {
             trendRatio = slope * risk;
         }
+    }
+
+    if (!isTraining) {
+        vector<double> line(_numOfDays);
+        line.front() = totalFS.front();
+        line.back() = totalFS.back();
+        for (int i = 1; i < _numOfDays - 1; i++) {
+            line[i] = i * (line.back() - line.front()) / (_numOfDays - 1) + line.front();
+        }
+
+        tmp = 0.0;
+
+        for (int i = 0; i < _numOfDays; i++) {
+            tmp += (totalFS[i] - line[i]) * (totalFS[i] - line[i]);
+        }
+
+        double fluctuation = sqrt(tmp / _numOfDays);
+
+        this->result->fluctuation = fluctuation;
+        this->result->fluctuationRatio = (line.back() - line.front()) / fluctuation;
+        this->result->line = line;
     }
 
     if (pIndex == -1) {

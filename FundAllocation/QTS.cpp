@@ -51,7 +51,7 @@ vector<double> QTS::run() {
         }
     }
     normalize(allocRatio);
-    this->model->getFitness(this->stockSelection, -1, allocRatio);
+    this->model->getFitness(this->stockSelection, -1, allocRatio, true);
     return allocRatio;
 }
 
@@ -81,11 +81,18 @@ void QTS::evaluate(int generation) {
             }
         }
         normalize(allocRatio);
-        this->particle[i].fitness = this->model->getFitness(this->stockSelection, i, allocRatio);
+        this->particle[i].fitness = this->model->getFitness(this->stockSelection, i, allocRatio, true);
 
         // update best particle
         if (this->particle[i] > *this->gBest) {
-            *this->gBest = this->particle[i];
+            if (this->particle[i].fitness >= 0)
+                *this->gBest = this->particle[i];
+            else {
+                for (int j = 0; j < this->indexOfChosen.size(); j++)
+                    for (int k = 0; k < this->numOfBit; k++)
+                        this->gBest->solution[j][k] = 0;
+                this->gBest->fitness = 0.0;
+            }
             this->bestGeneration = generation;
         }
         // update worst particle

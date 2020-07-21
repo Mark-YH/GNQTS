@@ -11,7 +11,7 @@
 #define EXIST_BANK 0
 #define ROUND 50
 #define RUN_TESTING 1
-#define COMPOUND_INTEREST 0
+#define COMPOUND_INTEREST 1
 #define MODE 1
 
 /** @param MODE
@@ -51,7 +51,7 @@ public:
 
     double getTheta() const;
 
-    double getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio);
+    double getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio, bool isTraining);
 
     void setResult(Result *rs);
 
@@ -65,7 +65,7 @@ public:
 
     void setInitialFund(double fund);
 
-    double calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex) const;
+    double calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
 
 private:
     int population;

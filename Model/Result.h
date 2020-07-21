@@ -22,7 +22,8 @@ public:
             allocatedFund(_numOfStocks),
             amount(_numOfStocks),
             solution(_numOfStocks),
-            totalFS(_numOfDays) {
+            totalFS(_numOfDays),
+            line(_numOfDays) {
         for (int i = 0; i < _numOfStocks; i++)
             stocks.emplace_back(_numOfDays);
     };
@@ -56,6 +57,10 @@ public:
         logger.writeLine(this->finalFund);
         logger.writeComma("Real return");
         logger.writeLine(this->realReturn);
+        logger.writeComma("Fluctuation");
+        logger.writeLine(this->fluctuation);
+        logger.writeComma("Fluctuation ratio");
+        logger.writeLine(this->fluctuationRatio);
         logger.writeLine("");
 
         logger.writeComma("Expected return");
@@ -74,7 +79,10 @@ public:
             logger.writeComma(")");
 
             logger.writeComma(this->totalFS[i]);
-            logger.writeLine("");
+
+            logger.writeSpace("Line");
+            logger.writeComma(i + 1);
+            logger.writeLine(this->line[i]);
         }
     }
 
@@ -107,6 +115,10 @@ public:
         logger.writeLine(this->finalFund);
         logger.writeComma("Real return");
         logger.writeLine(this->realReturn);
+        logger.writeComma("Fluctuation");
+        logger.writeLine(this->fluctuation);
+        logger.writeComma("Fluctuation ratio");
+        logger.writeLine(this->fluctuationRatio);
         logger.writeLine("");
 
         logger.writeComma("Expected return");
@@ -168,7 +180,9 @@ public:
                 }
             }
             logger.writeComma(this->totalFS[i]);
-            logger.writeLine("");
+            logger.writeSpace("Line");
+            logger.writeComma(i + 1);
+            logger.writeLine(this->line[i]);
         }
         logger.writeLine("");
     };
@@ -194,7 +208,9 @@ public:
                 logger.writeComma("at generation");
                 logger.writeLine("Found best count");
             } else {
-                logger.writeLine("Real return");
+                logger.writeComma("Fluctuation ratio");
+                logger.writeComma("Real return");
+                logger.writeLine("Fluctuation");
             }
         }
         logger.writeComma(section + 1);
@@ -224,7 +240,9 @@ public:
             logger.writeComma(atGen + 1);
             logger.writeLine(this->foundBestCount);
         } else {
-            logger.writeLine(this->realReturn);
+            logger.writeComma(this->fluctuationRatio);
+            logger.writeComma(this->realReturn);
+            logger.writeLine(this->fluctuation);
         }
     }
 
@@ -239,6 +257,9 @@ public:
     double initFund{};
     double finalFund{};
     double realReturn{};
+    double fluctuation{};
+    double fluctuationRatio{};
+    vector<double> line{};
     double expectedReturn{};
     double risk{};
     double gBest{}; // the best trend value

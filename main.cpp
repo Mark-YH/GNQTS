@@ -26,7 +26,7 @@ void ranking() {
             }
             vector<double> allocRatio(model.getNumOfStocks());
             allocRatio[portfolio_a] = 1;
-            double gBest = model.getFitness(particle.solution, -1, allocRatio);
+            double gBest = model.getFitness(particle.solution, -1, allocRatio, true);
             double risk = result.risk;
             double expectedReturn = result.expectedReturn;
             string symbol = model.getStockSymbol(count);
@@ -106,7 +106,7 @@ void exhaustion() {
 //        allocRatio[portfolio_c] = (k) / (double) precision;
 //        allocRatio[portfolio_d] = (precision - i - j - k) / (double) precision;
 //            allocRatio[portfolio_e] = (precision - i - j - k - l) / (double) precision;
-        model.getFitness(particle.solution, -1, allocRatio);
+        model.getFitness(particle.solution, -1, allocRatio, true);
         if (bestResults[0].gBest < result.gBest) { // found a better solution
             bestResults.clear();
             bestResults.push_back(result);
@@ -229,7 +229,7 @@ void fundAllocation() {
         }
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
-            testingModel.getFitness(finalResult.solution, -1, allocRatio);
+            testingModel.getFitness(finalResult.solution, -1, allocRatio, false);
 #if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
 #endif
@@ -261,7 +261,7 @@ void fundAllocation() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1);
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
@@ -293,7 +293,7 @@ void stockSelection() {
         result.foundBestCount = 1;
         double gBest = -DBL_MAX;
         for (int j = 0; j < ROUND; j++) { // round
-            std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
+            std::cout << "Round: " << std::setw(2) << j + 1 << " / " << ROUND << '\r';
             GNQTS qts(&model);
             qts.run();
 
@@ -311,7 +311,7 @@ void stockSelection() {
         }
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
-            testingModel.getFitness(finalResult.solution, -1, vector<double>());
+            testingModel.getFitness(finalResult.solution, -1, vector<double>(), false);
 #if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
 #endif
@@ -343,7 +343,7 @@ void stockSelection() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1);
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
@@ -363,25 +363,26 @@ void singleStock() {
     vector<double> finalFS;
     for (int i = 0; i < model.trainingSection.size(); i++) { // section
         model.nextSection(i, true);
+        Result result(model.getNumOfStocks(), model.getNumOfDays());
+        model.setResult(&result);
 #if RUN_TESTING
         testingModel.nextSection(i, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
-        Result result(model.getNumOfStocks(), model.getNumOfDays());
-        model.setResult(&result);
+
         for (int j = 0; j < model.getNumOfStocks(); j++) {
             vector<int> solution(model.getNumOfStocks(), 0);
             vector<double> allocRatio(model.getNumOfStocks(), 0);
             solution[j] = 1;
             allocRatio[j] = 1;
-            model.getFitness(solution, -1, allocRatio);
+            model.getFitness(solution, -1, allocRatio, true);
             result.generateOutput(i, true, Model::market, Model::slidingWindow,
                                   model.trainingSection, model.testingSection);
             result.finalOutput(i, true, Model::market, Model::slidingWindow,
                                model.trainingSection, model.testingSection);
 #if RUN_TESTING
-            testingModel.getFitness(solution, -1, allocRatio);
+            testingModel.getFitness(solution, -1, allocRatio, false);
 #if COMPOUND_INTEREST
             testingModel.setInitialFund(testingResult.finalFund);
 #endif
@@ -401,7 +402,7 @@ void singleStock() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1);
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
