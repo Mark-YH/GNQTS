@@ -169,7 +169,7 @@ void fundAllocation() {
     const string portfolio_20 = "UNH";
 
     for (int section = 0; section < model.trainingSection.size(); section++) { // section
-        std::cout << "Period: " << std::setw(2) << section + 1 << "/" << model.trainingSection.size() << endl;
+        std::cout << "Period: " << std::setw(2) << section + 1 << " / " << model.trainingSection.size() << endl;
         model.nextSection(section, true);
 #if RUN_TESTING
         testingModel.nextSection(section, false);
@@ -280,7 +280,7 @@ void stockSelection() {
     double totalReturn = 0.0;
     vector<double> finalFS;
     for (int i = 0; i < model.trainingSection.size(); i++) { // section
-        std::cout << "Period: " << std::setw(2) << i + 1 << "/" << model.trainingSection.size() << endl;
+        std::cout << "Period: " << std::setw(2) << i + 1 << " / " << model.trainingSection.size() << endl;
         model.nextSection(i, true);
 #if RUN_TESTING
         testingModel.nextSection(i, false);
