@@ -42,16 +42,22 @@ vector<double> QTS::run() {
         evaluate(i);
         update();
     }
-    vector<double> allocRatio(this->model->getNumOfStocks()); // the fund ratio of each chosen stock
-    for (int i = 0; i < this->indexOfChosen.size(); i++) {
-        for (int j = 0; j < this->numOfBit; j++) {
-            if (this->gBest->solution[i][j] == 1) {
-                allocRatio[this->indexOfChosen[i]] += powf(2.0, float(-(j + 1)));
+    vector<double> allocRatio(this->model->getNumOfStocks(), 0); // the fund ratio of each chosen stock
+    if (this->gBest->fitness >= 0) {
+        for (int i = 0; i < this->indexOfChosen.size(); i++) {
+            for (int j = 0; j < this->numOfBit; j++) {
+                if (this->gBest->solution[i][j] == 1) {
+                    allocRatio[this->indexOfChosen[i]] += powf(2.0, float(-(j + 1)));
+                }
             }
         }
+        normalize(allocRatio);
+        this->model->getFitness(this->stockSelection, -1, allocRatio, true);
+    } else {
+        for (int &i : this->stockSelection)
+            i = 0;
+        this->model->getFitness(this->stockSelection, -1, allocRatio, true);
     }
-    normalize(allocRatio);
-    this->model->getFitness(this->stockSelection, -1, allocRatio, true);
     return allocRatio;
 }
 
