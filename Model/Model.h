@@ -83,6 +83,8 @@ private:
     void readData(const std::string &path);
 
     void calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex);
+
+    double calcRisk(vector<double> &totalFS, vector<double> &line, int _numOfDays) const;
 };
 
 #endif //GNQTS_STOCK_MODEL_H

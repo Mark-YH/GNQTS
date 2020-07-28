@@ -244,6 +244,16 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
     return calcTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
 }
 
+double Model::calcRisk(vector<double> &totalFS, vector<double> &line, int _numOfDays) const {
+    double tmp = 0.0;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        tmp += (totalFS[i] - line[i]) * (totalFS[i] - line[i]);
+    }
+
+    return sqrt(tmp / _numOfDays);
+}
+
 double
 Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
     // calculate slope
@@ -262,13 +272,7 @@ Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund,
     }
 
     // calculate risk
-    tmp = 0.0;
-
-    for (int i = 0; i < _numOfDays; i++) {
-        tmp += (totalFS[i] - trendLine[i]) * (totalFS[i] - trendLine[i]);
-    }
-
-    double risk = sqrt(tmp / _numOfDays);
+    double risk = calcRisk(totalFS, trendLine, _numOfDays);
 
     // calculate trend ratio
     double trendRatio = 0.0;
@@ -289,16 +293,10 @@ Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund,
             line[i] = i * (line.back() - line.front()) / (_numOfDays - 1) + line.front();
         }
 
-        tmp = 0.0;
-
-        for (int i = 0; i < _numOfDays; i++) {
-            tmp += (totalFS[i] - line[i]) * (totalFS[i] - line[i]);
-        }
-
-        double fluctuation = sqrt(tmp / _numOfDays);
+        double fluctuation = calcRisk(totalFS, line, _numOfDays);
 
         this->result->fluctuation = fluctuation;
-        this->result->fluctuationRatio = (line.back() - line.front()) / fluctuation;
+        this->result->emotionIndex = (line.back() - line.front()) / fluctuation;
         this->result->line = line;
     }
 
