@@ -59,8 +59,8 @@ public:
         logger.writeLine(this->realReturn);
         logger.writeComma("Fluctuation");
         logger.writeLine(this->fluctuation);
-        logger.writeComma("Fluctuation ratio");
-        logger.writeLine(this->fluctuationRatio);
+        logger.writeComma("Emotion index");
+        logger.writeLine(this->emotionIndex);
         logger.writeLine("");
 
         logger.writeComma("Expected return");
@@ -117,8 +117,8 @@ public:
         logger.writeLine(this->realReturn);
         logger.writeComma("Fluctuation");
         logger.writeLine(this->fluctuation);
-        logger.writeComma("Fluctuation ratio");
-        logger.writeLine(this->fluctuationRatio);
+        logger.writeComma("Emotion index");
+        logger.writeLine(this->emotionIndex);
         logger.writeLine("");
 
         logger.writeComma("Expected return");
@@ -208,7 +208,7 @@ public:
                 logger.writeComma("at generation");
                 logger.writeLine("Found best count");
             } else {
-                logger.writeComma("Fluctuation ratio");
+                logger.writeComma("Emotion index");
                 logger.writeComma("Real return");
                 logger.writeLine("Fluctuation");
             }
@@ -240,7 +240,7 @@ public:
             logger.writeComma(atGen + 1);
             logger.writeLine(this->foundBestCount);
         } else {
-            logger.writeComma(this->fluctuationRatio);
+            logger.writeComma(this->emotionIndex);
             logger.writeComma(this->realReturn);
             logger.writeLine(this->fluctuation);
         }
@@ -258,7 +258,7 @@ public:
     double finalFund{};
     double realReturn{};
     double fluctuation{};
-    double fluctuationRatio{};
+    double emotionIndex{};
     vector<double> line{};
     double expectedReturn{};
     double risk{};
