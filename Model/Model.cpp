@@ -241,7 +241,7 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
         this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
     }
 
-    return calcTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
+    return getSharpeRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
 }
 
 double Model::calcRisk(vector<double> &totalFS, vector<double> &line, int _numOfDays) const {
@@ -255,7 +255,7 @@ double Model::calcRisk(vector<double> &totalFS, vector<double> &line, int _numOf
 }
 
 double
-Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
+Model::getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
     // calculate slope
     double tmp = 0, tmp2 = 0;
 
@@ -307,6 +307,67 @@ Model::calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund,
         this->result->gBest = trendRatio;
     }
     return trendRatio;
+}
+
+double
+Model::getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
+    // calculate slope
+    double tmp = 0, tmp2 = 0;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        tmp += (i + 1) * totalFS[i] - (i + 1) * _initFund;
+        tmp2 += (i + 1) * (i + 1);
+    }
+    double slope = tmp / tmp2;
+
+    // calculate risk
+    double avg = 0.0;
+    tmp = 0.0;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        avg += totalFS[i];
+    }
+    avg /= _numOfDays;
+
+    for (int i = 0; i < _numOfDays; i++) {
+        tmp += (totalFS[i] - avg) * (totalFS[i] - avg);
+    }
+
+    double risk = sqrt(tmp / _numOfDays);
+
+    // calculate sharpe ratio
+    double sharpeRatio = 0.0;
+
+    if (risk > 0) { // if risk == 0 then sharpeRatio = 0
+        if (slope >= 0) {
+            sharpeRatio = slope / risk;
+        } else {
+            sharpeRatio = slope * risk;
+        }
+    }
+
+    if (!isTraining) {
+        vector<double> line(_numOfDays);
+        line.front() = totalFS.front();
+        line.back() = totalFS.back();
+        for (int i = 1; i < _numOfDays - 1; i++) {
+            line[i] = i * (line.back() - line.front()) / (_numOfDays - 1) + line.front();
+        }
+
+        double fluctuation = calcRisk(totalFS, line, _numOfDays);
+
+        this->result->fluctuation = fluctuation;
+        this->result->emotionIndex = (line.back() - line.front()) / fluctuation;
+        this->result->line = line;
+    }
+
+    if (pIndex == -1) {
+        this->result->initFund = _initFund;
+        this->result->expectedReturn = slope;
+        this->result->risk = risk;
+        this->result->gBest = sharpeRatio;
+    }
+    return sharpeRatio;
 }
 
 void Model::calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex) {

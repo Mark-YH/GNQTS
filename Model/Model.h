@@ -65,7 +65,9 @@ public:
 
     void setInitialFund(double fund);
 
-    double calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
+    double getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
+
+    double getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
 
 private:
     int population;
