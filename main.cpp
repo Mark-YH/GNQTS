@@ -8,7 +8,7 @@ using std::tuple;
 using std::get;
 
 void ranking() {
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     for (int section = 0; section < model.trainingSection.size(); section++) {
         int portfolio_a = 0;
         model.nextSection(section, true);
@@ -79,7 +79,7 @@ void exhaustion() {
     int portfolio_e = 0;
     int precision = 100;
 
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     model.nextSection(section, true);
     Particle particle(model.getNumOfStocks());
     Result result(model.getNumOfStocks(), model.getNumOfDays());
@@ -136,10 +136,10 @@ void exhaustion() {
 }
 
 void fundAllocation() {
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     testingModel.trainingSection = model.trainingSection;
     testingModel.testingSection = model.testingSection;
 #endif
@@ -269,10 +269,10 @@ void fundAllocation() {
 }
 
 void stockSelection() {
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     testingModel.trainingSection = model.trainingSection;
     testingModel.testingSection = model.testingSection;
 #endif
@@ -351,10 +351,10 @@ void stockSelection() {
 }
 
 void singleStock() {
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     testingModel.trainingSection = model.trainingSection;
     testingModel.testingSection = model.testingSection;
 #endif
