@@ -17,10 +17,13 @@ using std::pair;
 
 namespace fs = std::filesystem;
 
-Model::Model(int population, int generation, double theta, double fund, double fee, double tax) {
+Model::Model(int population, int generation, double theta, double uTheta, double lTheta, double fund, double fee,
+             double tax) {
     this->population = population;
     this->generation = generation;
     this->theta = theta;
+    this->uTheta = uTheta;
+    this->lTheta = lTheta;
     this->initFund = fund;
     this->fee = fee;
     this->tax = tax;
@@ -362,17 +365,18 @@ int Model::getPopulation() const {
     return this->population;
 }
 
-double Model::getTheta() const {
-    return this->theta;
+double Model::getTheta(double beta) const {
+    return this->uTheta - 2.0 * beta * (this->uTheta - this->lTheta); // linear
+//    return pow(2.0, -beta * 10.0) * (this->uTheta - this->lTheta) + this->lTheta; // exponential
 }
 
 void Model::setResult(Result *rs) {
     this->result = rs;
     this->result->generation = this->getGeneration();
     this->result->population = this->getPopulation();
-    this->result->uBound = this->getTheta();
-    this->result->lBound = this->getTheta();
-    this->result->theta = this->getTheta();
+    this->result->uBound = this->uTheta;
+    this->result->lBound = this->lTheta;
+    this->result->theta = this->theta;
     this->result->round = ROUND;
 }
 

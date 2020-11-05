@@ -86,18 +86,18 @@ void GNQTS::update() {
         if (this->bestParticle->solution[i] == 0 && this->worstParticle->solution[i] == 1) {
             if (this->pMatrix[i] > 0.5) {
                 this->pMatrix[i] = 1 - this->pMatrix[i];
-                this->pMatrix[i] -= this->model->getTheta();
+                this->pMatrix[i] -= this->model->getTheta(this->pMatrix[i]);
             } else {
-                this->pMatrix[i] -= this->model->getTheta();
+                this->pMatrix[i] -= this->model->getTheta(this->pMatrix[i]);
             }
         }
 
         if (this->bestParticle->solution[i] == 1 && this->worstParticle->solution[i] == 0) {
             if (this->pMatrix[i] < 0.5) {
                 this->pMatrix[i] = 1 - this->pMatrix[i];
-                this->pMatrix[i] += this->model->getTheta();
+                this->pMatrix[i] += this->model->getTheta(this->pMatrix[i]);
             } else {
-                this->pMatrix[i] += this->model->getTheta();
+                this->pMatrix[i] += this->model->getTheta(this->pMatrix[i]);
             }
         }
     }

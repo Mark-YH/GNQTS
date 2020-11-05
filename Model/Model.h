@@ -39,7 +39,8 @@ public:
 
     Model() = delete;
 
-    Model(int population, int generation, double theta, double fund, double fee, double tax);
+    Model(int population, int generation, double theta, double uTheta, double lTheta, double fund, double fee,
+          double tax);
 
     ~Model();
 
@@ -49,7 +50,7 @@ public:
 
     int getPopulation() const;
 
-    double getTheta() const;
+    double getTheta(double beta) const;
 
     double getFitness(vector<int> &solution, int pIndex, const vector<double> &allocRatio, bool isTraining);
 
@@ -75,6 +76,8 @@ private:
     int numOfDays;
     double initFund;
     double theta;
+    double uTheta;
+    double lTheta;
     double fee;
     double tax;
 

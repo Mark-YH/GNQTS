@@ -128,14 +128,14 @@ void QTS::update() {
                 if (this->pMatrix[i][j] > 0.5) {
                     this->pMatrix[i][j] = 1 - this->pMatrix[i][j];
                 }
-                this->pMatrix[i][j] -= this->model->getTheta();
+                this->pMatrix[i][j] -= this->model->getTheta(this->pMatrix[i][j]);
             }
 
             if (this->gBest->solution[i][j] == 1 && this->lWorst->solution[i][j] == 0) {
                 if (this->pMatrix[i][j] < 0.5) {
                     this->pMatrix[i][j] = 1 - this->pMatrix[i][j];
                 }
-                this->pMatrix[i][j] += this->model->getTheta();
+                this->pMatrix[i][j] += this->model->getTheta(this->pMatrix[i][j]);
             }
         }
     }
