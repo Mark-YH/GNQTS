@@ -4,3 +4,4 @@ data
 cmake-build*
 log
 img
+py_output
