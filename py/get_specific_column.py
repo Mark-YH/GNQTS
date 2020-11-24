@@ -18,7 +18,7 @@ def read():
     for p in paths:
         for v in ver:
             for sw in sliding_windows:
-                file_path = path.join(path.join(path.join(path.realpath(p), v), sw), sw + '_final_result.csv')
+                file_path = path.join(path.realpath(p), v, sw, sw + '_final_result.csv')
                 with open(file_path) as csvfile:
                     i_round = 0
                     avg_round = 0
