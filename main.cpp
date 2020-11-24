@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstring>
 #include <tuple>
+#include <sstream>
 
 using std::tuple;
 using std::get;
@@ -409,6 +410,76 @@ void singleStock() {
 #endif
 }
 
+void givenPortfolio() {
+    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    model.init();
+#if RUN_TESTING
+    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    testingModel.trainingSection = model.trainingSection;
+    testingModel.testingSection = model.testingSection;
+#endif
+
+    double totalReturn = 0.0;
+    vector<double> finalFS;
+    for (int i = 0; i < model.trainingSection.size(); i++) { // section
+        model.nextSection(i, true);
+        Result result(model.getNumOfStocks(), model.getNumOfDays());
+        model.setResult(&result);
+#if RUN_TESTING
+        testingModel.nextSection(i, false);
+        Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
+        testingModel.setResult(&testingResult);
+#endif
+
+        vector<int> solution(model.getNumOfStocks(), 0);
+        vector<double> allocRatio(model.getNumOfStocks(), 0);
+        std::ifstream fin;
+        fin.open("../py/py_output/EWFA/" + Model::slidingWindow + "/" + std::to_string(i + 1) + ".csv");
+        for (int j = 0; j < model.getNumOfStocks(); j++) {
+            string line;
+            while (std::getline(fin, line)) {
+                std::stringstream ss(line);
+                int a;
+                long double b;
+                while (ss >> a >> b) {
+                    solution[a] = 1;
+                    allocRatio[a] = b / 10000000.0;
+                }
+            }
+        }
+        fin.close();
+        model.getFitness(solution, -1, allocRatio, true);
+        result.generateOutput(i, true, Model::market, Model::slidingWindow,
+                              model.trainingSection, model.testingSection);
+        result.finalOutput(i, true, Model::market, Model::slidingWindow,
+                           model.trainingSection, model.testingSection);
+#if RUN_TESTING
+        testingModel.getFitness(solution, -1, allocRatio, false);
+#if COMPOUND_INTEREST
+        testingModel.setInitialFund(testingResult.finalFund);
+#endif
+        totalReturn += testingResult.finalFund - testingResult.initFund;
+        for (auto it: testingModel.result->totalFS) {
+            finalFS.push_back(it);
+        }
+
+        testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
+                                     model.trainingSection, model.testingSection);
+        testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
+                                  model.trainingSection, model.testingSection);
+#endif
+    }
+#if RUN_TESTING
+    Result rs(model.getNumOfStocks(), finalFS.size());
+    testingModel.setResult(&rs);
+    rs.totalFS = finalFS;
+    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+    rs.finalFund = finalFS.back();
+    rs.realReturn = totalReturn;
+    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
+#endif
+}
+
 int main() {
     auto start = std::chrono::steady_clock::now();
     srand(114);
@@ -422,6 +493,8 @@ int main() {
     ranking();
 #elif MODE == 4
     singleStock();
+#elif MODE == 5
+    givenPortfolio();
 #endif
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
