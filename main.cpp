@@ -1,4 +1,4 @@
-#include "StockSelection/GNQTS.h"
+#include "EWFA/GNQTS.h"
 #include "FundAllocation/QTS.h"
 #include <chrono>
 #include <cstring>
