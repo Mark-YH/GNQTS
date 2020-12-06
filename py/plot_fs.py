@@ -8,9 +8,11 @@ import numpy as np
 
 
 class Config:
-    paths = ['../log/DJI30/', 'C:/Users/Lab114/Desktop/DJI30/DJI30 心情波動/分配/']
-    labels = ['SR', 'TR']
-    colors = [(0.2, 0.4, 1), (1, 0.5, 0.2)]
+    paths = ['C:/Users/Lab114/Desktop/DJI30/DJI30 Sharpe ratio/平分/',
+             'C:/Users/Lab114/Desktop/DJI30/DJI30 心情波動/平分/',
+             'C:/Users/Lab114/Desktop/DJI30/DJI30 心情波動/分配/']
+    labels = ['SR', 'TR EWFA', 'TR FA']
+    colors = [(0.2, 0.4, 1), (1, 0.5, 0.2), (0.2, 0.6, 0.4)]
     mode = ['train']
     sliding_windows = [
         'Y2Y',
@@ -69,17 +71,21 @@ def get_fs(file_path):
     fs = []
     with open(file_path, 'r') as file:
         no_invest = False
+        col = 0
         for row in file:
             if re.match(r'Number of chosen,\d+', row):
                 result = row.split(',')
                 if int(result[1]) == 0:
                     no_invest = True
+            if re.match(r'Balance of each stock,+', row):
+                result = row.split(',')
+                col = len(result) - 1
             if re.match(r'FS\(\d+\)', row):
                 result = row.split(',')
                 if no_invest:
                     fs.append(float(result[1]))
                 else:
-                    fs.append(float(result[31]))
+                    fs.append(float(result[col]))
     return fs
 
 
@@ -90,8 +96,8 @@ def add_fs(_fs, label='?', color=(0, 0, 0)):
     r, g, b = color
 
     plt.plot(_fs, label=label, color=color)
-    plt.plot(avg, label=label + ' average', linestyle='dotted', color=(r, g, b, 0.7))
-    plt.plot(get_trend_line(_fs), label=label + ' trendline', linestyle='dashed', color=(r, g, b, 0.7))
+    plt.plot(avg, label=label + ' avg.', linestyle='dotted', color=(r, g, b, 0.7))
+    plt.plot(get_trend_line(_fs), label=label + ' tl.', linestyle='dashed', color=(r, g, b, 0.7))
 
 
 def save_fs(sw, filename):
@@ -99,14 +105,15 @@ def save_fs(sw, filename):
         mode = 'test'
     if filename.__contains__('train'):
         mode = 'train'
-    period = re.split(r'output_|test_|train_|\(', filename)[2]
+    period = re.split(r'output_(test|train)_|\(.+\)\.csv', filename)[2]
     os.makedirs('./img/' + mode + '/' + sw, exist_ok=True)
-    plt.title(period)
+    plt.title(sw.replace('#', '*') + ' ' + period)
     plt.xlabel('Day')
     plt.ylabel('Funds Standardization')
     plt.legend()
     plt.savefig('img/' + mode + '/' + sw + '/' + filename.split('.csv')[0] + '.svg')
-    plt.show()
+    # plt.show()
+    plt.clf()
 
 
 def run():
