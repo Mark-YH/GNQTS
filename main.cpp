@@ -411,10 +411,10 @@ void singleStock() {
 }
 
 void givenPortfolio() {
-    Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
     testingModel.trainingSection = model.trainingSection;
     testingModel.testingSection = model.testingSection;
 #endif
