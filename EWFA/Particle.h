@@ -2,8 +2,8 @@
 // Created by Mark Hsu on 2019/11/6.
 //
 
-#ifndef GNQTS_STOCK_PARTICLE_H
-#define GNQTS_STOCK_PARTICLE_H
+#ifndef PORTFOLIO_OPTIMIZATION_PARTICLE_H
+#define PORTFOLIO_OPTIMIZATION_PARTICLE_H
 
 #include <cfloat>
 
@@ -15,4 +15,4 @@ public:
     explicit Particle(int size) : solution(size), fitness{-DBL_MAX} {};
 };
 
-#endif //GNQTS_STOCK_PARTICLE_H
+#endif //PORTFOLIO_OPTIMIZATION_PARTICLE_H

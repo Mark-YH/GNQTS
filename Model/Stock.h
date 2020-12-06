@@ -2,8 +2,8 @@
 // Created by Mark Hsu on 2019/11/19.
 //
 
-#ifndef GNQTS_STOCK_STOCK_H
-#define GNQTS_STOCK_STOCK_H
+#ifndef PORTFOLIO_OPTIMIZATION_STOCK_H
+#define PORTFOLIO_OPTIMIZATION_STOCK_H
 
 #include <string>
 #include <vector>
@@ -26,4 +26,4 @@ public:
 };
 
 
-#endif //GNQTS_STOCK_STOCK_H
+#endif //PORTFOLIO_OPTIMIZATION_STOCK_H

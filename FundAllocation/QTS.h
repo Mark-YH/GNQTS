@@ -2,42 +2,43 @@
 // Created by Mark Hsu on 2020/3/27.
 //
 
-#ifndef GNQTS_STOCK_QTS_H
-#define GNQTS_STOCK_QTS_H
+#ifndef PORTFOLIO_OPTIMIZATION_FA_QTS_H
+#define PORTFOLIO_OPTIMIZATION_FA_QTS_H
 
 #include "../Model/Model.h"
-#include "Particle_FA.h"
+#include "ParticleFA.h"
 
-class QTS {
-public:
-    QTS() = delete;
+namespace FA {
+    class QTS {
+    public:
+        QTS() = delete;
 
-    explicit QTS(Model &m, vector<int> &selection);
+        explicit QTS(Model &m, vector<int> &selection);
 
-    ~QTS();
+        ~QTS();
 
-    vector<double> run();
+        vector<double> run();
 
-    int getBestGeneration() const;
+        int getBestGeneration() const;
 
-private:
-    void measure();
+    private:
+        void measure();
 
-    void evaluate(int generation);
+        void evaluate(int generation);
 
-    void update();
+        void update();
 
-    void normalize(vector<double> &_allocRatio) const;
+        void normalize(vector<double> &_allocRatio) const;
 
-    int numOfBit;
-    Model *model;
-    vector<int> stockSelection;
-    vector<int> indexOfChosen;
-    vector<ParticleFA> particle;
-    ParticleFA *gBest;
-    ParticleFA *lWorst;
-    double **pMatrix;
-    int bestGeneration;
-};
-
-#endif //GNQTS_STOCK_QTS_H
+        int numOfBit;
+        Model *model;
+        vector<int> stockSelection;
+        vector<int> indexOfChosen;
+        vector<ParticleFA> particle;
+        ParticleFA *gBest;
+        ParticleFA *lWorst;
+        double **pMatrix;
+        int bestGeneration;
+    };
+}
+#endif //PORTFOLIO_OPTIMIZATION_FA_QTS_H
