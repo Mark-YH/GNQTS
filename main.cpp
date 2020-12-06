@@ -1,4 +1,4 @@
-#include "EWFA/GNQTS.h"
+#include "EWFA/QTS.h"
 #include "FundAllocation/QTS.h"
 #include <chrono>
 #include <cstring>
@@ -10,9 +10,10 @@ using std::get;
 
 void ranking() {
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    for (int section = 0; section < model.trainingSection.size(); section++) {
+    model.init();
+    for (int period = 0; period < model.trainingPeriod.size(); period++) {
         int portfolio_a = 0;
-        model.nextSection(section, true);
+        model.nextPeriod(period, true);
         Particle particle(model.getNumOfStocks());
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
@@ -39,9 +40,9 @@ void ranking() {
         path += "/";
         path += Model::slidingWindow;
         path += "/rank_";
-        path += model.trainingSection[section];
+        path += model.trainingPeriod[period];
         Logger logger(path);
-        logger.writeComma("Section");
+        logger.writeComma("Period");
         logger.writeComma("Stock(rank#)");
         logger.writeComma("Trend ratio");
         logger.writeComma("Expected return");
@@ -57,7 +58,7 @@ void ranking() {
                     iMax = i;
                 }
             }
-            logger.writeComma(section + 1);
+            logger.writeComma(period + 1);
             logger.write(get<0>(rank[iMax]));
             logger.write("(");
             logger.write(count + 1);
@@ -72,7 +73,7 @@ void ranking() {
 }
 
 void exhaustion() {
-    int section = 0;
+    int period = 0;
     int portfolio_a = 0;
     int portfolio_b = 1;
     int portfolio_c = 0;
@@ -81,7 +82,8 @@ void exhaustion() {
     int precision = 100;
 
     Model model(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    model.nextSection(section, true);
+    model.init();
+    model.nextPeriod(period, true);
     Particle particle(model.getNumOfStocks());
     Result result(model.getNumOfStocks(), model.getNumOfDays());
     model.setResult(&result);
@@ -119,20 +121,20 @@ void exhaustion() {
             (allocRatio[portfolio_c] == 1) ||
             (allocRatio[portfolio_d] == 1) ||
             (allocRatio[portfolio_e] == 1)) {
-            result.generateOutput(section, true, Model::market, Model::slidingWindow, model.trainingSection,
-                                  model.testingSection);
-            result.finalOutput(section, true, Model::market, Model::slidingWindow, model.trainingSection,
-                               model.testingSection);
+            result.generateOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
+                                  model.testingPeriod);
+            result.finalOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
+                               model.testingPeriod);
         }
     }
 //        }
 //    }
 //    }
     for (auto &bestResult : bestResults) {
-        bestResult.generateOutput(section, true, Model::market, Model::slidingWindow, model.trainingSection,
-                                  model.testingSection);
-        bestResult.finalOutput(section, true, Model::market, Model::slidingWindow, model.trainingSection,
-                               model.testingSection);
+        bestResult.generateOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
+                                  model.testingPeriod);
+        bestResult.finalOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
+                               model.testingPeriod);
     }
 }
 
@@ -141,8 +143,8 @@ void fundAllocation() {
     model.init();
 #if RUN_TESTING
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    testingModel.trainingSection = model.trainingSection;
-    testingModel.testingSection = model.testingSection;
+    testingModel.trainingPeriod = model.trainingPeriod;
+    testingModel.testingPeriod = model.testingPeriod;
 #endif
 
     double totalReturn = 0.0;
@@ -169,11 +171,11 @@ void fundAllocation() {
     const string portfolio_19 = "CSCO";
     const string portfolio_20 = "UNH";
 
-    for (int section = 0; section < model.trainingSection.size(); section++) { // section
-        std::cout << "Period: " << std::setw(2) << section + 1 << " / " << model.trainingSection.size() << endl;
-        model.nextSection(section, true);
+    for (int period = 0; period < model.trainingPeriod.size(); period++) {
+        std::cout << "Period: " << std::setw(2) << period + 1 << " / " << model.trainingPeriod.size() << endl;
+        model.nextPeriod(period, true);
 #if RUN_TESTING
-        testingModel.nextSection(section, false);
+        testingModel.nextPeriod(period, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
@@ -214,7 +216,7 @@ void fundAllocation() {
         vector<double> allocRatio, tmp;
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
-            QTS qts(model, stockSelection);
+            FA::QTS qts(model, stockSelection);
             tmp = qts.run();
             if (gBest == result.gBest) {
                 result.foundBestCount++;
@@ -248,15 +250,15 @@ void fundAllocation() {
                 finalFS.push_back(tmp);
             }
         }
-        testingResult.generateOutput(section, false, Model::market, Model::slidingWindow,
-                                     model.trainingSection, model.testingSection);
-        testingResult.finalOutput(section, false, Model::market, Model::slidingWindow,
-                                  model.trainingSection, model.testingSection);
+        testingResult.generateOutput(period, false, Model::market, Model::slidingWindow,
+                                     model.trainingPeriod, model.testingPeriod);
+        testingResult.finalOutput(period, false, Model::market, Model::slidingWindow,
+                                  model.trainingPeriod, model.testingPeriod);
 #endif
-        finalResult.generateOutput(section, true, Model::market, Model::slidingWindow,
-                                   model.trainingSection, model.testingSection);
-        finalResult.finalOutput(section, true, Model::market, Model::slidingWindow,
-                                model.trainingSection, model.testingSection);
+        finalResult.generateOutput(period, true, Model::market, Model::slidingWindow,
+                                   model.trainingPeriod, model.testingPeriod);
+        finalResult.finalOutput(period, true, Model::market, Model::slidingWindow,
+                                model.trainingPeriod, model.testingPeriod);
     }
 #if RUN_TESTING
     Result rs(model.getNumOfStocks(), finalFS.size());
@@ -265,7 +267,7 @@ void fundAllocation() {
     testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
+    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
 #endif
 }
 
@@ -274,17 +276,17 @@ void stockSelection() {
     model.init();
 #if RUN_TESTING
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    testingModel.trainingSection = model.trainingSection;
-    testingModel.testingSection = model.testingSection;
+    testingModel.trainingPeriod = model.trainingPeriod;
+    testingModel.testingPeriod = model.testingPeriod;
 #endif
 
     double totalReturn = 0.0;
     vector<double> finalFS;
-    for (int i = 0; i < model.trainingSection.size(); i++) { // section
-        std::cout << "Period: " << std::setw(2) << i + 1 << " / " << model.trainingSection.size() << endl;
-        model.nextSection(i, true);
+    for (int i = 0; i < model.trainingPeriod.size(); i++) {
+        std::cout << "Period: " << std::setw(2) << i + 1 << " / " << model.trainingPeriod.size() << endl;
+        model.nextPeriod(i, true);
 #if RUN_TESTING
-        testingModel.nextSection(i, false);
+        testingModel.nextPeriod(i, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
@@ -295,7 +297,7 @@ void stockSelection() {
         double gBest = -DBL_MAX;
         for (int j = 0; j < ROUND; j++) { // round
             std::cout << "Round: " << std::setw(2) << j + 1 << " / " << ROUND << '\r';
-            GNQTS qts(&model);
+            EWFA::QTS qts(&model);
             qts.run();
 
             if (gBest == result.gBest) {
@@ -331,14 +333,14 @@ void stockSelection() {
             }
         }
         testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
-                                     model.trainingSection, model.testingSection);
+                                     model.trainingPeriod, model.testingPeriod);
         testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
-                                  model.trainingSection, model.testingSection);
+                                  model.trainingPeriod, model.testingPeriod);
 #endif
         finalResult.generateOutput(i, true, Model::market, Model::slidingWindow,
-                                   model.trainingSection, model.testingSection);
+                                   model.trainingPeriod, model.testingPeriod);
         finalResult.finalOutput(i, true, Model::market, Model::slidingWindow,
-                                model.trainingSection, model.testingSection);
+                                model.trainingPeriod, model.testingPeriod);
     }
 #if RUN_TESTING
     Result rs(model.getNumOfStocks(), finalFS.size());
@@ -347,7 +349,7 @@ void stockSelection() {
     testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
+    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
 #endif
 }
 
@@ -356,18 +358,18 @@ void singleStock() {
     model.init();
 #if RUN_TESTING
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    testingModel.trainingSection = model.trainingSection;
-    testingModel.testingSection = model.testingSection;
+    testingModel.trainingPeriod = model.trainingPeriod;
+    testingModel.testingPeriod = model.testingPeriod;
 #endif
 
     double totalReturn = 0.0;
     vector<double> finalFS;
-    for (int i = 0; i < model.trainingSection.size(); i++) { // section
-        model.nextSection(i, true);
+    for (int i = 0; i < model.trainingPeriod.size(); i++) {
+        model.nextPeriod(i, true);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
 #if RUN_TESTING
-        testingModel.nextSection(i, false);
+        testingModel.nextPeriod(i, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
@@ -379,9 +381,9 @@ void singleStock() {
             allocRatio[j] = 1;
             model.getFitness(solution, -1, allocRatio, true);
             result.generateOutput(i, true, Model::market, Model::slidingWindow,
-                                  model.trainingSection, model.testingSection);
+                                  model.trainingPeriod, model.testingPeriod);
             result.finalOutput(i, true, Model::market, Model::slidingWindow,
-                               model.trainingSection, model.testingSection);
+                               model.trainingPeriod, model.testingPeriod);
 #if RUN_TESTING
             testingModel.getFitness(solution, -1, allocRatio, false);
 #if COMPOUND_INTEREST
@@ -393,9 +395,9 @@ void singleStock() {
             }
 
             testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
-                                         model.trainingSection, model.testingSection);
+                                         model.trainingPeriod, model.testingPeriod);
             testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
-                                      model.trainingSection, model.testingSection);
+                                      model.trainingPeriod, model.testingPeriod);
 #endif
         }
     }
@@ -406,7 +408,7 @@ void singleStock() {
     testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
+    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
 #endif
 }
 
@@ -415,18 +417,18 @@ void givenPortfolio() {
     model.init();
 #if RUN_TESTING
     Model testingModel(10, 10000, 0.0004, 10000000.0, 0.001425, 0.003);
-    testingModel.trainingSection = model.trainingSection;
-    testingModel.testingSection = model.testingSection;
+    testingModel.trainingPeriod = model.trainingPeriod;
+    testingModel.testingPeriod = model.testingPeriod;
 #endif
 
     double totalReturn = 0.0;
     vector<double> finalFS;
-    for (int i = 0; i < model.trainingSection.size(); i++) { // section
-        model.nextSection(i, true);
+    for (int i = 0; i < model.trainingPeriod.size(); i++) {
+        model.nextPeriod(i, true);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
 #if RUN_TESTING
-        testingModel.nextSection(i, false);
+        testingModel.nextPeriod(i, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
@@ -450,9 +452,9 @@ void givenPortfolio() {
         fin.close();
         model.getFitness(solution, -1, allocRatio, true);
         result.generateOutput(i, true, Model::market, Model::slidingWindow,
-                              model.trainingSection, model.testingSection);
+                              model.trainingPeriod, model.testingPeriod);
         result.finalOutput(i, true, Model::market, Model::slidingWindow,
-                           model.trainingSection, model.testingSection);
+                           model.trainingPeriod, model.testingPeriod);
 #if RUN_TESTING
         testingModel.getFitness(solution, -1, allocRatio, false);
 #if COMPOUND_INTEREST
@@ -464,9 +466,9 @@ void givenPortfolio() {
         }
 
         testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
-                                     model.trainingSection, model.testingSection);
+                                     model.trainingPeriod, model.testingPeriod);
         testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
-                                  model.trainingSection, model.testingSection);
+                                  model.trainingPeriod, model.testingPeriod);
 #endif
     }
 #if RUN_TESTING
@@ -476,7 +478,7 @@ void givenPortfolio() {
     testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingSection, model.testingSection);
+    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
 #endif
 }
 

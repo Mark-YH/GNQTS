@@ -2,8 +2,8 @@
 // Created by Lab114 on 2020/3/11.
 //
 
-#ifndef GNQTS_STOCK_RESULT_H
-#define GNQTS_STOCK_RESULT_H
+#ifndef PORTFOLIO_OPTIMIZATION_RESULT_H
+#define PORTFOLIO_OPTIMIZATION_RESULT_H
 
 #include "Stock.h"
 #include "Logger.h"
@@ -28,14 +28,14 @@ public:
             stocks.emplace_back(_numOfDays);
     };
 
-    void totalTestResult(string market, string sw, vector<string> &trainingSection,
-                         vector<string> &testingSection) const {
+    void totalTestResult(string market, string sw, vector<string> &trainingPeriod,
+                         vector<string> &testingPeriod) const {
         Logger logger("../log/" + market + "/" + sw + "/" + sw + "_total_test_result.csv");
 
         logger.writeComma("Testing period");
-        logger.writeSpace(testingSection.front());
+        logger.writeSpace(testingPeriod.front());
         logger.writeSpace("-");
-        logger.writeLine(testingSection.back());
+        logger.writeLine(testingPeriod.back());
 
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
@@ -86,14 +86,14 @@ public:
         }
     }
 
-    void generateOutput(int section, bool isTraining, string market, string sw,
-                        vector<string> &trainingSection, vector<string> &testingSection) const {
+    void generateOutput(int period, bool isTraining, string market, string sw,
+                        vector<string> &trainingPeriod, vector<string> &testingPeriod) const {
         Logger logger;
 
         if (isTraining)
-            logger.setPath("../log/" + market + "/" + sw + "/output_" + trainingSection[section]);
+            logger.setPath("../log/" + market + "/" + sw + "/output_" + trainingPeriod[period]);
         else
-            logger.setPath("../log/" + market + "/" + sw + "/output_" + testingSection[section]);
+            logger.setPath("../log/" + market + "/" + sw + "/output_" + testingPeriod[period]);
 
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
@@ -187,15 +187,15 @@ public:
         logger.writeLine("");
     };
 
-    void finalOutput(int section, bool isTraining, string market, string sw,
-                     vector<string> &trainingSection, vector<string> &testingSection) const {
+    void finalOutput(int period, bool isTraining, string market, string sw,
+                     vector<string> &trainingPeriod, vector<string> &testingPeriod) const {
         Logger logger;
         if (isTraining)
             logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_result.csv");
         else
             logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_test_result.csv");
 
-        if (section == 0) {
+        if (period == 0) {
             logger.writeComma(sw);
             logger.writeComma("Period");
             logger.writeComma("Number of chosen");
@@ -213,11 +213,11 @@ public:
                 logger.writeLine("Fluctuation");
             }
         }
-        logger.writeComma(section + 1);
+        logger.writeComma(period + 1);
         if (isTraining)
-            logger.writeComma(trainingSection[section]);
+            logger.writeComma(trainingPeriod[period]);
         else
-            logger.writeComma(testingSection[section]);
+            logger.writeComma(testingPeriod[period]);
         logger.writeComma(this->numOfChosen);
         for (int i = 0; i < this->numOfStocks; i++) {
             if (this->solution[i] == 1 && this->allocatedFund[i] > 0) {
@@ -277,4 +277,4 @@ public:
     int numOfDays{};
 };
 
-#endif //GNQTS_STOCK_RESULT_H
+#endif //PORTFOLIO_OPTIMIZATION_RESULT_H
