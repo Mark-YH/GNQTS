@@ -20,6 +20,7 @@
  *  2: execute fund allocation with method of exhaustion program
  *  3: execute ranking program
  *  4: execute single stock program
+ *  5: execute given portfolio program
  */
 
 class Model {

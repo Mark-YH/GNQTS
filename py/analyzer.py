@@ -5,8 +5,7 @@
 import csv
 from os import listdir
 
-# ver_dir = ["平分", "分配"]
-ver_dir = ["分配"]
+ver_dir = ["平分", "分配"]
 sliding_windows = ["Y2Y", "Y2H", "Y2Q", "Y2M", "H2H", "H2Q", "H2M", "H#", "Q2Q", "Q2M", "Q#", "M2M", "M#"]
 rs_training = [[], []]
 rs_testing = [[], []]
@@ -122,7 +121,7 @@ def training_search(path, file, ver, sw):
 
 
 def write_training(ver):
-    with open('analysis_training.csv', 'a+', newline='') as csvfile:
+    with open('py_output/analysis_training.csv', 'a+', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
         subject = ['預期報酬', '風險', '趨勢值']
         title = []
@@ -148,24 +147,52 @@ def write_training(ver):
             writer.writerow(context)
 
 
-def write_testing():
-    with open('analysis_testing.csv', 'a+', newline='') as csvfile:
+def write_testing(ver):
+    with open('py_output/analysis_testing.csv', 'a+', newline='') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
-        writer.writerow(
-            ['實際報酬', '平分', '分配', 'DJIA', '波動', '平分', '分配', 'DJIA', '心情指數', '平分', '分配', 'DJIA',
-             '預期報酬', '平分', '分配', 'DJIA', '風險', '平分', '分配', 'DJIA', '趨勢值', '平分', '分配', 'DJIA'])
+        subject = ['真實報酬', '波動', '心情指數', '預期報酬', '風險', '趨勢值']
+        title = []
+        for s in subject:
+            title.append(s)
+            for v in ver:
+                title.append(v)
+            if rs_djia is not None:
+                title.append('DJIA')
+        writer.writerow(title)
         for i in range(len(sliding_windows)):
-            writer.writerow(
-                [sliding_windows[i], rs_testing[0][i].real_return, rs_testing[1][i].real_return, rs_djia.real_return,
-                 sliding_windows[i], rs_testing[0][i].fluctuation, rs_testing[1][i].fluctuation, rs_djia.fluctuation,
-                 sliding_windows[i], rs_testing[0][i].emotion_index, rs_testing[1][i].emotion_index,
-                 rs_djia.emotion_index,
-                 sliding_windows[i], rs_testing[0][i].exp_return, rs_testing[1][i].exp_return, rs_djia.exp_return,
-                 sliding_windows[i], rs_testing[0][i].risk, rs_testing[1][i].risk, rs_djia.risk,
-                 sliding_windows[i], rs_testing[0][i].tr, rs_testing[1][i].tr, rs_djia.tr])
+            context = []
+            for s in subject:
+                context.append(sliding_windows[i])
+                for index, v in enumerate(ver):
+                    if s == '真實報酬':
+                        context.append(rs_testing[index][i].real_return)
+                    elif s == '波動':
+                        context.append(rs_testing[index][i].fluctuation)
+                    elif s == '心情指數':
+                        context.append(rs_testing[index][i].emotion_index)
+                    elif s == '預期報酬':
+                        context.append(rs_testing[index][i].exp_return)
+                    elif s == '風險':
+                        context.append(rs_testing[index][i].risk)
+                    elif s == '趨勢值':
+                        context.append(rs_testing[index][i].tr)
+                if rs_djia is not None:
+                    if s == '真實報酬':
+                        context.append(rs_djia[index][i].real_return)
+                    elif s == '波動':
+                        context.append(rs_djia[index][i].fluctuation)
+                    elif s == '心情指數':
+                        context.append(rs_djia[index][i].emotion_index)
+                    elif s == '預期報酬':
+                        context.append(rs_djia[index][i].exp_return)
+                    elif s == '風險':
+                        context.append(rs_djia[index][i].risk)
+                    elif s == '趨勢值':
+                        context.append(rs_djia[index][i].tr)
+            writer.writerow(context)
 
 
 if __name__ == '__main__':
     read()
     write_training(ver_dir)
-    # write_testing()
+    write_testing(ver_dir)
