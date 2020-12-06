@@ -41,7 +41,7 @@ void Model::init() {
 
     if (fs::exists(path))
         for (const auto &entry : fs::directory_iterator(path)) {
-            trainingSection.emplace_back(entry.path().filename().generic_string());
+            trainingPeriod.emplace_back(entry.path().filename().generic_string());
         }
 
     path = "../data/" + market + "/" + slidingWindow + "/test";
@@ -49,18 +49,18 @@ void Model::init() {
     if (fs::exists(path))
         for (const auto &entry : fs::directory_iterator(path)) {
             auto filename = entry.path().filename();
-            testingSection.emplace_back(filename.generic_string());
+            testingPeriod.emplace_back(filename.generic_string());
         }
 }
 
-void Model::nextSection(int section, bool isTraining) {
+void Model::nextPeriod(int period, bool isTraining) {
     this->stocks.clear();
     string path;
 
     if (isTraining)
-        path = "../data/" + market + "/" + slidingWindow + "/train/" + trainingSection[section];
+        path = "../data/" + market + "/" + slidingWindow + "/train/" + trainingPeriod[period];
     else
-        path = "../data/" + market + "/" + slidingWindow + "/test/" + testingSection[section];
+        path = "../data/" + market + "/" + slidingWindow + "/test/" + testingPeriod[period];
 
     getNumOfRowColumn(path);
 

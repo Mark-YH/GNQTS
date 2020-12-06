@@ -2,8 +2,8 @@
 // Created by Mark Hsu on 2019/11/13.
 //
 
-#ifndef GNQTS_STOCK_MODEL_H
-#define GNQTS_STOCK_MODEL_H
+#ifndef PORTFOLIO_OPTIMIZATION_MODEL_H
+#define PORTFOLIO_OPTIMIZATION_MODEL_H
 
 #include "Result.h"
 
@@ -34,8 +34,8 @@ public:
      * DJI30: Component stocks of DJI.
      * DJIA: Dow Jones industrial average.
      */
-    vector<string> trainingSection;
-    vector<string> testingSection;
+    vector<string> trainingPeriod;
+    vector<string> testingPeriod;
     Result *result;
 
     Model() = delete;
@@ -61,7 +61,7 @@ public:
 
     int getNumOfDays() const;
 
-    void nextSection(int section, bool isTraining);
+    void nextPeriod(int period, bool isTraining);
 
     string getStockSymbol(int i);
 
@@ -91,4 +91,4 @@ private:
     double calcRisk(vector<double> &totalFS, vector<double> &line, int _numOfDays) const;
 };
 
-#endif //GNQTS_STOCK_MODEL_H
+#endif //PORTFOLIO_OPTIMIZATION_MODEL_H

@@ -2,8 +2,8 @@
 // Created by Mark Hsu on 2020/3/27.
 //
 
-#ifndef GNQTS_STOCK_PARTICLE_FA_H
-#define GNQTS_STOCK_PARTICLE_FA_H
+#ifndef PORTFOLIO_OPTIMIZATION_PARTICLEFA_H
+#define PORTFOLIO_OPTIMIZATION_PARTICLEFA_H
 
 #include <cfloat>
 
@@ -48,4 +48,4 @@ public:
     }
 };
 
-#endif //GNQTS_STOCK_PARTICLE_FA_H
+#endif //PORTFOLIO_OPTIMIZATION_PARTICLEFA_H
