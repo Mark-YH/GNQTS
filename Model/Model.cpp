@@ -346,10 +346,8 @@ Model::getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund,
 
     if (!isTraining) {
         vector<double> line(_numOfDays);
-        line.front() = totalFS.front();
-        line.back() = totalFS.back();
-        for (int i = 1; i < _numOfDays - 1; i++) {
-            line[i] = i * (line.back() - line.front()) / (_numOfDays - 1) + line.front();
+        for (int i = 0; i < _numOfDays; i++) {
+            line[i] = (totalFS.back() - totalFS.front()) / (_numOfDays - 1) * (i) + totalFS.front();
         }
 
         double fluctuation = calcRisk(totalFS, line, _numOfDays);
