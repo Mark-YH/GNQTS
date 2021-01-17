@@ -240,8 +240,11 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
         this->result->finalFund = totalFS[this->numOfDays - 1];
         this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
     }
-
+#if TR_SR == 0
+    return getTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
+#else
     return getSharpeRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
+#endif
 }
 
 double Model::calcRisk(vector<double> &totalFS, vector<double> &line, int _numOfDays) const {
