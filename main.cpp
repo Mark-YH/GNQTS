@@ -217,7 +217,7 @@ void fundAllocation() {
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             FA::QTS qts(model, stockSelection);
-            tmp = qts.run();
+            tmp = qts.run(Model::market, Model::slidingWindow, model.trainingPeriod[period], i);
             if (gBest == result.gBest) {
                 result.foundBestCount++;
                 finalResult.foundBestCount++;
@@ -282,11 +282,11 @@ void stockSelection() {
 
     double totalReturn = 0.0;
     vector<double> finalFS;
-    for (int i = 0; i < model.trainingPeriod.size(); i++) {
-        std::cout << "Period: " << std::setw(2) << i + 1 << " / " << model.trainingPeriod.size() << endl;
-        model.nextPeriod(i, true);
+    for (int period = 0; period < model.trainingPeriod.size(); period++) {
+        std::cout << "Period: " << std::setw(2) << period + 1 << " / " << model.trainingPeriod.size() << endl;
+        model.nextPeriod(period, true);
 #if RUN_TESTING
-        testingModel.nextPeriod(i, false);
+        testingModel.nextPeriod(period, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
@@ -295,10 +295,10 @@ void stockSelection() {
         model.setResult(&result);
         result.foundBestCount = 1;
         double gBest = -DBL_MAX;
-        for (int j = 0; j < ROUND; j++) { // round
-            std::cout << "Round: " << std::setw(2) << j + 1 << " / " << ROUND << '\r';
+        for (int i = 0; i < ROUND; i++) { // round
+            std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             EWFA::QTS qts(&model);
-            qts.run();
+            qts.run(Model::market, Model::slidingWindow, model.trainingPeriod[period], i);
 
             if (gBest == result.gBest) {
                 result.foundBestCount++;
@@ -306,7 +306,7 @@ void stockSelection() {
             } else if (gBest < result.gBest) { // found the global best which is a brand new solution
                 gBest = result.gBest;
                 result.foundBestCount = 1;
-                result.atRound = j;
+                result.atRound = i;
                 result.atGen = qts.getBestGeneration();
 
                 finalResult = result;
@@ -332,14 +332,14 @@ void stockSelection() {
                 finalFS.push_back(tmp);
             }
         }
-        testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
+        testingResult.generateOutput(period, false, Model::market, Model::slidingWindow,
                                      model.trainingPeriod, model.testingPeriod);
-        testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
+        testingResult.finalOutput(period, false, Model::market, Model::slidingWindow,
                                   model.trainingPeriod, model.testingPeriod);
 #endif
-        finalResult.generateOutput(i, true, Model::market, Model::slidingWindow,
+        finalResult.generateOutput(period, true, Model::market, Model::slidingWindow,
                                    model.trainingPeriod, model.testingPeriod);
-        finalResult.finalOutput(i, true, Model::market, Model::slidingWindow,
+        finalResult.finalOutput(period, true, Model::market, Model::slidingWindow,
                                 model.trainingPeriod, model.testingPeriod);
     }
 #if RUN_TESTING

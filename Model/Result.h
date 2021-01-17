@@ -246,6 +246,19 @@ public:
         }
     }
 
+    static void convergence(string &market, string &sw, string periodName, int round, int gen, double fitness) {
+        Logger logger;
+        string name = periodName.replace(periodName.end() - 4, periodName.end(), "");
+        logger.setPath("../log/" + market + "/" + sw + "/convergence_" + name + "/Round " +
+                       std::to_string(round) + ".csv");
+        if (gen == 0) {
+            logger.writeComma("Generation");
+            logger.writeLine("Fitness");
+        }
+        logger.writeComma(gen);
+        logger.writeLine(fitness);
+    }
+
     int generation{};
     int population{};
     vector<int> solution{};
