@@ -13,6 +13,7 @@
 #define RUN_TESTING 1
 #define COMPOUND_INTEREST 1
 #define MODE 1
+#define TR_SR 0
 
 /** @param MODE
  *  0: execute stock selection program
@@ -21,6 +22,10 @@
  *  3: execute ranking program
  *  4: execute single stock program
  *  5: execute given portfolio program
+ *
+ *  @param TR_SR
+ *  0: Trend Ratio applied
+ *  1: Sharpe Ratio applied
  */
 
 class Model {
@@ -67,7 +72,9 @@ public:
 
     void setInitialFund(double fund);
 
-    double calcTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
+    double getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
+
+    double getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const;
 
 private:
     int population;

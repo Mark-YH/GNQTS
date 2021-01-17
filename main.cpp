@@ -264,7 +264,7 @@ void fundAllocation() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+    testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
@@ -346,7 +346,7 @@ void stockSelection() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+    testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
@@ -405,7 +405,7 @@ void singleStock() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+    testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
@@ -475,7 +475,7 @@ void givenPortfolio() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
-    testingModel.calcTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+    testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
