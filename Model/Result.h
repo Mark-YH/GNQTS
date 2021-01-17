@@ -256,16 +256,11 @@ public:
     static void
     convergence(string &market, string &alias, string &mode, string &sw, string periodName, int round, int gen,
                 double fitness) {
-        Logger logger;
+        Logger logger(10);
         string name = periodName.replace(periodName.end() - 4, periodName.end(), "");
         logger.setPath(
                 "../log/" + market + " " + alias + "/" + mode + "/" + "/" + sw + "/convergence_" + name + "/Round " +
                 std::to_string(round) + ".csv");
-        if (gen == 0) {
-            logger.writeComma("Generation");
-            logger.writeLine("Fitness");
-        }
-        logger.writeComma(gen);
         logger.writeLine(fitness);
     }
 
