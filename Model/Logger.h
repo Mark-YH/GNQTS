@@ -29,6 +29,10 @@ public:
         this->precision = 20;
     }
 
+    Logger(int precision) {
+        this->precision = precision;
+    }
+
     explicit Logger(const fs::path &path) {
         try {
             if (!fs::is_directory(path.parent_path()))
@@ -67,7 +71,6 @@ public:
             if (!fs::is_directory(path.parent_path()))
                 fs::create_directories(path.parent_path());
             fOut.open(path, ios::app);
-            this->precision = 20;
         } catch (exception &e) {
             cerr << "Got an exception: " << e.what() << endl;
         }
