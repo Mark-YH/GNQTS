@@ -121,20 +121,20 @@ void exhaustion() {
             (allocRatio[portfolio_c] == 1) ||
             (allocRatio[portfolio_d] == 1) ||
             (allocRatio[portfolio_e] == 1)) {
-            result.generateOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
-                                  model.testingPeriod);
-            result.finalOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
-                               model.testingPeriod);
+            result.generateOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
+                                  model.trainingPeriod, model.testingPeriod);
+            result.finalOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
+                               model.trainingPeriod, model.testingPeriod);
         }
     }
 //        }
 //    }
 //    }
     for (auto &bestResult : bestResults) {
-        bestResult.generateOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
-                                  model.testingPeriod);
-        bestResult.finalOutput(period, true, Model::market, Model::slidingWindow, model.trainingPeriod,
-                               model.testingPeriod);
+        bestResult.generateOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
+                                  model.trainingPeriod, model.testingPeriod);
+        bestResult.finalOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
+                               model.trainingPeriod, model.testingPeriod);
     }
 }
 
@@ -217,7 +217,8 @@ void fundAllocation() {
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             FA::QTS qts(model, stockSelection);
-            tmp = qts.run(Model::market, Model::slidingWindow, model.trainingPeriod[period], i);
+            tmp = qts.run(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
+                          i);
             if (gBest == result.gBest) {
                 result.foundBestCount++;
                 finalResult.foundBestCount++;
@@ -250,14 +251,14 @@ void fundAllocation() {
                 finalFS.push_back(tmp);
             }
         }
-        testingResult.generateOutput(period, false, Model::market, Model::slidingWindow,
+        testingResult.generateOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                      model.trainingPeriod, model.testingPeriod);
-        testingResult.finalOutput(period, false, Model::market, Model::slidingWindow,
+        testingResult.finalOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                   model.trainingPeriod, model.testingPeriod);
 #endif
-        finalResult.generateOutput(period, true, Model::market, Model::slidingWindow,
+        finalResult.generateOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                    model.trainingPeriod, model.testingPeriod);
-        finalResult.finalOutput(period, true, Model::market, Model::slidingWindow,
+        finalResult.finalOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                 model.trainingPeriod, model.testingPeriod);
     }
 #if RUN_TESTING
@@ -267,7 +268,8 @@ void fundAllocation() {
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
+    rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
+                       model.testingPeriod);
 #endif
 }
 
@@ -298,7 +300,7 @@ void stockSelection() {
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             EWFA::QTS qts(&model);
-            qts.run(Model::market, Model::slidingWindow, model.trainingPeriod[period], i);
+            qts.run(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period], i);
 
             if (gBest == result.gBest) {
                 result.foundBestCount++;
@@ -332,14 +334,14 @@ void stockSelection() {
                 finalFS.push_back(tmp);
             }
         }
-        testingResult.generateOutput(period, false, Model::market, Model::slidingWindow,
+        testingResult.generateOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                      model.trainingPeriod, model.testingPeriod);
-        testingResult.finalOutput(period, false, Model::market, Model::slidingWindow,
+        testingResult.finalOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                   model.trainingPeriod, model.testingPeriod);
 #endif
-        finalResult.generateOutput(period, true, Model::market, Model::slidingWindow,
+        finalResult.generateOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                    model.trainingPeriod, model.testingPeriod);
-        finalResult.finalOutput(period, true, Model::market, Model::slidingWindow,
+        finalResult.finalOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                 model.trainingPeriod, model.testingPeriod);
     }
 #if RUN_TESTING
@@ -349,7 +351,8 @@ void stockSelection() {
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
+    rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
+                       model.testingPeriod);
 #endif
 }
 
@@ -364,25 +367,25 @@ void singleStock() {
 
     double totalReturn = 0.0;
     vector<double> finalFS;
-    for (int i = 0; i < model.trainingPeriod.size(); i++) {
-        model.nextPeriod(i, true);
+    for (int period = 0; period < model.trainingPeriod.size(); period++) {
+        model.nextPeriod(period, true);
         Result result(model.getNumOfStocks(), model.getNumOfDays());
         model.setResult(&result);
 #if RUN_TESTING
-        testingModel.nextPeriod(i, false);
+        testingModel.nextPeriod(period, false);
         Result testingResult(testingModel.getNumOfStocks(), testingModel.getNumOfDays());
         testingModel.setResult(&testingResult);
 #endif
 
-        for (int j = 0; j < model.getNumOfStocks(); j++) {
+        for (int i = 0; i < model.getNumOfStocks(); i++) {
             vector<int> solution(model.getNumOfStocks(), 0);
             vector<double> allocRatio(model.getNumOfStocks(), 0);
-            solution[j] = 1;
-            allocRatio[j] = 1;
+            solution[i] = 1;
+            allocRatio[i] = 1;
             model.getFitness(solution, -1, allocRatio, true);
-            result.generateOutput(i, true, Model::market, Model::slidingWindow,
+            result.generateOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                   model.trainingPeriod, model.testingPeriod);
-            result.finalOutput(i, true, Model::market, Model::slidingWindow,
+            result.finalOutput(period, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                model.trainingPeriod, model.testingPeriod);
 #if RUN_TESTING
             testingModel.getFitness(solution, -1, allocRatio, false);
@@ -394,9 +397,9 @@ void singleStock() {
                 finalFS.push_back(it);
             }
 
-            testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
+            testingResult.generateOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                          model.trainingPeriod, model.testingPeriod);
-            testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
+            testingResult.finalOutput(period, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                       model.trainingPeriod, model.testingPeriod);
 #endif
         }
@@ -408,7 +411,8 @@ void singleStock() {
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
+    rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
+                       model.testingPeriod);
 #endif
 }
 
@@ -451,9 +455,9 @@ void givenPortfolio() {
         }
         fin.close();
         model.getFitness(solution, -1, allocRatio, true);
-        result.generateOutput(i, true, Model::market, Model::slidingWindow,
+        result.generateOutput(i, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                               model.trainingPeriod, model.testingPeriod);
-        result.finalOutput(i, true, Model::market, Model::slidingWindow,
+        result.finalOutput(i, true, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                            model.trainingPeriod, model.testingPeriod);
 #if RUN_TESTING
         testingModel.getFitness(solution, -1, allocRatio, false);
@@ -465,9 +469,9 @@ void givenPortfolio() {
             finalFS.push_back(it);
         }
 
-        testingResult.generateOutput(i, false, Model::market, Model::slidingWindow,
+        testingResult.generateOutput(i, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                      model.trainingPeriod, model.testingPeriod);
-        testingResult.finalOutput(i, false, Model::market, Model::slidingWindow,
+        testingResult.finalOutput(i, false, Model::market, Model::alias, Model::mode, Model::slidingWindow,
                                   model.trainingPeriod, model.testingPeriod);
 #endif
     }
@@ -478,7 +482,8 @@ void givenPortfolio() {
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
-    rs.totalTestResult(Model::market, Model::slidingWindow, model.trainingPeriod, model.testingPeriod);
+    rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
+                       model.testingPeriod);
 #endif
 }
 
@@ -502,7 +507,8 @@ int main() {
     std::cout << "Time taken: " << std::chrono::duration<double>(end - start).count() << "s" << std::endl;
 
     Logger logger(
-            "../log/" + Model::market + "/" + Model::slidingWindow + "/" + Model::slidingWindow + "_final_result.csv");
+            "../log/" + Model::market + " " + Model::alias + "/" + Model::mode + "/" + Model::slidingWindow + "/" +
+            Model::alias + "_" + Model::mode + "_" + Model::slidingWindow + "_final_result.csv");
     logger.writeComma("\nExecution time (s)");
     logger.writeLine(std::chrono::duration<double>(end - start).count());
     return 0;

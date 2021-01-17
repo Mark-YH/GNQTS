@@ -17,7 +17,7 @@ namespace FA {
 
         ~QTS();
 
-        vector<double> run(string &market, string &sw, string &periodName, int round);
+        vector<double> run(string &market, string &alias, string &mode, string &sw, string &periodName, int round);
 
         int getBestGeneration() const;
 

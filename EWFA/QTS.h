@@ -17,7 +17,7 @@ namespace EWFA {
 
         ~QTS();
 
-        void run(string &market, string &sw, string &periodName, int round);
+        void run(string &market, string &alias, string &mode, string &sw, string &periodName, int round);
 
         void measure();
 

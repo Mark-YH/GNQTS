@@ -28,9 +28,10 @@ public:
             stocks.emplace_back(_numOfDays);
     };
 
-    void totalTestResult(string market, string sw, vector<string> &trainingPeriod,
+    void totalTestResult(string &market, string &alias, string &mode, string &sw, vector<string> &trainingPeriod,
                          vector<string> &testingPeriod) const {
-        Logger logger("../log/" + market + "/" + sw + "/" + sw + "_total_test_result.csv");
+        Logger logger("../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_" + sw +
+                      "_total_test_result.csv");
 
         logger.writeComma("Testing period");
         logger.writeSpace(testingPeriod.front());
@@ -86,14 +87,16 @@ public:
         }
     }
 
-    void generateOutput(int period, bool isTraining, string market, string sw,
+    void generateOutput(int period, bool isTraining, string &market, string &alias, string &mode, string &sw,
                         vector<string> &trainingPeriod, vector<string> &testingPeriod) const {
         Logger logger;
 
         if (isTraining)
-            logger.setPath("../log/" + market + "/" + sw + "/output_" + trainingPeriod[period]);
+            logger.setPath("../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_" +
+                           trainingPeriod[period]);
         else
-            logger.setPath("../log/" + market + "/" + sw + "/output_" + testingPeriod[period]);
+            logger.setPath("../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_" +
+                           testingPeriod[period]);
 
         logger.writeComma("Generation");
         logger.writeLine(this->generation);
@@ -187,13 +190,17 @@ public:
         logger.writeLine("");
     };
 
-    void finalOutput(int period, bool isTraining, string market, string sw,
+    void finalOutput(int period, bool isTraining, string &market, string &alias, string &mode, string &sw,
                      vector<string> &trainingPeriod, vector<string> &testingPeriod) const {
         Logger logger;
         if (isTraining)
-            logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_result.csv");
+            logger.setPath(
+                    "../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_" + sw +
+                    "_final_result.csv");
         else
-            logger.setPath("../log/" + market + "/" + sw + "/" + sw + "_final_test_result.csv");
+            logger.setPath(
+                    "../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_" + sw +
+                    "_final_test_result.csv");
 
         if (period == 0) {
             logger.writeComma(sw);
@@ -246,11 +253,14 @@ public:
         }
     }
 
-    static void convergence(string &market, string &sw, string periodName, int round, int gen, double fitness) {
+    static void
+    convergence(string &market, string &alias, string &mode, string &sw, string periodName, int round, int gen,
+                double fitness) {
         Logger logger;
         string name = periodName.replace(periodName.end() - 4, periodName.end(), "");
-        logger.setPath("../log/" + market + "/" + sw + "/convergence_" + name + "/Round " +
-                       std::to_string(round) + ".csv");
+        logger.setPath(
+                "../log/" + market + " " + alias + "/" + mode + "/" + "/" + sw + "/convergence_" + name + "/Round " +
+                std::to_string(round) + ".csv");
         if (gen == 0) {
             logger.writeComma("Generation");
             logger.writeLine("Fitness");

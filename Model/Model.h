@@ -32,6 +32,15 @@ class Model {
 public:
     inline static string slidingWindow = "M2M";
     inline static string market = "DJI30";
+    inline static string alias = "normal";
+#if MODE == 0
+    inline static string mode = "EWFA";
+#elif MODE == 1
+    inline static string mode = "FA";
+#else
+    inline static string mode = "Other";
+#endif
+
     /**
      * @param market
      * TW0050: Component stocks of ETF 0050 in Taiwan.
