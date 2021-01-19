@@ -31,12 +31,12 @@ namespace EWFA {
         this->model = nullptr;
     }
 
-    void QTS::run(string &market, string &alias, string &mode, string &sw, string &periodName, int round) {
+    void QTS::run(double *convergence) {
         for (int i = 0; i < this->model->getGeneration(); i++) {
             measure();
             evaluate(i);
             update();
-            Result::convergence(market, alias, mode, sw, periodName, round, i, this->bestParticle->fitness);
+            convergence[i] += this->bestParticle->fitness;
         }
         this->model->getFitness(this->bestParticle->solution, -1, vector<double>(), true);
     }

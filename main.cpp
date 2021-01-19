@@ -214,11 +214,16 @@ void fundAllocation() {
         }
 
         vector<double> allocRatio, tmp;
+        double *convergence = new double[model.getGeneration()];
+
+        for (int i = 0; i < model.getGeneration(); i++) {
+            convergence[i] = 0;
+        }
+
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             FA::QTS qts(model, stockSelection);
-            tmp = qts.run(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
-                          i);
+            tmp = qts.run(convergence);
             if (gBest == result.gBest) {
                 result.foundBestCount++;
                 finalResult.foundBestCount++;
@@ -231,6 +236,9 @@ void fundAllocation() {
                 allocRatio = tmp;
             }
         }
+        result.convergence(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
+                           ROUND, convergence);
+        delete[] convergence;
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, allocRatio, false);
@@ -297,11 +305,16 @@ void stockSelection() {
         model.setResult(&result);
         result.foundBestCount = 1;
         double gBest = -DBL_MAX;
+        double *convergence = new double[model.getGeneration()];
+
+        for (int i = 0; i < model.getGeneration(); i++) {
+            convergence[i] = 0;
+        }
+
         for (int i = 0; i < ROUND; i++) { // round
             std::cout << "Round: " << std::setw(2) << i + 1 << " / " << ROUND << '\r';
             EWFA::QTS qts(&model);
-            qts.run(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period], i);
-
+            qts.run(convergence);
             if (gBest == result.gBest) {
                 result.foundBestCount++;
                 finalResult.foundBestCount++;
@@ -314,6 +327,9 @@ void stockSelection() {
                 finalResult = result;
             }
         }
+        result.convergence(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
+                           ROUND, convergence);
+        delete[] convergence;
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
             testingModel.getFitness(finalResult.solution, -1, vector<double>(), false);

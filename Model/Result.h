@@ -253,15 +253,18 @@ public:
         }
     }
 
-    static void
-    convergence(string &market, string &alias, string &mode, string &sw, string periodName, int round, int gen,
-                double fitness) {
+    void convergence(string &market, string &alias, string &mode, string &sw, string periodName, int size,
+                     double *convergence) {
         Logger logger(10);
-        string name = periodName.replace(periodName.end() - 4, periodName.end(), "");
         logger.setPath(
-                "../log/" + market + " " + alias + "/" + mode + "/" + "/" + sw + "/convergence_" + name + "/Round " +
-                std::to_string(round) + ".csv");
-        logger.writeLine(fitness);
+                "../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_convergence_" +
+                periodName);
+        logger.writeComma("Generation");
+        logger.writeLine("Fitness");
+        for (int i = 0; i < size; i++) {
+            logger.writeComma(i + 1);
+            logger.writeLine(convergence[i] / (float) size);
+        }
     }
 
     int generation{};

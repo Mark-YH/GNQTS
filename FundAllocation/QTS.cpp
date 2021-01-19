@@ -37,12 +37,12 @@ namespace FA {
         this->model = nullptr;
     }
 
-    vector<double> QTS::run(string &market, string &alias, string &mode, string &sw, string &periodName, int round) {
+    vector<double> QTS::run(double *convergence) {
         for (int i = 0; i < this->model->getGeneration(); i++) {
             measure();
             evaluate(i);
             update();
-            Result::convergence(market, alias, mode, sw, periodName, round, i, this->gBest->fitness);
+            convergence[i] += this->gBest->fitness;
         }
         vector<double> allocRatio(this->model->getNumOfStocks(), 0); // the fund ratio of each chosen stock
         if (this->gBest->fitness > 0) {
