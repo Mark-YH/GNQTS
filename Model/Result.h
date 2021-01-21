@@ -254,14 +254,14 @@ public:
     }
 
     void convergence(string &market, string &alias, string &mode, string &sw, string periodName, int size,
-                     double *convergence) {
+                     double *convergence, int generation) {
         Logger logger(10);
         logger.setPath(
                 "../log/" + market + " " + alias + "/" + mode + "/" + sw + "/" + alias + "_" + mode + "_convergence_" +
                 periodName);
         logger.writeComma("Generation");
         logger.writeLine("Fitness");
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < generation; i++) {
             logger.writeComma(i + 1);
             logger.writeLine(convergence[i] / (float) size);
         }

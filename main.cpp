@@ -237,7 +237,7 @@ void fundAllocation() {
             }
         }
         result.convergence(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
-                           ROUND, convergence);
+                           ROUND, convergence, model.getGeneration());
         delete[] convergence;
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
@@ -328,7 +328,7 @@ void stockSelection() {
             }
         }
         result.convergence(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod[period],
-                           ROUND, convergence);
+                           ROUND, convergence, model.getGeneration());
         delete[] convergence;
 #if RUN_TESTING
         if (finalResult.gBest > 0) {
