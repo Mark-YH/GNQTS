@@ -4,16 +4,16 @@
 import matplotlib.pyplot as plt
 import re
 import os
-import numpy as np
 
 
 class Config:
-    paths = ['C:/Users/Lab114/Desktop/DJI30/DJI30 Sharpe ratio/平分/',
-             'C:/Users/Lab114/Desktop/DJI30/DJI30 心情波動/平分/',
-             'C:/Users/Lab114/Desktop/DJI30/DJI30 心情波動/分配/']
-    labels = ['SR', 'TR EWFA', 'TR FA']
+    paths = ['C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS/EWFA/',
+             'C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS/FA/',
+             'C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS-SR/EWFA/']
+    labels = ['ANGQTS-EWFA', 'ANGQTS-FA', 'ANGQTS-SR']
+    file_prefix = ['ANGQTS_EWFA', 'ANGQTS_FA', 'ANGQTS-SR_EWFA']
     colors = [(0.2, 0.4, 1), (1, 0.5, 0.2), (0.2, 0.6, 0.4)]
-    mode = ['train']
+    mode = 'train'
     sliding_windows = [
         'Y2Y',
         'Y2H',
@@ -52,18 +52,13 @@ def get_trend_line(_fs):
 
 def get_files():
     results = {}
-    cwd = os.getcwd()
-    for path in Config.paths:
+    for i, path in enumerate(Config.paths):
         for sw in Config.sliding_windows:
-            os.chdir(cwd)
-            os.chdir(path + sw)
             _files = []
-            for item in os.listdir():
-                for m in Config.mode:
-                    if re.match(r'output_' + m, item):
-                        _files.append(item)
+            for item in os.listdir(path + sw):
+                if re.match(r'.+_' + Config.mode, item) and not item.__contains__('convergence'):
+                    _files.append(Config.mode + re.split(r'.+_' + Config.mode, item)[1])
             results.update({sw: _files})
-    os.chdir(cwd)
     return results
 
 
@@ -89,15 +84,17 @@ def get_fs(file_path):
     return fs
 
 
-def add_fs(_fs, label='?', color=(0, 0, 0)):
-    avg = []
-    for i in range(len(_fs)):
-        avg.append(np.average(_fs))
-    r, g, b = color
+def add_fs(_fs, label='?', color=None, first_to_last=None):
+    # avg = []
+    # for i in range(len(_fs)):
+    #     avg.append(np.average(_fs))
 
     plt.plot(_fs, label=label, color=color)
-    plt.plot(avg, label=label + ' avg.', linestyle='dotted', color=(r, g, b, 0.7))
-    plt.plot(get_trend_line(_fs), label=label + ' tl.', linestyle='dashed', color=(r, g, b, 0.7))
+    # plt.plot(avg, label=label + ' avg.', linestyle='dotted', color=color, alpha=0.7)
+    if first_to_last is None:
+        plt.plot(get_trend_line(_fs), label=label + ' TL.', linestyle='dashed', color=color, alpha=0.5)
+    else:
+        plt.plot(first_to_last, label=label + ' FL.', linestyle='dashed', color=color, alpha=0.5)
 
 
 def save_fs(sw, filename):
@@ -105,15 +102,33 @@ def save_fs(sw, filename):
         mode = 'test'
     if filename.__contains__('train'):
         mode = 'train'
-    period = re.split(r'output_(test|train)_|\(.+\)\.csv', filename)[2]
+    if filename.__contains__('total'):
+        mode = 'total test'
+
     os.makedirs('./img/' + mode + '/' + sw, exist_ok=True)
-    plt.title(sw.replace('#', '*') + ' ' + period)
-    plt.xlabel('Day')
-    plt.ylabel('Funds Standardization')
-    plt.legend()
-    plt.savefig('img/' + mode + '/' + sw + '/' + filename.split('.csv')[0] + '.svg')
+    plt.title(get_title(sw, filename), fontsize=14)
+    plt.xlabel('Day', fontsize=14)
+    plt.ylabel('Funds Standardization', fontsize=14)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    extension = '.svg'
+    plt.savefig('img/' + mode + '/' + sw + '/' + filename.split('.csv')[0] + extension)
+    extension = '.pdf'
+    plt.savefig('img/' + mode + '/' + sw + '/' + filename.split('.csv')[0] + extension)
     # plt.show()
     plt.clf()
+
+
+def get_title(sw, filename):
+    months = {'01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+              '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'}
+    period = re.split(r'(test|train)_|\(.+\)\.csv', filename)[2]
+    period = period.replace('_', ' ').replace('~', ' - ')
+    for key, val in months.items():
+        period = period.replace(' ' + key, ' ' + val).replace('-' + key, '-' + val)
+    if Config.mode == 'total':
+        return sw.replace('#', '*')
+    return sw.replace('#', '*') + ' $-$ ' + period
 
 
 def run():
@@ -121,7 +136,7 @@ def run():
     for sw, files in dict_files.items():
         for fn in files:
             for i, path in enumerate(Config.paths):
-                fp = path + sw + '/' + fn
+                fp = path + sw + '/' + Config.file_prefix[i] + '_' + fn
                 add_fs(get_fs(fp), Config.labels[i], Config.colors[i])
             save_fs(sw, fn)
 
@@ -133,6 +148,27 @@ def single():
     save_fs('M#', 'output_train_2018_12(2018 Q1).csv')
 
 
+def total_testing_period():
+    dict_files = get_files()
+    for sw, files in dict_files.items():
+        for fn in files:
+            for i, path in enumerate(Config.paths):
+                fp = path + sw + '/' + Config.file_prefix[i] + '_' + sw + '_' + fn
+                fs = []
+                first_to_last = []
+                with open(fp) as reader:
+                    for row in reader:
+                        if re.match(r'FS\(\d+\)', row):
+                            result = row.split(',')
+                            fs.append(float(result[1]))
+                            first_to_last.append(float(result[3]))
+                add_fs(fs, Config.labels[i], Config.colors[i], first_to_last)
+            save_fs(sw, fn)
+
+
 if __name__ == '__main__':
+    plt.figure(figsize=(7.2, 4.8))
     run()
     # single()
+    if Config.mode == 'total':
+        total_testing_period()
