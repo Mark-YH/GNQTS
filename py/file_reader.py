@@ -7,13 +7,15 @@ from os import path, makedirs
 
 
 class Reader:
-    def __init__(self, _sliding_window=None, _ver=None, _path=None):
+    def __init__(self, _sliding_window=None, _ver=None, _path=None, _file_prefix=None):
         if _sliding_window is None:
             _sliding_window = 'Y2Y'
         if _ver is None:
             _ver = ''
         if _path is None:
             _path = path.curdir
+        if _file_prefix is None:
+            _file_prefix = ''
         self.sliding_window = _sliding_window
         self.version = _ver
         self.path = path.join(_path, _ver, _sliding_window)
@@ -21,7 +23,7 @@ class Reader:
     def get_final_result(self):
         if not path.exists(path.join('./py_output/', self.version, self.sliding_window)):
             makedirs(path.join('./py_output/', self.version, self.sliding_window))
-        with open(path.join(self.path, self.sliding_window + '_final_result.csv')) as csvfile:
+        with open(path.join(self.path, file_prefix + '_' + self.sliding_window + '_final_result.csv')) as csvfile:
             for i, row in enumerate(csvfile):
                 if i == 0:
                     continue
@@ -49,8 +51,9 @@ class Reader:
 
 
 if __name__ == '__main__':
-    p = 'C:/Users/Lab114/Desktop/DJI30/DJI30 Sharpe ratio/'
+    p = 'C:/Users/Lab114/Desktop/DJI 30 convergence/result/DJI30 ANGQTS-SR/'
+    file_prefix = 'ANGQTS-SR_EWFA'
     sws = ['Y2Y', 'Y2H', 'Y2Q', 'Y2M', 'H2H', 'H2Q', 'H2M', 'H#', 'Q2Q', 'Q2M', 'Q#', 'M2M', 'M#']
     for sw in sws:
-        reader = Reader(_path=p, _ver='平分', _sliding_window=sw)
+        reader = Reader(_path=p, _ver='EWFA', _sliding_window=sw, _file_prefix=file_prefix)
         reader.get_final_result()
