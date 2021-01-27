@@ -5,7 +5,7 @@
 import csv
 from os import listdir
 
-ver_dir = ["平分", "分配"]
+ver_dir = ["EWFA", "FA"]
 sliding_windows = ["Y2Y", "Y2H", "Y2Q", "Y2M", "H2H", "H2Q", "H2M", "H#", "Q2Q", "Q2M", "Q#", "M2M", "M#"]
 rs_training = [[], []]
 rs_testing = [[], []]
@@ -25,8 +25,8 @@ class Result:
 
 
 def read():
-    root = "C:/Users/Lab114/Desktop/DJI30/DJI30 linear adaptive/"
-    # djia_search(root, "DJIA_abs.csv")
+    root = "C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS/"
+    djia_search(root, "DJIA_origin.csv")
     for sw in sliding_windows:
         for version in ver_dir:
             path = root + version + "/" + sw + "/"
@@ -178,17 +178,17 @@ def write_testing(ver):
                         context.append(rs_testing[index][i].tr)
                 if rs_djia is not None:
                     if s == '真實報酬':
-                        context.append(rs_djia[index][i].real_return)
+                        context.append(rs_djia.real_return)
                     elif s == '波動':
-                        context.append(rs_djia[index][i].fluctuation)
+                        context.append(rs_djia.fluctuation)
                     elif s == '心情指數':
-                        context.append(rs_djia[index][i].emotion_index)
+                        context.append(rs_djia.emotion_index)
                     elif s == '預期報酬':
-                        context.append(rs_djia[index][i].exp_return)
+                        context.append(rs_djia.exp_return)
                     elif s == '風險':
-                        context.append(rs_djia[index][i].risk)
+                        context.append(rs_djia.risk)
                     elif s == '趨勢值':
-                        context.append(rs_djia[index][i].tr)
+                        context.append(rs_djia.tr)
             writer.writerow(context)
 
 
