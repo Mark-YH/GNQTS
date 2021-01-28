@@ -7,9 +7,10 @@ import os
 
 
 class Config:
-    paths = ['C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS/EWFA/',
-             'C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS/FA/',
-             'C:/Users/Lab114/Desktop/convergence/result/DJI30 ANGQTS-SR/EWFA/']
+    paths = ['C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/EWFA/',
+             # 'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/FA/',
+             # 'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-SR/EWFA/'
+             ]
     labels = ['ANGQTS-EWFA', 'ANGQTS-FA', 'ANGQTS-SR']
     file_prefix = ['ANGQTS_EWFA', 'ANGQTS_FA', 'ANGQTS-SR_EWFA']
     colors = [(0.2, 0.4, 1), (1, 0.5, 0.2), (0.2, 0.6, 0.4)]
@@ -143,9 +144,9 @@ def run():
 
 def single():
     for i, path in enumerate(Config.paths):
-        fp = path + 'M#/output_train_2018_12(2018 Q1).csv'
+        fp = path + 'Y2Y/ANGQTS_EWFA_train_2010(2010 Q1).csv'
         add_fs(get_fs(fp), Config.labels[i], Config.colors[i])
-    save_fs('M#', 'output_train_2018_12(2018 Q1).csv')
+    save_fs('Y2Y', 'ANGQTS_EWFA_train_2010(2010 Q1).csv')
 
 
 def total_testing_period():
@@ -166,9 +167,41 @@ def total_testing_period():
             save_fs(sw, fn)
 
 
+def study_case():
+    files = ['study case 1 - H2Q - 2011 Q1-Q2.csv', 'study case 2 - Y2Y - 2011.csv', 'study case 3 - M2M 2013 09.csv']
+    titles = ['H2Q $-$ 2011 Q1-Q2', 'Y2Y $-$ 2011', 'M2M $-$ 2013 Sep']
+    for k, file in enumerate(files):
+        with open('C:/Users/Lab114/Desktop/DJI30 convergence/result/' + file) as reader:
+            data = []
+            for i, row in enumerate(reader):
+                if i == 0:
+                    cols = row.split(',')
+                    for j in range(len(cols)):
+                        cols[j] = str(cols[j]).replace('\n', '')
+                        data.append([])
+                    continue
+                for j, val in enumerate(row.split(',')):
+                    data[j].append(float(str(val).replace('\n', '')))
+
+            for i in range(len(data) - 1):
+                plt.plot(data[i], label=cols[i], alpha=.5)
+            plt.plot(data[-1], label='Portfolio', alpha=.8, color='tab:red')
+            plt.plot(get_trend_line(data[-1]), label='Portfolio TL.', alpha=.5, color='tab:red', linestyle='dashed')
+            plt.xlabel('Day', fontsize=14)
+            plt.ylabel('Funds standardization', fontsize=14)
+            plt.title(titles[k], fontsize=14)
+            plt.legend(fontsize=10, ncol=1)
+            extension = '.svg'
+            plt.savefig('./py_output/' + titles[k].replace('$', '') + extension)
+            extension = '.pdf'
+            plt.savefig('./py_output/' + titles[k].replace('$', '') + extension)
+            plt.show()
+
+
 if __name__ == '__main__':
     plt.figure(figsize=(7.2, 4.8))
-    run()
+    # run()
     # single()
-    if Config.mode == 'total':
-        total_testing_period()
+    # if Config.mode == 'total':
+    #     total_testing_period()
+    study_case()
