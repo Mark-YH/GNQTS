@@ -315,39 +315,30 @@ Model::getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, 
 
 double
 Model::getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund, int pIndex, bool isTraining) const {
-    // calculate slope
-    double tmp = 0, tmp2 = 0;
-
-    for (int i = 0; i < _numOfDays; i++) {
-        tmp += (i + 1) * totalFS[i] - (i + 1) * _initFund;
-        tmp2 += (i + 1) * (i + 1);
-    }
-    double slope = tmp / tmp2;
+    // calculate return rate
+    // risk-free interest rate: 0.87%
+    double retRate = (totalFS.back() - totalFS.front()) / totalFS.front() - 0.0087;
 
     // calculate risk
     double avg = 0.0;
-    tmp = 0.0;
 
     for (int i = 0; i < _numOfDays; i++) {
         avg += totalFS[i];
     }
     avg /= _numOfDays;
 
+    double tmp = 0.0;
     for (int i = 0; i < _numOfDays; i++) {
         tmp += (totalFS[i] - avg) * (totalFS[i] - avg);
     }
 
-    double risk = sqrt(tmp / _numOfDays);
+    double risk = sqrt(tmp / _numOfDays) / avg;
 
     // calculate sharpe ratio
     double sharpeRatio = 0.0;
 
     if (risk > 0) { // if risk == 0 then sharpeRatio = 0
-        if (slope >= 0) {
-            sharpeRatio = slope / risk;
-        } else {
-            sharpeRatio = slope * risk;
-        }
+        sharpeRatio = retRate / risk;
     }
 
     if (!isTraining) {
@@ -365,7 +356,7 @@ Model::getSharpeRatio(vector<double> &totalFS, int _numOfDays, double _initFund,
 
     if (pIndex == -1) {
         this->result->initFund = _initFund;
-        this->result->expectedReturn = slope;
+        this->result->expectedReturn = retRate;
         this->result->risk = risk;
         this->result->gBest = sharpeRatio;
     }
