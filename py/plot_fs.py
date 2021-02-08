@@ -4,6 +4,7 @@
 import matplotlib.pyplot as plt
 import re
 import os
+import numpy as np
 
 
 class Config:
@@ -169,7 +170,7 @@ def total_testing_period():
 
 def study_case():
     files = ['study case 1 - H2Q - 2011 Q1-Q2.csv', 'study case 2 - Y2Y - 2011.csv', 'study case 3 - M2M 2013 09.csv']
-    titles = ['H2Q $-$ 2011 Q1-Q2', 'Y2Y $-$ 2011', 'M2M $-$ 2013 Sep']
+    titles = ['H2Q $-$ Q1-Q2 2011', 'Y2Y $-$ 2011', 'M2M $-$ Sep 2013']
     for k, file in enumerate(files):
         with open('C:/Users/Lab114/Desktop/DJI30 convergence/result/' + file) as reader:
             data = []
@@ -182,13 +183,16 @@ def study_case():
                     continue
                 for j, val in enumerate(row.split(',')):
                     data[j].append(float(str(val).replace('\n', '')))
-
+            colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
+                      'tab:olive', 'tab:cyan']
             for i in range(len(data) - 1):
-                plt.plot(data[i], label=cols[i], alpha=.5)
+                plt.plot(data[i], label=cols[i], alpha=.4, c=colors[i])
             plt.plot(data[-1], label='Portfolio', alpha=.8, color='tab:red')
             plt.plot(get_trend_line(data[-1]), label='Portfolio TL.', alpha=.5, color='tab:red', linestyle='dashed')
             plt.xlabel('Day', fontsize=14)
             plt.ylabel('Funds standardization', fontsize=14)
+            x_ticks = np.arange(0, len(data[i]), 2)
+            plt.xticks(x_ticks)
             plt.title(titles[k], fontsize=14)
             plt.legend(fontsize=10, ncol=1)
             extension = '.svg'
