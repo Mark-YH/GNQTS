@@ -9,8 +9,8 @@ import numpy as np
 
 class Config:
     paths = ['C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/EWFA/',
-             # 'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/FA/',
-             # 'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-SR/EWFA/'
+             'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/FA/',
+             'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-SR/EWFA/'
              ]
     labels = ['ANGQTS-EWFA', 'ANGQTS-FA', 'ANGQTS-SR']
     file_prefix = ['ANGQTS_EWFA', 'ANGQTS_FA', 'ANGQTS-SR_EWFA']
@@ -34,7 +34,7 @@ class Config:
 
 
 def get_trend_line(_fs):
-    origin = 1e7
+    origin = _fs[0]
     x = _fs
     tmp = 0
     tmp2 = 0
@@ -133,13 +133,26 @@ def get_title(sw, filename):
     return sw.replace('#', '*') + ' $-$ ' + period
 
 
+def get_first_last_line(fs):
+    line = []
+    for i in range(len(fs)):
+        line.append(
+            (fs[-1] - fs[0]) / (len(fs) - 1) * i + fs[0]
+        )
+    return line
+
+
 def run():
     dict_files = get_files()
     for sw, files in dict_files.items():
         for fn in files:
             for i, path in enumerate(Config.paths):
                 fp = path + sw + '/' + Config.file_prefix[i] + '_' + fn
-                add_fs(get_fs(fp), Config.labels[i], Config.colors[i])
+                if Config.mode == 'test':
+                    fs = get_fs(fp)
+                    add_fs(fs, Config.labels[i], Config.colors[i], first_to_last=get_first_last_line(fs))
+                else:
+                    add_fs(get_fs(fp), Config.labels[i], Config.colors[i])
             save_fs(sw, fn)
 
 
@@ -204,8 +217,8 @@ def study_case():
 
 if __name__ == '__main__':
     plt.figure(figsize=(7.2, 4.8))
-    # run()
+    run()
     # single()
-    # if Config.mode == 'total':
-    #     total_testing_period()
-    study_case()
+    if Config.mode == 'total':
+        total_testing_period()
+    # study_case()
