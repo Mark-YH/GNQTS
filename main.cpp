@@ -273,7 +273,11 @@ void fundAllocation() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
+#if TR_SR == 0
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#else
+    testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#endif
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
@@ -364,7 +368,11 @@ void stockSelection() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
+#if TR_SR == 0
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#else
+    testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#endif
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
@@ -424,7 +432,11 @@ void singleStock() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
+#if TR_SR == 0
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#else
+    testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#endif
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
@@ -495,7 +507,11 @@ void givenPortfolio() {
     Result rs(model.getNumOfStocks(), finalFS.size());
     testingModel.setResult(&rs);
     rs.totalFS = finalFS;
+#if TR_SR == 0
     testingModel.getTrendRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#else
+    testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
+#endif
     rs.finalFund = finalFS.back();
     rs.realReturn = totalReturn;
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
