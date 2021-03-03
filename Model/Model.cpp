@@ -188,7 +188,7 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
     vector<int> allocatedFund(this->numOfStocks);
     for (int i = 0; i < this->numOfStocks; i++) {
         if (solution[i] == 1) {
-#if MODE == 0 || MODE==5
+#if MODE == 0 || MODE == 5
             allocatedFund[i] = floor(this->initFund / numOfChosen);
 #else
             allocatedFund[i] = floor(this->initFund * allocRatio[i]);
