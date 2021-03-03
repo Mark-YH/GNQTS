@@ -79,9 +79,9 @@ def read_testing_period():
                     DJIA[t].append(float(value))
         t = 'profit'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Profit', 'Testing period/Profit', data, sort_descend=True)
+        plot('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Profit', 'Testing period/Profit', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
         t = 'fluc'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
@@ -94,9 +94,9 @@ def read_testing_period():
         plot_bar('Overall Testing Period', 'Emotion index', 'Testing period/Emotion index', data, sort_descend=True)
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
