@@ -300,7 +300,10 @@ Model::getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, 
         double fluctuation = calcRisk(totalFS, line, _numOfDays);
 
         this->result->fluctuation = fluctuation;
-        this->result->emotionIndex = (line.back() - line.front()) / fluctuation;
+        if (fluctuation == 0)
+            this->result->emotionIndex = 0;
+        else
+            this->result->emotionIndex = (line.back() - line.front()) / fluctuation;
         this->result->line = line;
     }
 
