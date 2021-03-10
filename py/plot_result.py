@@ -36,13 +36,13 @@ def read_training_period():
                     ANGQTS_SR[t].append(float(value))
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Training Period', 'Expected return', 'Training period/Expected return', data, sort_descend=True)
+        plot('Training Period', 'Daily Expected Return', 'Training period/Expected return', data, sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Training Period', 'Risk', 'Training period/Risk', data, sort_descend=False)
         t = 'tr'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Training Period', 'Trend ratio', 'Training period/Trend ratio', data, sort_descend=True)
+        plot('Training Period', 'Trend Ratio', 'Training period/Trend ratio', data, sort_descend=True)
 
 
 def read_testing_period():
@@ -79,34 +79,34 @@ def read_testing_period():
                     DJIA[t].append(float(value))
         t = 'profit'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
+        plot('Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
+        plot_bar('Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         t = 'fluc'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
+        plot('Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
+        plot_bar('Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
         t = 'ei'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Emotion index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot('Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Emotion index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot_bar('Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot('Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot_bar('Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data, sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
+        plot('Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
+        plot_bar('Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
         t = 'tr'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Trend ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot('Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Trend ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot_bar('Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
 
 
 def sort(data, sorted_indices, sort_descend):
