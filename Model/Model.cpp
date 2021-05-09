@@ -284,6 +284,9 @@ Model::getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, 
     double trendRatio = 0.0;
 
     if (risk > 0) { // if risk == 0 then trendRatio = 0
+#if SHORT_SELLING
+        slope *= -1;
+#endif
         if (slope >= 0) {
             trendRatio = slope / risk;
         } else {
