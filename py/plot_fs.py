@@ -58,7 +58,8 @@ def get_files():
         for sw in Config.sliding_windows:
             _files = []
             for item in os.listdir(path + sw):
-                if re.match(r'.+_' + Config.mode, item) and not item.__contains__('convergence'):
+                if re.match(r'.+_' + Config.mode, item) and not item.__contains__(
+                        'convergence') and not item.__contains__('final') and not item.__contains__('total'):
                     _files.append(Config.mode + re.split(r'.+_' + Config.mode, item)[1])
             results.update({sw: _files})
     return results
@@ -182,8 +183,9 @@ def total_testing_period():
 
 
 def study_case():
-    files = ['study case 1 - H2Q - 2011 Q1-Q2.csv', 'study case 2 - Y2Y - 2011.csv', 'study case 3 - M2M 2013 09.csv']
-    titles = ['H2Q $-$ Q1-Q2 2011', 'Y2Y $-$ 2011', 'M2M $-$ Sep 2013']
+    files = ['study case 1 - H2Q - 2011 Q1-Q2.csv', 'study case 2 - Y2Y - 2011.csv', 'study case 3 - M2M 2013 09.csv',
+             'study case 4 - M# - 2017 11.csv']
+    titles = ['H2Q $-$ Q1-Q2 2011', 'Y2Y $-$ 2011', 'M2M $-$ Sep 2013', 'M* $-$ Nov 2017']
     for k, file in enumerate(files):
         with open('C:/Users/Lab114/Desktop/DJI30 convergence/result/' + file) as reader:
             data = []
@@ -196,29 +198,37 @@ def study_case():
                     continue
                 for j, val in enumerate(row.split(',')):
                     data[j].append(float(str(val).replace('\n', '')))
+            colors = ['darkgoldenrod', 'cornflowerblue', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
+                      'lime', 'tab:cyan', 'black']
             colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:purple', 'tab:brown', 'tab:pink', 'tab:gray',
                       'tab:olive', 'tab:cyan']
-            for i in range(len(data) - 1):
-                plt.plot(data[i], label=cols[i], alpha=.4, c=colors[i])
-            plt.plot(data[-1], label='Portfolio', alpha=.8, color='tab:red')
-            plt.plot(get_trend_line(data[-1]), label='Portfolio TL.', alpha=.5, color='tab:red', linestyle='dashed')
+            for i in range(len(data) - 2):
+                plt.plot(data[i], label=cols[i], alpha=.3, c=colors[i])
+            plt.plot(data[-1], label='Portfolio-EWFA', alpha=.9, color='orangered', linewidth=1.75)
+            plt.plot(get_trend_line(data[-1]), label='Portfolio-EWFA TL.', alpha=.7, color='orangered',
+                     linestyle='dashed')
+            plt.plot(data[-2], label='Portfolio-FA', alpha=.9, color='darkred', linewidth=1.75)
+            plt.plot(get_trend_line(data[-2]), label='Portfolio-FA TL.', alpha=.7, color='darkred', linestyle='dashed')
             plt.xlabel('Day', fontsize=14)
             plt.ylabel('Funds standardization', fontsize=14)
             x_ticks = np.arange(0, len(data[i]), 2)
             plt.xticks(x_ticks)
             plt.title(titles[k], fontsize=14)
-            plt.legend(fontsize=10, ncol=1)
+            plt.legend(fontsize=10, ncol=2, handletextpad=0.1, columnspacing=0.3, handlelength=1.2, borderaxespad=0.1)
             extension = '.svg'
-            plt.savefig('./py_output/' + titles[k].replace('$', '') + extension)
+            plt.tight_layout()
+            plt.savefig('./py_output/' + titles[k].replace('$', '').replace('*', 'star') + extension)
             extension = '.pdf'
-            plt.savefig('./py_output/' + titles[k].replace('$', '') + extension)
-            plt.show()
+            plt.savefig('./py_output/' + titles[k].replace('$', '').replace('*', 'star') + extension)
+            # plt.show()
+            plt.clf()
 
 
 if __name__ == '__main__':
+    plt.rcParams['font.family'] = "Times New Roman"
     plt.figure(figsize=(7.2, 4.8))
     run()
     # single()
-    if Config.mode == 'total':
-        total_testing_period()
+    # if Config.mode == 'total':
+    #     total_testing_period()
     # study_case()
