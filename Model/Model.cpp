@@ -241,7 +241,7 @@ double Model::getFitness(vector<int> &solution, int pIndex, const vector<double>
             this->result->stocks[i] = this->stocks[i];
         }
         this->result->finalFund = totalFS[this->numOfDays - 1];
-        this->result->realReturn = totalFS[this->numOfDays - 1] - this->initFund;
+        this->result->realReturn = (totalFS.back() - totalFS.front()) / (this->numOfDays - 1);
     }
 #if TR_SR == 0
     return getTrendRatio(totalFS, this->numOfDays, this->initFund, pIndex, isTraining);
@@ -303,7 +303,7 @@ Model::getTrendRatio(vector<double> &totalFS, int _numOfDays, double _initFund, 
         if (fluctuation == 0)
             this->result->emotionIndex = 0;
         else
-            this->result->emotionIndex = (line.back() - line.front()) / fluctuation;
+            this->result->emotionIndex = ((line.back() - line.front()) / (_numOfDays - 1)) / fluctuation;
         this->result->line = line;
     }
 

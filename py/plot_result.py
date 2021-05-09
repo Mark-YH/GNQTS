@@ -36,17 +36,17 @@ def read_training_period():
                     ANGQTS_SR[t].append(float(value))
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Training Period', 'Expected return', 'Training period/Expected return', data, sort_descend=True)
+        plot('Training Period', 'Daily Expected Return', 'Training period/Expected return', data, sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Training Period', 'Risk', 'Training period/Risk', data, sort_descend=False)
         t = 'tr'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Training Period', 'Trend ratio', 'Training period/Trend ratio', data, sort_descend=True)
+        plot('Training Period', 'Trend Ratio', 'Training period/Trend ratio', data, sort_descend=True)
 
 
 def read_testing_period():
-    p = 'C:/Users/Lab114/Desktop/DJI30 convergence/result/TR vs SR testing period.csv'
+    p = 'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-EIfixed/TR vs SR total testing period.csv'
     ANGQTS_EWFA = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
     ANGQTS_FA = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
     ANGQTS_SR = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
@@ -79,9 +79,9 @@ def read_testing_period():
                     DJIA[t].append(float(value))
         t = 'profit'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
+        plot('Overall Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily profit', 'Testing period/Profit', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         t = 'fluc'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
@@ -89,14 +89,14 @@ def read_testing_period():
         plot_bar('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
         t = 'ei'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Emotion index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot('Overall Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Emotion index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot('Overall Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily expected return', 'Testing period/Expected return', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data, sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
         plot('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
@@ -104,9 +104,9 @@ def read_testing_period():
         plot_bar('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
         t = 'tr'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Trend ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot('Overall Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Trend ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot_bar('Overall Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
 
 
 def sort(data, sorted_indices, sort_descend):
@@ -133,6 +133,7 @@ def plot(title, y_label, filename, data, sort_descend=None):
         ANGQTS_SR = sort(ANGQTS_SR, sorted_indices, sort_descend)
         xlabels = sort(xlabels, sorted_indices, sort_descend)
 
+    plt.rcParams['font.family'] = "Times New Roman"
     fig = plt.figure(figsize=(7.2, 4.8))
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(ANGQTS_EWFA, alpha=.8, label="ANGQTS-EWFA", marker='x')
@@ -144,7 +145,7 @@ def plot(title, y_label, filename, data, sort_descend=None):
     ax.xaxis.set_major_locator(ticker.FixedLocator(index))
 
     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
-    plt.legend(fontsize=12, ncol=1)
+    plt.legend(fontsize=14, ncol=1)
     plt.title(title, fontsize=14)
     plt.tight_layout()
     file_path = './py_output/'
@@ -169,6 +170,7 @@ def plot_bar(title, y_label, filename, data, sort_descend=None):
     ANGQTS_FA = sort(ANGQTS_FA, sorted_indices, sort_descend)
     xlabels = sort(xlabels, sorted_indices, sort_descend)
 
+    plt.rcParams['font.family'] = "Times New Roman"
     fig = plt.figure(figsize=(7.2, 4.8))
     ax = fig.add_subplot(1, 1, 1)
 

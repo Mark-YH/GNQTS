@@ -279,7 +279,7 @@ void fundAllocation() {
     testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
 #endif
     rs.finalFund = finalFS.back();
-    rs.realReturn = totalReturn;
+    rs.realReturn = (finalFS.back() - finalFS.front()) / (finalFS.size() - 1);
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
                        model.testingPeriod);
 #endif
@@ -374,7 +374,7 @@ void stockSelection() {
     testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
 #endif
     rs.finalFund = finalFS.back();
-    rs.realReturn = totalReturn;
+    rs.realReturn = (finalFS.back() - finalFS.front()) / (finalFS.size() - 1);
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
                        model.testingPeriod);
 #endif
@@ -438,7 +438,7 @@ void singleStock() {
     testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
 #endif
     rs.finalFund = finalFS.back();
-    rs.realReturn = totalReturn;
+    rs.realReturn = (finalFS.back() - finalFS.front()) / (finalFS.size() - 1);
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
                        model.testingPeriod);
 #endif
@@ -513,7 +513,7 @@ void givenPortfolio() {
     testingModel.getSharpeRatio(finalFS, finalFS.size(), model.result->initFund, -1, false);
 #endif
     rs.finalFund = finalFS.back();
-    rs.realReturn = totalReturn;
+    rs.realReturn = (finalFS.back() - finalFS.front()) / (finalFS.size() - 1);
     rs.totalTestResult(Model::market, Model::alias, Model::mode, Model::slidingWindow, model.trainingPeriod,
                        model.testingPeriod);
 #endif

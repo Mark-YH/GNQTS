@@ -10,14 +10,26 @@ import matplotlib.pyplot as plt
 
 
 def run():
-    x, a, b, c, d = get_seq_sin()
-    x, a, b, c, d = get_seq_rotation()
+    data = get_seq_sin()
+    data = get_seq_rotation()
+    x = data[0]
+    y = data[1:]
     # plt.figure(figsize=(10.8, 7.2))
     plt.figure(figsize=(7.2, 4.8))
+    plt.rcParams["font.family"] = "Times New Roman"
     plt.xlabel('Day', fontsize=14)
-    plt.ylabel('Daily return', fontsize=14)
-    plt.plot(x, a, 'g', x, b, 'b', x, c, 'y', x, d, 'r')
-    plt.legend(('Stock A', 'Stock B', 'Equally weighted portfolio', 'Optimal portfolio'), fontsize=10)
+    plt.ylabel('Daily Return', fontsize=14)
+    c1 = np.array([222, 222, 54]) / 255
+    c2 = np.array([204, 153, 255]) / 255
+
+    colors = ['tab:green', 'tab:blue', 'tab:orange', 'tab:red']
+    for i in range(len(y)):
+        if i < 2:
+            plt.plot(x, y[i], linestyle='dashdot', c=colors[i])
+        else:
+            plt.plot(x, y[i], c=colors[i])
+    plt.legend(('Stock A', 'Stock B', 'Equally weighted portfolio', 'Optimal portfolio'), fontsize=14, ncol=2,
+               handletextpad=0.2, columnspacing=0.5, handlelength=1.6)
     plt.tight_layout()
     plt.savefig('./py_output/ideal_situation.pdf')
     plt.show()
