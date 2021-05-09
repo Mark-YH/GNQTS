@@ -14,6 +14,7 @@
 #define COMPOUND_INTEREST 1
 #define MODE 1
 #define TR_SR 0
+#define SHORT_SELLING 0
 
 /** @param MODE
  *  0: execute stock selection program
