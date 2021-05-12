@@ -102,7 +102,8 @@ def ei():
     lower_err = y - first2last_line
     upp_err = [0] * len(x)
     err = [lower_err, upp_err]
-    eb = plt.errorbar(x, y, yerr=err, errorevery=1, ecolor='tab:red', linewidth=0, elinewidth=2, label='Risk')
+    eb = plt.errorbar(x, y, yerr=err, errorevery=1, ecolor='tab:red', linewidth=0, elinewidth=2,
+                      label='Emotional ups and downs')
     eb[-1][0].set_linestyle('--')
     plt.plot(x, y, c='tab:blue', linewidth=2, label='Portfolio')
     plt.plot(x, first2last_line, c='tab:green', linewidth=2, label='First-to-last line')
