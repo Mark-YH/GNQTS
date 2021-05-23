@@ -14,15 +14,17 @@ def twin_plot(FA, SR, title, output_path):
     fig, ax = plt.subplots(1, 1)
     fig.set_size_inches(7.2, 4.8)
     ax2 = ax.twinx()
-    ln = ax.plot(FA, label='ANGQTS-FA', c=(1, 0.5, 0.2))
-    ln2 = ax.plot(get_first_last_line(FA), label='ANGQTS-FA FL.', linestyle='dashed', c=(1, 0.5, 0.2))
+    ln = ax.plot(FA, label='ANGQTS-NEWFA', c=(1, 0.5, 0.2))
+    ln2 = ax.plot(get_first_last_line(FA), label='ANGQTS-NEWFA FL.', linestyle='dashed', c=(1, 0.5, 0.2))
     ln3 = ax2.plot(SR, label='ANGQTS-SR', c=(0.2, 0.6, 0.4))
     ln4 = ax2.plot(get_first_last_line(SR), label='ANGQTS-SR FL.', linestyle='dashed', c=(0.2, 0.6, 0.4))
-    ax.set_ylabel('Funds Standardization (ANGQTS-FA)', fontsize=14)
+    ax.set_ylabel('Funds Standardization (ANGQTS-NEWFA)', fontsize=14)
     ax2.set_ylabel('Funds Standardization (ANGQTS-SR)', fontsize=14)
 
     # ax.set_ylim([0.8e7, 2.0e7])
     # ax2.set_ylim([3.43e7, 4.5e7])
+    ax.set_ylim([1.12e7, 1.25e7])
+    ax2.set_ylim([0.95e7, 1.02e7])
     lns = ln + ln2 + ln3 + ln4
 
     labels = [l.get_label() for l in lns]
