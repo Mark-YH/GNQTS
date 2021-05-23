@@ -12,7 +12,7 @@ class Config:
              'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/FA/',
              'C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-SR/EWFA/'
              ]
-    labels = ['ANGQTS-EWFA', 'ANGQTS-FA', 'ANGQTS-SR']
+    labels = ['ANGQTS-EWFA', 'ANGQTS-NEWFA', 'ANGQTS-SR']
     file_prefix = ['ANGQTS_EWFA', 'ANGQTS_FA', 'ANGQTS-SR_EWFA']
     colors = [(0.2, 0.4, 1), (1, 0.5, 0.2), (0.2, 0.6, 0.4)]
     mode = 'train'
@@ -243,8 +243,8 @@ def study_case():
 if __name__ == '__main__':
     plt.rcParams['font.family'] = "Times New Roman"
     plt.figure(figsize=(7.2, 4.8))
-    # run()
+    run()
     # single()
     # if Config.mode == 'total':
     #     total_testing_period()
-    study_case()
+    # study_case()

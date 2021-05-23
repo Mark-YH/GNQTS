@@ -137,7 +137,7 @@ def plot(title, y_label, filename, data, sort_descend=None):
     fig = plt.figure(figsize=(7.2, 4.8))
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(ANGQTS_EWFA, alpha=.8, label="ANGQTS-EWFA", marker='x')
-    ax.plot(ANGQTS_FA, alpha=.8, label="ANGQTS-FA", marker='o')
+    ax.plot(ANGQTS_FA, alpha=.8, label="ANGQTS-NEWFA", marker='o')
     ax.plot(ANGQTS_SR, alpha=.8, label="ANGQTS-SR", marker='+')
 
     ax.set_ylabel(y_label, fontsize=14)

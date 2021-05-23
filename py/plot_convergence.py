@@ -67,8 +67,8 @@ def plot_data(title, sw, data):
     plt.rcParams['font.family'] = "Times New Roman"
     plt.figure(figsize=(7.2, 4.8))
     x = [i + 1 for i in range(0, 10000)]
-    plt.plot(x, data[0], label='ANGQTS-FA')
-    plt.plot(x, data[1], label='GNQTS-FA')
+    plt.plot(x, data[0], label='ANGQTS-NEWFA')
+    plt.plot(x, data[1], label='GNQTS-NEWFA')
     # plt.plot(data[2])
     # plt.plot(data[3])
     plt.legend(fontsize=14)
