@@ -215,11 +215,11 @@ def study_case():
             ln += ax.plot(data[-1], label='Portfolio-EWFA', alpha=.9, color='orangered', linewidth=1.75)
             ln += ax.plot(get_trend_line(data[-1]), label='Portfolio-EWFA TL.', alpha=.7, color='orangered',
                           linestyle='dashed')
-            ln += ax.plot(data[-2], label='Portfolio-FA', alpha=.9, color='darkred', linewidth=1.75)
+            ln += ax.plot(data[-2], label='Portfolio-NEWFA', alpha=.9, color='darkred', linewidth=1.75)
             ln += ax.plot(get_trend_line(data[-2]), label='Portfolio-NEWFA TL.', alpha=.7, color='darkred',
                           linestyle='dashed')
             labels = [l.get_label() for l in ln]
-            ax.legend(ln, labels, fontsize=12, ncol=3, handletextpad=0.2, columnspacing=0.3, handlelength=1.2,
+            ax.legend(ln, labels, fontsize=12, ncol=3, handletextpad=0.1, columnspacing=0.2, handlelength=1,
                       borderaxespad=0.1, loc='upper left')
             ax.set_ylim([0.9875e7, 1.05e7])
             ax2.set_ylim([0.95e7, 1.2e7])
