@@ -216,7 +216,7 @@ def study_case():
             ln += ax.plot(get_trend_line(data[-1]), label='Portfolio-EWFA TL.', alpha=.7, color='orangered',
                           linestyle='dashed')
             ln += ax.plot(data[-2], label='Portfolio-FA', alpha=.9, color='darkred', linewidth=1.75)
-            ln += ax.plot(get_trend_line(data[-2]), label='Portfolio-FA TL.', alpha=.7, color='darkred',
+            ln += ax.plot(get_trend_line(data[-2]), label='Portfolio-NEWFA TL.', alpha=.7, color='darkred',
                           linestyle='dashed')
             labels = [l.get_label() for l in ln]
             ax.legend(ln, labels, fontsize=12, ncol=3, handletextpad=0.2, columnspacing=0.3, handlelength=1.2,
