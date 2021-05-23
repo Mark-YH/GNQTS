@@ -28,8 +28,9 @@ def run():
             plt.plot(x, y[i], linestyle='dashdot', c=colors[i])
         else:
             plt.plot(x, y[i], c=colors[i])
-    plt.legend(('Stock A', 'Stock B', 'Equally weighted portfolio', 'Optimal portfolio'), fontsize=14, ncol=2,
+    l = plt.legend(('Stock A', 'Stock B', 'Equally weighted portfolio', 'Optimal portfolio'), fontsize=14, ncol=2,
                handletextpad=0.2, columnspacing=0.5, handlelength=1.6)
+    # l.get_texts()[0].set_color("white")
     plt.tight_layout()
     plt.savefig('./py_output/ideal_situation.pdf')
     plt.show()

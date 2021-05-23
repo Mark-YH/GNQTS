@@ -61,7 +61,8 @@ def tr():
     x = np.arange(0, 11, 1)
     y = np.arange(50, 151, 10)
     for i in range(len(y)):
-        y[i] = y[i] + 20 * np.power(-1, i)
+        if i > 0:
+            y[i] = y[i] + 10 * np.power(-1, i)
 
     trend_line = get_return_trendline(y)[1]
     print(y)
