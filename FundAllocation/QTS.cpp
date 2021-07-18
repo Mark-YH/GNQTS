@@ -42,7 +42,8 @@ namespace FA {
             measure();
             evaluate(i);
             update();
-            convergence[i] += this->gBest->fitness;
+            if (convergence != nullptr)
+                convergence[i] += this->gBest->fitness;
         }
         vector<double> allocRatio(this->model->getNumOfStocks(), 0); // the fund ratio of each chosen stock
         if (this->gBest->fitness > 0) {

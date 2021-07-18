@@ -15,6 +15,7 @@
 #define MODE 1
 #define TR_SR 0
 #define SHORT_SELLING 0
+#define CONVERGENCE 1
 
 /** @param MODE
  *  0: execute stock selection program

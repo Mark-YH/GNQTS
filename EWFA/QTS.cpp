@@ -36,7 +36,8 @@ namespace EWFA {
             measure();
             evaluate(i);
             update();
-            convergence[i] += this->bestParticle->fitness;
+            if (convergence != nullptr)
+                convergence[i] += this->bestParticle->fitness;
         }
         this->model->getFitness(this->bestParticle->solution, -1, vector<double>(), true);
     }
