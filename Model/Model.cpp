@@ -382,7 +382,7 @@ void Model::calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex
                     amount = int(allocatedFund[i] / this->stocks[i].price[j]);
                     balance = allocatedFund[i] - amount * this->stocks[i].price[j];
 
-                    this->stocks[i].fs[j] = allocatedFund[i];
+                    this->stocks[i].fs[j] = allocatedFund[i] - this->stocks[i].price[j] * amount * 0.00025;
 #else
                     amount = int(allocatedFund[i] /
                                  (this->stocks[i].price[j] * 1000.0 +
