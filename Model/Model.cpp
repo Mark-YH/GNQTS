@@ -401,7 +401,7 @@ void Model::calcFS(vector<int> &solution, vector<int> &allocatedFund, int pIndex
                 } else { // the other days
 #if US_MARKET
                     this->stocks[i].fs[j] =
-                            this->stocks[i].price[j] * amount + balance;
+                            this->stocks[i].price[j] * amount - this->stocks[i].price[j] * amount * 0.00025 + balance;
 #else
                     this->stocks[i].fs[j] =
                             this->stocks[i].price[j] * amount * 1000.0 -

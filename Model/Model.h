@@ -15,7 +15,7 @@
 #define MODE 1
 #define TR_SR 0
 #define SHORT_SELLING 0
-#define CONVERGENCE 1
+#define CONVERGENCE 0
 
 /** @param MODE
  *  0: execute stock selection program
@@ -33,8 +33,8 @@
 class Model {
 public:
     inline static string slidingWindow = "M2M";
-    inline static string market = "DJI30";
-    inline static string alias = "normal";
+    inline static string market = "DJI30_2017";
+    inline static string alias = "ANGQTS";
 #if MODE == 0
     inline static string mode = "EWFA";
 #elif MODE == 1

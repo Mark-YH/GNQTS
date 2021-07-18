@@ -139,10 +139,10 @@ void exhaustion() {
 }
 
 void fundAllocation() {
-    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 1000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 1000000.0, 0.001425, 0.003);
     testingModel.trainingPeriod = model.trainingPeriod;
     testingModel.testingPeriod = model.testingPeriod;
 #endif
@@ -293,10 +293,10 @@ void fundAllocation() {
 }
 
 void stockSelection() {
-    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
+    Model model(10, 10000, 0.0004, 0.0008, 0.0002, 1000000.0, 0.001425, 0.003);
     model.init();
 #if RUN_TESTING
-    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 10000000.0, 0.001425, 0.003);
+    Model testingModel(10, 10000, 0.0004, 0.0008, 0.0002, 1000000.0, 0.001425, 0.003);
     testingModel.trainingPeriod = model.trainingPeriod;
     testingModel.testingPeriod = model.testingPeriod;
 #endif
