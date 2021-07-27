@@ -59,7 +59,8 @@ def get_files():
             _files = []
             for item in os.listdir(path + sw):
                 if re.match(r'.+_' + Config.mode, item) and not item.__contains__(
-                        'convergence') and not item.__contains__('final') and not item.__contains__('total'):
+                        'convergence') and not item.__contains__('final') and (
+                        Config.mode == 'total' or not item.__contains__('total')):
                     _files.append(Config.mode + re.split(r'.+_' + Config.mode, item)[1])
             results.update({sw: _files})
     return results
