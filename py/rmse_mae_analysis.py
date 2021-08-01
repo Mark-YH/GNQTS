@@ -35,6 +35,31 @@ def get_single_fs(sw, mode, period, stock):
     return single_stock_fs
 
 
+def get_spec_fs(sw, mode, period, portfolio):
+    p = os.path.join(os.path.realpath('../data/DJI30/'), sw, mode, period)
+    df = pd.read_csv(p)
+    df = df.drop('Unnamed: 30', axis=1)
+
+    for item in df.keys():
+        if item not in portfolio:
+            df = df.drop(item, axis=1)
+
+    total_fs = np.zeros(df.shape[0])
+    init_fund = 1e7
+    fund = int(init_fund / df.shape[1])
+    alloc_remain = init_fund - fund * df.shape[1]
+
+    price = df.to_numpy()
+    amount = np.floor(fund / price[0])
+    buy_remain = fund - amount * price[0]
+    each_stock_fs = amount * price + buy_remain
+    each_stock_fs[0] = [fund for i in range(df.shape[1])]
+
+    for i in range(df.shape[0]):
+        total_fs[i] = np.sum(each_stock_fs[i]) + alloc_remain
+    return total_fs
+
+
 def write_title():
     with open('py_output/result.csv', 'w') as writer:
         writer.write(
@@ -101,13 +126,22 @@ def run():
                 add_fs(fs_rmse, 'Portfolio (RMSE)', Config.colors[0])
                 add_fs(fs_mae, 'Portfolio (MAE)', Config.colors[1])
                 save_fs(sw, rs_mae[i].period)
+
                 write_contents(sw, rs_rmse[i].period, rs_rmse[i].stock_number, portfolio_rmse, fs_rmse,
                                'Portfolio (RMSE)')
                 write_contents(sw, rs_mae[i].period, rs_mae[i].stock_number, portfolio_mae, fs_mae, 'Portfolio (MAE)')
+
+                # single stock
                 add_fs(get_single_fs(sw, 'train', rs_rmse[i].period, diff_rmse[0]), diff_rmse[0] + ' (by RMSE)',
                        Config.colors[0])
                 add_fs(get_single_fs(sw, 'train', rs_mae[i].period, diff_mae[0]), diff_mae[0] + ' (by MAE)',
                        Config.colors[1])
+
+                # n-1 portfolio
+                portfolio_mae.remove(diff_mae[0])
+                fs_n_1 = get_spec_fs(sw, 'train', rs_mae[i].period, portfolio_mae)
+                write_contents(sw, rs_mae[i].period, rs_mae[i].stock_number, portfolio_mae, fs_n_1, 'Portfolio (n-1)')
+                add_fs(fs_n_1, 'Portfolio (n-1)', Config.colors[2])
                 save_fs(sw, 'Single_' + rs_mae[i].period)
 
     print('Total: ', count)
