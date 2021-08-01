@@ -6,6 +6,8 @@ import re
 import os
 import numpy as np
 
+plt.rcParams['font.family'] = "Times New Roman"
+plt.figure(figsize=(7.2, 4.8))
 
 class Config:
     paths = ['C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS/EWFA/',
@@ -242,8 +244,7 @@ def study_case():
 
 
 if __name__ == '__main__':
-    plt.rcParams['font.family'] = "Times New Roman"
-    plt.figure(figsize=(7.2, 4.8))
+
     run()
     # single()
     # if Config.mode == 'total':
