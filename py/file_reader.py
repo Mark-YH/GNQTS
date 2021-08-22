@@ -45,7 +45,7 @@ class Reader:
             makedirs(path.join('./py_output/', self.version, self.sliding_window))
         container = []
         with open(path.join(self.path,
-                            self.file_prefix + '_' + self.sliding_window + '_' + filename + '.csv')) as csvfile:
+                            self.file_prefix + self.sliding_window + '_' + filename + '.csv')) as csvfile:
             for i, row in enumerate(csvfile):
                 if i == 0:
                     continue
