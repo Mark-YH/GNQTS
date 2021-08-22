@@ -126,68 +126,71 @@ def get_sr(fs):
         tmp += (fs[i] - avg) * (fs[i] - avg)
 
     risk = np.sqrt(tmp / len(fs)) / avg
-
+    if risk == 0:
+        return 0
     sr = retRate / risk
     return sr
 
 
+def get_trendline(fs):
+    origin = fs[0]
+    x = fs
+    tmp = 0
+    tmp2 = 0
+    trend_line = []
+
+    for i in range(0, len(x)):
+        tmp += ((i + 1) * x[i] - (i + 1) * origin)
+    for i in range(0, len(x)):
+        tmp2 += (i + 1) * (i + 1)
+
+    slope = tmp / tmp2
+
+    for i in range(0, len(x)):
+        trend_line.append(slope * (i + 1) + origin)
+    return trend_line, slope
+
+
+def get_risk(fs, tl):
+    tmp = 0
+
+    for i in range(len(fs)):
+        tmp += (fs[i] - tl[i]) * (fs[i] - tl[i])
+
+        risk = np.sqrt(tmp / len(fs))
+    return risk
+
+
 def get_tr(fs):
-    def get_trendline(fs):
-        origin = fs[0]
-        x = fs
-        tmp = 0
-        tmp2 = 0
-        trend_line = []
-
-        for i in range(0, len(x)):
-            tmp += ((i + 1) * x[i] - (i + 1) * origin)
-        for i in range(0, len(x)):
-            tmp2 += (i + 1) * (i + 1)
-
-        slope = tmp / tmp2
-
-        for i in range(0, len(x)):
-            trend_line.append(slope * (i + 1) + origin)
-        return trend_line, slope
-
-    def get_risk(fs, tl):
-        tmp = 0
-
-        for i in range(len(fs)):
-            tmp += (fs[i] - tl[i]) * (fs[i] - tl[i])
-
-            risk = np.sqrt(tmp / len(fs))
-        return risk
-
     tl, slope = get_trendline(fs)
     risk = get_risk(fs, tl)
-    if slope == 0:
-        return 0
     if risk == 0:
-        return np.inf
+        return 0
     return slope / risk
 
 
+def get_first2last_line(fs):
+    line = []
+    for i in range(0, len(fs)):
+        line.append((fs[-1] - fs[0]) / (len(fs) - 1) * i + fs[0])
+    return line, ((fs[-1] - fs[0]) / (len(fs) - 1))
+
+
+def get_fluctuation(fs, line):
+    tmp = 0
+    for i in range(len(fs)):
+        tmp += (fs[i] - line[i]) * (fs[i] - line[i])
+
+    return np.sqrt(tmp / len(fs))
+
+
 def get_ei(fs):
-    def get_first2last_line():
-        line = []
-        for i in range(0, len(fs)):
-            line.append((fs[-1] - fs[0]) / (len(fs) - 1) * i + fs[0])
-        return line
-
-    def get_fluctuation(line):
-        tmp = 0
-        for i in range(len(fs)):
-            tmp += (fs[i] - line[i]) * (fs[i] - line[i])
-
-        return np.sqrt(tmp / len(fs))
-
-    seq = get_first2last_line()
-    fluctuation = get_fluctuation(seq)
+    seq, slope = get_first2last_line(fs)
+    fluctuation = get_fluctuation(fs, seq)
 
     if fluctuation == 0:
         return 0
-    return ((fs[-1] - fs[0]) / (len(fs) - 1)) / fluctuation
+    return slope / fluctuation
 
 
 # collect all results calculated by fund standardization, including shrape ratio, max drawdown, and profit factor.
@@ -271,22 +274,25 @@ def output_results(rs):
                 writer.write('\n')
 
 
-if __name__ == '__main__':
-    # p = os.path.realpath('/Users/Mark/Downloads/DJI30_2017 ANGQTS/')
-    # file_prefix = 'ANGQTS_EWFA'
-    # ver = 'EWFA'
-    # label = 'ANGQTS-EWFA'
-    # result = {}
-    # run(p, file_prefix, ver, label, result)
-    # file_prefix = 'ANGQTS_FA'
-    # ver = 'FA'
-    # label = 'ANGQTS-FA'
-    # run(p, file_prefix, ver, label, result)
-    # # p = os.path.realpath('C:/Users/Lab114/Desktop/DJI30 convergence/result/DJI30 ANGQTS-SR/EWFA/DJI30 SR2TR/')
-    # # file_prefix = 'SR2TR_Other'
-    # # ver = 'EWFA'
-    # # label = 'ANGQTS-SR'
-    # run(p, file_prefix, ver, label, result)
-    # output(result)
+def profit_factor_formula1():
+    p = os.path.realpath('/Users/Mark/Desktop/2010-202106/DJI30_2010-202106 ANGQTS/')
+    file_prefix = 'ANGQTS_EWFA_'
+    ver = 'EWFA'
+    label = 'ANGQTS-EWFA'
+    result = {}
+    run(p, file_prefix, ver, label, result)
+    file_prefix = 'ANGQTS_FA_'
+    ver = 'FA'
+    label = 'ANGQTS-FA'
+    run(p, file_prefix, ver, label, result)
+    p = os.path.realpath('/Users/Mark/Desktop/2010-202106/DJI30_2010-202106 ANGQTS-SR/EWFA/DJI30_2010-202106 SR2TR/')
+    file_prefix = 'SR2TR_Other_'
+    ver = 'Other'
+    label = 'ANGQTS-SR'
+    run(p, file_prefix, ver, label, result)
+    output(result)
 
+
+if __name__ == '__main__':
+    profit_factor_formula1()
     collect_results()
