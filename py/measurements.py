@@ -97,6 +97,8 @@ def get_daily_pf(fs):
 def get_mdd(fs):
     mdd = 0
     mdd_percent = 0
+    if np.sum(fs) == 0:
+        return 0, 0
     for i, val in enumerate(fs):
         if i == 0:
             continue
@@ -105,7 +107,7 @@ def get_mdd(fs):
         if histroy_max < val:
             continue
 
-        if histroy_max - val > mdd:
+        if (histroy_max - val) / histroy_max > mdd_percent:
             mdd = histroy_max - val
             mdd_percent = mdd / histroy_max
     return mdd, mdd_percent
