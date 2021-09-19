@@ -86,11 +86,19 @@ class Measurement:
 
 
 def get_fs():
-    path = os.path.realpath('../data/DJI30/Y2Y/test')
+    path = os.path.realpath('../data/DJI30_2010-202106/M2M/test')
     files = os.listdir(path)
     files.sort()
     df = pd.concat([pd.read_csv(os.path.join(path, file)) for file in files])
     df = df.drop('Unnamed: 30', axis=1)
+    utx = df['UTX'].to_numpy()
+    rtx = df['RTX'].to_numpy()
+    df = df.drop('UTX', axis=1)
+    for i in range(len(rtx)):
+        if np.isnan(rtx[i]):
+            rtx[i] = utx[i]
+    df['RTX'] = rtx
+
     total_fs = np.zeros(df.shape[0])
     init_fund = 1e7
     fund = int(init_fund / df.shape[1])
