@@ -53,7 +53,7 @@ def get_fs_obj():
     for i in range(len(Config.paths)):
         fs_result.update({Config.labels[i]: {}})
     Config.mode = 'test'
-    file_list = dict_files = get_files()
+    dict_files = get_files()
 
     for sw, files in dict_files.items():
         for i in fs_result.keys():
@@ -75,7 +75,7 @@ def get_fs_obj():
                             result = row.split(',')
                             fs.append(float(result[1]))
                 fs_result[Config.labels[i]][sw].update({'total': fs})
-    return fs_result, file_list
+    return fs_result
 
 
 def get_daily_pf(fs):
@@ -197,7 +197,7 @@ def get_ei(fs):
 
 # collect all results calculated by fund standardization, including shrape ratio, max drawdown, and profit factor.
 def collect_results():
-    fs_result, file_list = get_fs_obj()
+    fs_result = get_fs_obj()
     rs = {}
     for version in Config.labels:
         rs.update({version: {}})
