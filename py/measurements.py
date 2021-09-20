@@ -49,19 +49,28 @@ def run(p, file_prefix, ver, label, result):
 
 
 def get_fs_obj():
+    def update_dict():
+        for sw, files in dict_files.items():
+            for fn in files:
+                for i, path in enumerate(Config.paths):
+                    fp = path + sw + '/' + Config.file_prefix[i] + '_' + fn
+                    fs_result[Config.labels[i]][sw][Config.mode].update({fn: get_fs(fp)})
+
     fs_result = {}
     for i in range(len(Config.paths)):
         fs_result.update({Config.labels[i]: {}})
+
+    Config.mode = 'train'
+    dict_files = get_files()
+    for sw in sws:
+        for i in fs_result.keys():
+            fs_result[i].update({sw: {'train': {}, 'test': {}, 'total': {}}})
+
+    update_dict()
     Config.mode = 'test'
     dict_files = get_files()
+    update_dict()
 
-    for sw, files in dict_files.items():
-        for i in fs_result.keys():
-            fs_result[i].update({sw: {}})
-        for fn in files:
-            for i, path in enumerate(Config.paths):
-                fp = path + sw + '/' + Config.file_prefix[i] + '_' + fn
-                fs_result[Config.labels[i]][sw].update({fn: get_fs(fp)})
     Config.mode = 'total'
     dict_files = get_files()
     for sw, files in dict_files.items():
@@ -74,7 +83,7 @@ def get_fs_obj():
                         if re.match(r'FS\(\d+\)', row):
                             result = row.split(',')
                             fs.append(float(result[1]))
-                fs_result[Config.labels[i]][sw].update({'total': fs})
+                fs_result[Config.labels[i]][sw]['total'].update({'total': fs})
     return fs_result
 
 
@@ -90,7 +99,10 @@ def get_daily_pf(fs):
         else:
             negative += abs(diff)
     if negative == 0:
-        return np.inf
+        if positive > 0:
+            return np.inf
+        else:
+            return 0
     return positive / negative
 
 
@@ -199,81 +211,124 @@ def get_ei(fs):
 def collect_results():
     fs_result = get_fs_obj()
     rs = {}
-    for version in Config.labels:
+    for version in fs_result.keys():
         rs.update({version: {}})
         for sw in fs_result[version].keys():
             rs[version].update({sw: {}})
-            for period, fs in fs_result[version][sw].items():
-                rs[version][sw].update({period: {}})
-                rs[version][sw][period].update({'profit factor': get_daily_pf(fs)})
-                mdd, mdd_percentage = get_mdd(fs)
-                rs[version][sw][period].update({'mdd percentage': mdd_percentage})
-                rs[version][sw][period].update({'mdd': mdd})
-                rs[version][sw][period].update({'sharpe ratio': get_sr(fs)})
-                rs[version][sw][period].update({'net profit': get_net_profit(fs)})
-                rs[version][sw][period].update({'trend ratio': get_tr(fs)})
-                rs[version][sw][period].update({'emotion index': get_ei(fs)})
+            for mode in fs_result[version][sw].keys():
+                rs[version][sw].update({mode: {}})
+                count = 0
+                mean_pf = 0
+                mean_mddp = 0
+                mean_mdd = 0
+                mean_sr = 0
+                mean_netp = 0
+                mean_tr = 0
+                mean_ei = 0
+                for period, fs in fs_result[version][sw][mode].items():
+                    rs[version][sw][mode].update({period: {}})
+                    rs[version][sw][mode].update({'mean': {}})
+
+                    pf = get_daily_pf(fs)
+                    mdd, mdd_percentage = get_mdd(fs)
+                    sr = get_sr(fs)
+                    netp = get_net_profit(fs)
+                    tr = get_tr(fs)
+                    ei = get_ei(fs)
+                    rs[version][sw][mode][period].update({
+                        'profit factor': pf,
+                        'mdd percentage': mdd_percentage,
+                        'mdd': mdd,
+                        'sharpe ratio': sr,
+                        'net profit': netp,
+                        'trend ratio': tr,
+                        'emotion index': ei
+                    })
+                    count += 1
+                    mean_mddp += mdd_percentage
+                    mean_pf += pf
+                    mean_mdd += mdd
+                    mean_sr += sr
+                    mean_netp += netp
+                    mean_tr += tr
+                    mean_ei += ei
+                mean_mddp /= count
+                mean_pf /= count
+                mean_mdd /= count
+                mean_sr /= count
+                mean_netp /= count
+                mean_tr /= count
+                mean_ei /= count
+                rs[version][sw][mode]['mean'].update({
+                    'profit factor': mean_pf,
+                    'mdd percentage': mean_mddp,
+                    'mdd': mean_mdd,
+                    'sharpe ratio': mean_sr,
+                    'net profit': mean_netp,
+                    'trend ratio': mean_tr,
+                    'emotion index': mean_ei
+                })
+
     output_results(rs)
 
 
 def output_results(rs):
-    with open('./py_output/total_results.csv', 'w') as writer:
-        for version in rs.keys():
-            sws = rs[version].keys()
-            for sw in rs[version].keys():
-                for period in rs[version][sw].keys():
-                    measurements = rs[version][sw][period].keys()
+    with open('./py_output/total_results.csv', 'w') as writer_total:
+        measurements = rs[Config.labels[0]][sws[0]]['total']['total'].keys()
+
         for measurement in measurements:
-            writer.write(measurement)
-            writer.write(',')
+            writer_total.write(measurement)
+            writer_total.write(',')
             for ver in rs.keys():
-                writer.write(ver)
-                writer.write(',')
-        writer.write('\n')
+                writer_total.write(ver)
+                writer_total.write(',')
+        writer_total.write('\n')
         for sw in sws:
             for measurement in measurements:
-                writer.write(sw)
-                writer.write(',')
+                writer_total.write(sw)
+                writer_total.write(',')
                 for version in rs.keys():
-                    writer.write(str(rs[version][sw]['total'][measurement]))
-                    writer.write(',')
-            writer.write('\n')
+                    writer_total.write(str(rs[version][sw]['total']['total'][measurement]))
+                    writer_total.write(',')
+            writer_total.write('\n')
 
-    for version in rs.keys():
-        for sw in rs[version].keys():
-            for period in rs[version][sw].keys():
-                if period == 'total':
-                    rs[version][sw].pop(period)
-                    rs[version][sw].update({'mean': {}})
-                    for measurement in measurements:
-                        rs[version][sw]['mean'].update({measurement: 0})
-                    break
-    for version in rs.keys():
-        for sw in rs[version].keys():
-            for measurement in measurements:
-                for period in rs[version][sw].keys():
-                    if period == 'mean':
-                        continue
-                    rs[version][sw]['mean'][measurement] += rs[version][sw][period][measurement]
-                rs[version][sw]['mean'][measurement] /= len(rs[version][sw].keys()) - 1
     for sw in sws:
-        with open('./py_output/test_results_' + sw + '.csv', 'w') as writer:
+        with open('./py_output/train_results_' + sw + '.csv', 'w') as writer_train, \
+                open('./py_output/test_results_' + sw + '.csv', 'w') as writer_test:
             for measurement in measurements:
-                writer.write(measurement)
-                writer.write(',')
+                writer_train.write(measurement)
+                writer_train.write(',')
+                writer_test.write(measurement)
+                writer_test.write(',')
                 for ver in rs.keys():
-                    writer.write(ver)
-                    writer.write(',')
-            writer.write('\n')
+                    writer_train.write(ver)
+                    writer_train.write(',')
+                    writer_test.write(ver)
+                    writer_test.write(',')
+            writer_train.write('\n')
+            writer_test.write('\n')
 
-            for period in rs[list(rs.keys())[0]][sw].keys():
+            periods = list(rs[list(rs.keys())[0]][sw]['train'].keys())
+            periods.sort()
+            for period in periods:
                 for measurement in measurements:
-                    writer.write(period)
-                    writer.write(',')
+                    writer_train.write(period)
+                    writer_train.write(',')
                     for version in rs.keys():
-                        writer.write(str(rs[version][sw][period][measurement]))
-                        writer.write(',')
-                writer.write('\n')
+                        writer_train.write(str(rs[version][sw]['train'][period][measurement]))
+                        writer_train.write(',')
+                writer_train.write('\n')
+
+            periods = list(rs[list(rs.keys())[0]][sw]['test'].keys())
+            periods.sort()
+            for period in periods:
+                for measurement in measurements:
+                    writer_test.write(period)
+                    writer_test.write(',')
+                    for version in rs.keys():
+                        writer_test.write(str(rs[version][sw]['test'][period][measurement]))
+                        writer_test.write(',')
+                writer_test.write('\n')
 
 
 def profit_factor_formula1():
