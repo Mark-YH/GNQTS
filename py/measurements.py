@@ -273,23 +273,45 @@ def collect_results():
 
 
 def output_results(rs):
-    with open('./py_output/total_results.csv', 'w') as writer_total:
+    with open('./py_output/total_results.csv', 'w') as writer_total, \
+                open('./py_output/train_results_Mean.csv', 'w') as writer_train_mean, \
+                open('./py_output/test_results_Mean.csv', 'w') as writer_test_mean:
         measurements = rs[Config.labels[0]][sws[0]]['total']['total'].keys()
 
         for measurement in measurements:
+            writer_train_mean.write(measurement)
+            writer_train_mean.write(',')
+            writer_test_mean.write(measurement)
+            writer_test_mean.write(',')
             writer_total.write(measurement)
             writer_total.write(',')
             for ver in rs.keys():
+                writer_train_mean.write(ver)
+                writer_train_mean.write(',')
+                writer_test_mean.write(ver)
+                writer_test_mean.write(',')
                 writer_total.write(ver)
                 writer_total.write(',')
+        writer_train_mean.write('\n')
+        writer_test_mean.write('\n')
         writer_total.write('\n')
         for sw in sws:
             for measurement in measurements:
+                writer_train_mean.write(sw)
+                writer_train_mean.write(',')
+                writer_test_mean.write(sw)
+                writer_test_mean.write(',')
                 writer_total.write(sw)
                 writer_total.write(',')
                 for version in rs.keys():
+                    writer_train_mean.write(str(rs[version][sw]['train']['mean'][measurement]))
+                    writer_train_mean.write(',')
+                    writer_test_mean.write(str(rs[version][sw]['test']['mean'][measurement]))
+                    writer_test_mean.write(',')
                     writer_total.write(str(rs[version][sw]['total']['total'][measurement]))
                     writer_total.write(',')
+            writer_train_mean.write('\n')
+            writer_test_mean.write('\n')
             writer_total.write('\n')
 
     for sw in sws:
