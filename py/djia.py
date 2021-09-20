@@ -29,6 +29,10 @@ def run():
     l, profit = m.get_first2last_line(fs)
     f = m.get_fluctuation(fs, l)
     ei = m.get_ei(fs)
+    mdd, mddp = m.get_mdd(fs)
+    sr = m.get_sr(fs)
+    dpf = m.get_daily_pf(fs)
+    netp = m.get_net_profit(fs)
 
     with open('py_output/DJIA_result.csv', 'w') as writer:
         writer.write('Period,2010-202106\n')
@@ -49,6 +53,21 @@ def run():
         writer.write('\n')
         writer.write('Emotion index,')
         writer.write(str(ei))
+        writer.write('\n\n')
+        writer.write('Sharpe ratio,')
+        writer.write(str(sr))
+        writer.write('\n')
+        writer.write('MDD percentage,')
+        writer.write(str(mddp))
+        writer.write('\n')
+        writer.write('MDD,')
+        writer.write(str(mdd))
+        writer.write('\n')
+        writer.write('Profit factor (daily),')
+        writer.write(str(dpf))
+        writer.write('\n')
+        writer.write('Net profit,')
+        writer.write(str(netp))
         writer.write('\n')
 
         for i, it in enumerate(fs):
