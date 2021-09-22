@@ -13,7 +13,6 @@ import pandas as pd
 from multiprocessing import Process
 from threading import Thread
 
-
 matplotlib.use('macosx')
 
 
@@ -107,7 +106,7 @@ def analyze():
         writer.write('Times,theta_u,theta_l,trend ratio\n')
         for fp in file_paths:
             tr = get_tr(fp)
-            fns = re.search(r'(\d+)times_(0\.\d*)_(0\.\d*)', fp)
+            fns = re.search(r'(\d+\.?\d*)times_(0\.\d*)_(0\.\d*)', fp)
             times, upper_bound, lower_bound = fns.groups()
             writer.write(times)
             writer.write(',')
