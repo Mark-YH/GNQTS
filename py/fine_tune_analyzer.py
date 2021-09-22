@@ -10,6 +10,11 @@ import re
 import matplotlib.pyplot as plt
 import matplotlib
 import pandas as pd
+from multiprocessing import Process
+from threading import Thread
+
+
+matplotlib.use('macosx')
 
 
 def get_files():
@@ -46,7 +51,6 @@ def get_tr(fp):
 
 
 def d4(x, y, z, u):
-    matplotlib.use('macosx')
     fig = plt.figure()
     ax = plt.axes(projection="3d")
     img = ax.scatter(x, y, z, c=u, cmap=plt.jet(), alpha=0.7, marker='x')
@@ -59,7 +63,6 @@ def d4(x, y, z, u):
 
 
 def d3(x, y, z):
-    matplotlib.use('macosx')
     fig = plt.figure()
     ax = plt.axes(projection="3d")
     img = ax.scatter(x, y, z, c=z, cmap=plt.jet(), alpha=0.7, marker='x')
@@ -77,26 +80,25 @@ def d2(x, y, z):
     ax.set_xlabel(r'$\theta_u$')
     ax.set_ylabel(r'$\theta_l$')
     ax.grid(True, linestyle='-', color='0.75')
-    ax.scatter(x, y, c=z, cmap=plt.jet(), alpha=0.7, marker='x')
+    img = ax.scatter(x, y, c=z, cmap=plt.jet(), alpha=0.7, marker='x')
+    fig.colorbar(img, pad=0.1)
     fig.tight_layout()
     plt.show()
 
 
 def draw():
-    mode = 2
-
     df = pd.read_csv('./py_output/fine-tune.csv')
     x = df['theta_u'].to_numpy()
     y = df['theta_l'].to_numpy()
     z = df['Times'].to_numpy()
     u = df['trend ratio'].to_numpy()
 
-    if mode == 2:
-        d2(x, y, u)
-    elif mode == 3:
-        d3(x, y, u)
-    elif mode == 4:
-        d4(x, y, z, u)
+    p1 = Process(target=d2, args=(x, y, u))
+    p2 = Process(target=d3, args=(x, y, u))
+    p3 = Process(target=d4, args=(x, y, z, u))
+    p1.start()
+    p2.start()
+    p3.start()
 
 
 def analyze():
