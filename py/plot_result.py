@@ -9,7 +9,7 @@ import matplotlib.ticker as ticker
 import numpy as np
 import os
 
-objective_number = 3
+object_number = 3
 
 
 def read_training_period():
@@ -22,17 +22,17 @@ def read_training_period():
             if i < 2:
                 continue
             for j, value in enumerate(str(row).split(',')):
-                if np.floor(j / (objective_number + 1)) == 0:
+                if np.floor(j / (object_number + 1)) == 0:
                     t = 'return'
-                elif np.floor(j / (objective_number + 1)) == 1:
+                elif np.floor(j / (object_number + 1)) == 1:
                     t = 'risk'
-                elif np.floor(j / (objective_number + 1)) == 2:
+                elif np.floor(j / (object_number + 1)) == 2:
                     t = 'tr'
-                if j % (objective_number + 1) == 1:
+                if j % (object_number + 1) == 1:
                     ANGQTS_EWFA[t].append(float(value))
-                elif j % (objective_number + 1) == 2:
+                elif j % (object_number + 1) == 2:
                     ANGQTS_FA[t].append(float(value))
-                elif j % (objective_number + 1) == 3:
+                elif j % (object_number + 1) == 3:
                     ANGQTS_SR[t].append(float(value))
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
@@ -46,7 +46,7 @@ def read_training_period():
 
 
 def read_testing_period():
-    p = '/Users/Mark/Desktop/result/DJI30 ANGQTS-EIfixed/TR vs SR total testing period.csv'
+    p = '/Users/Mark/Desktop/2010-202106/TR vs SR testing period.csv'
     ANGQTS_EWFA = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
     ANGQTS_FA = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
     ANGQTS_SR = {'profit': [], 'fluc': [], 'ei': [], 'return': [], 'risk': [], 'tr': []}
@@ -57,58 +57,58 @@ def read_testing_period():
             if i < 2:
                 continue
             for j, value in enumerate(str(row).split(',')):
-                if np.floor(j / (objective_number + 2)) == 0:
+                if np.floor(j / (object_number + 2)) == 0:
                     t = 'profit'
-                elif np.floor(j / (objective_number + 2)) == 1:
+                elif np.floor(j / (object_number + 2)) == 1:
                     t = 'fluc'
-                elif np.floor(j / (objective_number + 2)) == 2:
+                elif np.floor(j / (object_number + 2)) == 2:
                     t = 'ei'
-                elif np.floor(j / (objective_number + 2)) == 3:
+                elif np.floor(j / (object_number + 2)) == 3:
                     t = 'return'
-                elif np.floor(j / (objective_number + 2)) == 4:
+                elif np.floor(j / (object_number + 2)) == 4:
                     t = 'risk'
-                elif np.floor(j / (objective_number + 2)) == 5:
+                elif np.floor(j / (object_number + 2)) == 5:
                     t = 'tr'
-                if j % (objective_number + 2) == 1:
+                if j % (object_number + 2) == 1:
                     ANGQTS_EWFA[t].append(float(value))
-                elif j % (objective_number + 2) == 2:
+                elif j % (object_number + 2) == 2:
                     ANGQTS_FA[t].append(float(value))
-                elif j % (objective_number + 2) == 3:
+                elif j % (object_number + 2) == 3:
                     ANGQTS_SR[t].append(float(value))
-                elif j % (objective_number + 2) == 4:
+                elif j % (object_number + 2) == 4:
                     DJIA[t].append(float(value))
         t = 'profit'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
+        plot('Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
+        plot_bar('Testing Period', 'Daily Profit', 'Testing period/Profit', data, sort_descend=True)
         t = 'fluc'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
+        plot('Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
+        plot_bar('Testing Period', 'Fluctuation', 'Testing period/Fluctuation', data, sort_descend=False)
         t = 'ei'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot('Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
+        plot_bar('Testing Period', 'Emotion Index', 'Testing period/Emotion index', data, sort_descend=True)
         t = 'return'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data,
+        plot('Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data,
              sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data,
+        plot_bar('Testing Period', 'Daily Expected Return', 'Testing period/Expected return', data,
                  sort_descend=True)
         t = 'risk'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
+        plot('Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
+        plot_bar('Testing Period', 'Risk', 'Testing period/Risk', data, sort_descend=False)
         t = 'tr'
         data = [ANGQTS_EWFA[t], ANGQTS_FA[t], ANGQTS_SR[t]]
-        plot('Overall Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot('Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
         data = [ANGQTS_FA[t], DJIA[t]]
-        plot_bar('Overall Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
+        plot_bar('Testing Period', 'Trend Ratio', 'Testing period/Trend ratio', data, sort_descend=True)
 
 
 def sort(data, sorted_indices, sort_descend):
@@ -124,15 +124,15 @@ def set_bar_label(ax, rects, labels):
     height = ax.dataLim.height * 0.01
     for rect, label in zip(rects, labels):
         if label < 5:
-            ax.text(rect.get_x() + 0.025, height, '{:.5f}'.format(label), rotation=90,alpha=0.7)
+            ax.text(rect.get_x() + 0.025, height, '{:.5f}'.format(label), rotation=90, alpha=0.7)
         else:
-            ax.text(rect.get_x() + 0.025, height, '{:.1f}'.format(label), rotation=90,alpha =0.7)
+            ax.text(rect.get_x() + 0.025, height, '{:.1f}'.format(label), rotation=90, alpha=0.7)
 
 
 def plot(title, y_label, filename, data, sort_descend=None):
     col_count = 13
     index = np.arange(0, col_count, 1)
-    ANGQTS_EWFA = data[0]
+    # ANGQTS_EWFA = data[0]
     ANGQTS_FA = data[1]
     ANGQTS_SR = data[2]
     xlabels = ['Y2Y', 'Y2H', 'Y2Q', 'Y2M', 'H2H', 'H2Q', 'H2M', 'H*', 'Q2Q', 'Q2M', 'Q*', 'M2M', 'M*']
@@ -140,20 +140,20 @@ def plot(title, y_label, filename, data, sort_descend=None):
     if sort_descend is not None:
         sorted_indices = np.argsort(ANGQTS_FA)
         ANGQTS_FA = sort(ANGQTS_FA, sorted_indices, sort_descend)
-        ANGQTS_EWFA = sort(ANGQTS_EWFA, sorted_indices, sort_descend)
+        # ANGQTS_EWFA = sort(ANGQTS_EWFA, sorted_indices, sort_descend)
         ANGQTS_SR = sort(ANGQTS_SR, sorted_indices, sort_descend)
         xlabels = sort(xlabels, sorted_indices, sort_descend)
 
     plt.rcParams['font.family'] = "Times New Roman"
     fig = plt.figure(figsize=(7.2, 4.8))
     ax = fig.add_subplot(1, 1, 1)
-    width = 0.3
+    width = 0.4
     index = np.arange(0, 13, 1)
-    rects1 = ax.bar(index - width, ANGQTS_EWFA, width, alpha=.8, label="ANGQTS-EWFA", align='center')
-    rects2 = ax.bar(index, ANGQTS_FA, width, alpha=.8, label="ANGQTS-FA", align='center')
-    rects3 = ax.bar(index + width, ANGQTS_SR, width, alpha=.8, label="ANGQTS-SR", align='center')
+    # rects1 = ax.bar(index - width / 2, ANGQTS_EWFA, width, alpha=.8, label="ANGQTS-EWFA", align='center')
+    rects2 = ax.bar(index - width / 2, ANGQTS_FA, width, alpha=.8, label="ANGQTS-FA", align='center',color='tab:orange')
+    rects3 = ax.bar(index + width/2, ANGQTS_SR, width, alpha=.8, label="ANGQTS-SR", align='center', color='tab:green')
 
-    set_bar_label(ax, rects1, ANGQTS_EWFA)
+    # set_bar_label(ax, rects1, ANGQTS_EWFA)
     set_bar_label(ax, rects2, ANGQTS_FA)
     set_bar_label(ax, rects3, ANGQTS_SR)
     ax.set_ylabel(y_label, fontsize=14)
