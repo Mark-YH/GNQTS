@@ -243,10 +243,23 @@ def study_case():
             plt.close()
 
 
-if __name__ == '__main__':
+def our_method_vs_djia():
+    import pandas as pd
 
+    df = pd.read_csv('/Users/Mark/Desktop/交接檔案/2. 實驗數據/2010-202106/FS of DJIA & 13 SWs.csv')
+    djia = list(df['DJIA'])
+    for sw in Config.sliding_windows:
+        our_method = list(df[sw.replace('#', '*')])
+        add_fs(our_method, label='Our method (' + sw.replace('#', '*') + ')',
+               color='tab:blue', first_to_last=get_first_last_line(our_method))
+        add_fs(djia, label='DJIA', color='tab:red', first_to_last=get_first_last_line(djia))
+        save_fs(sw, 'test_' + sw + '.csv')
+
+
+if __name__ == '__main__':
     run()
     # single()
     # if Config.mode == 'total':
     #     total_testing_period()
     # study_case()
+    our_method_vs_djia()
